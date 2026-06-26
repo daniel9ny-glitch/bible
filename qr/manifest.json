@@ -1,0 +1,25 @@
+{
+  "name": "늘사랑 QR생성",
+  "short_name": "QR생성",
+  "description": "인터넷 없이 QR 코드를 만들고, 이미지나 카메라로 인식할 수 있는 도구",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ec",
+  "theme_color": "#2f6f4f",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
