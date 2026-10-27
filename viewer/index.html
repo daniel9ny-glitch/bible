@@ -7989,8 +7989,8 @@ async function gSyncRun(token,mode){
         }
       }else if(e.ab===la&&localKv&&!localKv.has('annbase:'+id)&&la>0){const ad=await DB.get('ann',id);if(ad)await saveBase(ad);}   /* 이미 맞춰진 문서는 기준본만 저장해 둔다 */
     }
-    /* 원본 PDF (노트는 항상, PDF는 설정에 따라) */
-    if(blobsOn||d.type==='note'){
+    /* 원본 PDF (노트·한글 문서는 항상 — 직접 쓴 내용이 이 파일에만 있다 — , 일반 PDF는 설정에 따라) */
+    if(blobsOn||d.type==='note'||d.hwp){
       const rb=R.b?R.b.ts:0,lb=e.b||0,has=localBlobs.has(id);
       if(rb&&(rb>lb||!has)){if(openId!==id){gStatus('PDF 받는 중… '+d.title);const buf=await gGetBuf(token,R.b.id);await DB.putRaw('blobs',id,buf);localBlobs.add(id);e.b=rb;changed=true;pulled++;}}
       else if(has&&lb>rb){gStatus('PDF 올리는 중… '+d.title);const buf=await DB.get('blobs',id);if(buf){await gPutBlob(token,nb,buf,lb,R.b);pushed++;}}
