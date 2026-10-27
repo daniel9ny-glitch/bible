@@ -227,7 +227,7 @@ export async function hwpToPdf(hwp, o) {
 
   /* 원본 HWP를 첨부 → 서재 동기화·백업을 따라 함께 움직인다 */
   const now = new Date();
-  await pdf.attach(hwp instanceof Uint8Array ? hwp : new Uint8Array(hwp), (o.name || 'document') + '.hwp',
+  await pdf.attach(hwp instanceof Uint8Array ? hwp : new Uint8Array(hwp), (o.name || 'document') + (o.ext || '.hwp'),
     { mimeType: 'application/x-hwp', description: '늘뷰어 한글 문서 원본', creationDate: now, modificationDate: now });
   const bytes = await pdf.save();
   return { pdf: bytes, pages: pages.length, stat };

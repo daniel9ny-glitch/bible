@@ -1320,7 +1320,7 @@ body.spoid,body.spoid *{cursor:crosshair!important}
       <button class="btn" id="btnImport"><span data-i="file-in"></span><span class="lbl">파일 불러오기</span></button>
       <button class="btn" id="btnImportFolder"><span data-i="folder-in"></span><span class="lbl">폴더 불러오기</span></button>
       <button class="icon-btn" id="btnSearch" type="button" aria-label="검색"><span data-i="search"></span></button>
-      <input id="fileInput" type="file" accept="application/pdf,.pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,image/*" multiple hidden>
+      <input id="fileInput" type="file" accept="application/pdf,.pdf,.hwp,.hwpx,.docx,.doc,.pptx,.ppt,.xlsx,.xls,image/*" multiple hidden>
       <input id="folderInput" type="file" webkitdirectory multiple hidden>
       <input id="photoInput" type="file" accept="image/*" hidden>
       <input id="camInput" type="file" accept="image/*" capture="environment" hidden>
@@ -3180,7 +3180,8 @@ const isDocF=f=>OFFICE_RE.test(f.name)||/wordprocessingml|msword|presentationml|
 const officeKind=f=>{const m=/\.(docx?|pptx?|xlsx?)$/i.exec(f.name);const e=m?m[1].toLowerCase():(/presentation|powerpoint/.test(f.type||'')?'pptx':/sheet|excel/.test(f.type||'')?'xlsx':'docx');
   const O='application/vnd.openxmlformats-officedocument.';   /* 옛 형식(doc·xls·ppt)은 그 형식의 종류로 올려야 구글이 제대로 변환한다 */
   return e.startsWith('p')?{g:'presentation',ct:e==='ppt'?'application/vnd.ms-powerpoint':O+'presentationml.presentation'}:e.startsWith('x')?{g:'spreadsheet',ct:e==='xls'?'application/vnd.ms-excel':O+'spreadsheetml.sheet'}:{g:'document',ct:e==='doc'?'application/msword':O+'wordprocessingml.document'};};
-const isImgF=f=>!isPdfF(f)&&!isDocF(f)&&((f.type&&f.type.startsWith('image/'))||IMG_RE.test(f.name));
+const HWP_RE=/\.hwpx?$/i,isHwpF=f=>HWP_RE.test(f.name);   /* 한글 문서(.hwp·.hwpx) — 가져오면 PDF로 바꿔 서재에 넣는다 */
+const isImgF=f=>!isPdfF(f)&&!isDocF(f)&&!isHwpF(f)&&((f.type&&f.type.startsWith('image/'))||IMG_RE.test(f.name));
 const natCmp=(a,b)=>a.localeCompare(b,'ko',{numeric:true});
 async function imageToJpeg(file,maxSide,q){
   const bmp=await createImageBitmap(file);
@@ -3228,12 +3229,13 @@ async function findDup(h,size,isImg){
 }
 async function importFiles(files,opts){
   opts=opts||{};let lastDoc=null;const got=[];
-  const all=[...files],pdfs=all.filter(isPdfF),imgs=all.filter(isImgF);let docs=all.filter(isDocF);
-  if(!pdfs.length&&!imgs.length&&!docs.length){toast('PDF, 오피스(워드·파워포인트·엑셀) 또는 이미지(JPG·PNG 등) 파일만 불러올 수 있습니다','err');return;}
+  const all=[...files],pdfs=all.filter(isPdfF),imgs=all.filter(isImgF),hwps=all.filter(isHwpF);let docs=all.filter(isDocF);
+  if(!pdfs.length&&!imgs.length&&!docs.length&&!hwps.length){toast('PDF, 한글(HWP), 오피스(워드·파워포인트·엑셀) 또는 이미지(JPG·PNG 등) 파일만 불러올 수 있습니다','err');return;}
   let convTok='';
   if(docs.length){try{convTok=await gConvTokenAsk();}catch(e){toast('오피스 파일 변환에는 구글 로그인이 필요합니다: '+(e&&e.message||e),'err');docs=[];if(!pdfs.length&&!imgs.length)return;}}
   const jobs=[];for(const f of pdfs)jobs.push({kind:'pdf',f,name:f.name});
   for(const f of docs)jobs.push({kind:'docx',f,name:f.name});
+  for(const f of hwps)jobs.push({kind:'hwp',f,name:f.name});
   const groups=new Map(),loose=[];
   for(const f of imgs){const rp=f.webkitRelativePath||f._rel||'',dir=rp.includes('/')?rp.slice(0,rp.lastIndexOf('/')):'';
     if(dir){if(!groups.has(dir))groups.set(dir,[]);groups.get(dir).push(f);}else loose.push(f);}
@@ -3247,7 +3249,7 @@ async function importFiles(files,opts){
       n++;if(jobs.length>1)toast(`불러오는 중 ${n}/${jobs.length}`);
       try{
         let buf,title,hash='';
-        if(j.kind==='docx'){
+        if(j.kind==='docx'||j.kind==='hwp'){
           /* 변환하면 PDF 내용이 매번 조금씩 달라지므로, 변환 전 원본 파일의 지문으로 이미 있는 책인지 먼저 본다 (같으면 변환하지 않는다) */
           j.oh='o:'+await fpBuf(await j.f.arrayBuffer());
           const dup=await findDup(j.oh,0,true);
@@ -3255,7 +3257,13 @@ async function importFiles(files,opts){
           if(dup){const cn=(catById(dup.catId)||{}).name;
             if(jobs.length>1||!confirm(`'${j.name}'은(는) 이미 서재에 있는 책입니다.\n\n기존 책: ${dup.title}${cn?' ('+cn+')':''}\n\n[취소] 추가하지 않음\n[확인] 그래도 한 권 더 추가`)){skipped.push({name:j.name,dup});continue;}}
           toast(`'${j.name}' 변환 중…`);
-          const pb=await docxToPdf(convTok,j.f);j.f=new File([pb],j.name.replace(OFFICE_RE,'')+'.pdf',{type:'application/pdf'});j.kind='pdf';}
+          if(j.kind==='hwp'){
+            const raw=new Uint8Array(await j.f.arrayBuffer()),base=j.name.replace(HWP_RE,'');let last=0;
+            const m=await hwpMods();
+            const r=await m.hwpToPdf(raw,{...hwpOpts(),title:base,name:base,ext:/\.hwpx$/i.test(j.name)?'.hwpx':'.hwp',
+              onProgress:(w,i,nn)=>{if(i===nn||Date.now()-last>800){last=Date.now();toast(`${base} · ${w} ${i}/${nn}`);}}});
+            j.f=new File([r.pdf],base+'.pdf',{type:'application/pdf'});j.kind='pdf';
+          }else{const pb=await docxToPdf(convTok,j.f);j.f=new File([pb],j.name.replace(OFFICE_RE,'')+'.pdf',{type:'application/pdf'});j.kind='pdf';}}
         if(j.kind==='pdf'){buf=await j.f.arrayBuffer();title=j.f.name.replace(/\.pdf$/i,'');
           const head=new TextDecoder('latin1').decode(new Uint8Array(buf,0,Math.min(1024,buf.byteLength)));
           if(!head.includes('%PDF-'))throw new Error('PDF 형식이 아닙니다');
