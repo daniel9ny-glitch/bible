@@ -466,9 +466,10 @@ dialog.pdlg{width:min(660px,calc(100vw - 20px));max-height:calc(100dvh - 20px);o
 .toast{padding:10px 16px;border-radius:11px;background:var(--fg);color:var(--bg);font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:.22s;box-shadow:var(--shadow)}
 .toast.in{opacity:1;transform:none}
 .toast.err{background:var(--danger);color:#fff}
-#hwpRoot{position:absolute;inset:0;z-index:55;display:flex;flex-direction:column;background:var(--bg);color:var(--fg)}
-#hwpRoot[hidden]{display:none}
-.hwp-bar{display:flex;align-items:center;gap:8px;padding:6px 10px;padding-top:max(6px,env(safe-area-inset-top));border-bottom:1px solid var(--line);background:var(--surface)}
+#hwpRoot{display:none;flex:1 1 0;min-height:0;min-width:0;flex-direction:column;background:var(--bg);color:var(--fg)}
+#reader.hwpt #hwpRoot{display:flex}
+#reader.hwpt #bibleRow,#reader.bible.hwpt #rFold,#reader.bible.hwpt #rDict,#reader.bible.hwpt #rMore{display:none!important}   /* 늘한글 탭: 늘성경 탭의 틀(상단바·탭)만 빌려 쓴다 */
+.hwp-bar{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line);background:var(--surface)}
 .hwp-bar .ttl{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hwp-bar .st{font-size:12px;color:var(--fg2);white-space:nowrap}
 #hwpBody{flex:1;min-height:0;position:relative;background:#fff}
@@ -1407,6 +1408,16 @@ body.spoid,body.spoid *{cursor:crosshair!important}
     </header>
     <button class="barTab" id="barTab" title="상단바 펼치기" aria-label="상단바 펼치기"><span data-i="chev-down"></span></button>
     <div id="bibleRow"><div id="bibleBox"></div></div>
+  <div id="hwpRoot" aria-label="늘한글">
+    <div class="hwp-bar">
+      <button type="button" class="btn" id="hwpBack" title="이 문서 닫기 (탭 닫기)"><span data-i="x"></span>닫기</button>
+      <div class="ttl" id="hwpTtl"></div><span class="st" id="hwpSt"></span>
+      <button type="button" class="btn" id="hwpPop" title="이 문서를 별도의 창으로 빼서 편집">↗ 새 창</button>
+      <button type="button" class="btn" id="hwpSave">저장</button>
+      <button type="button" class="btn primary" id="hwpView">저장하고 보기</button>
+    </div>
+    <div id="hwpBody"></div>
+  </div>
     <div id="miniMap" aria-hidden="true"><canvas id="mmCv" width="64" height="90"></canvas><i id="mmRect"></i></div>
     <div class="rbody">
       <aside class="side" id="side" aria-label="탐색">
@@ -1557,16 +1568,6 @@ body.spoid,body.spoid *{cursor:crosshair!important}
     </div>
   <div class="drop" id="dropHintR" hidden style="position:fixed">파일을 놓으면 새 탭으로 열립니다</div>
   </section>
-  <div id="hwpRoot" hidden role="dialog" aria-label="한글 문서 작성">
-    <div class="hwp-bar">
-      <button type="button" class="btn" id="hwpBack"><span data-i="arrow-left"></span>서재로</button>
-      <div class="ttl" id="hwpTtl"></div><span class="st" id="hwpSt"></span>
-      <button type="button" class="btn" id="hwpPop" title="이 문서를 별도의 창으로 빼서 편집">↗ 새 창</button>
-      <button type="button" class="btn" id="hwpSave">저장</button>
-      <button type="button" class="btn primary" id="hwpView">저장하고 보기</button>
-    </div>
-    <div id="hwpBody"></div>
-  </div>
   <div id="loading" hidden><div class="spin" role="status" aria-label="불러오는 중"></div></div>
 </div>
 <div id="toasts" aria-live="polite"></div>
@@ -2557,6 +2558,7 @@ async function applySug(list){
 }
 function sugBarUpd(){
   const b=$('#sugBar');if(!b)return;
+  b.hidden=true;return;   /* 안내창은 띄우지 않는다 — 추천 라벨은 카드에만 표시 */
   if((S.catId!=='unsorted'&&S.catId!=='temp')||S.q){b.hidden=true;return;}
   const P=docsOf(S.catId),L=P.filter(d=>d.sug),pend=P.filter(d=>d.type==='pdf'&&d.sugV!==2).length;
   if(!P.length||(S.catId==='unsorted'&&!L.length&&!pend)){b.hidden=true;return;}
@@ -3372,14 +3374,25 @@ async function hwpStat(){
   try{const s=await HWP.ed.getDocumentState();HWP.dirty=!!s.dirty;}catch(e){}
   $('#hwpSt').textContent=HWP.dirty?'저장 안 됨':(HWP.saved?'저장됨 '+HWP.saved:'');
 }
+/* 늘한글은 늘성경처럼 늘뷰어의 탭으로 열린다 (reader에 'bible hwpt' 클래스: 상단바·탭을 그대로 쓰고 본문만 편집기로 바뀐다) */
+function showHwp(){
+  S.hwp=true;const rd=$('#reader');$('#shelf').hidden=true;rd.hidden=false;rd.classList.remove('chrome','full','bfold');rd.classList.add('bible','hwpt');
+  $('#rTitle').textContent='늘한글 · '+(HWP.title||'');$('#rSub').textContent='';tabsAdd(HWP_ID);
+}
+function hideHwp(){S.hwp=false;$('#reader').classList.remove('bible','hwpt');}
 function hwpTeardown(){
   clearInterval(HWP.poll);HWP.poll=0;
   try{if(HWP.ed)HWP.ed.destroy();}catch(e){}
   HWP.ed=null;HWP.open=false;HWP.dirty=false;HWP.saved='';HWP.doc=null;
-  $('#hwpBody').replaceChildren();$('#hwpRoot').hidden=true;
+  $('#hwpBody').replaceChildren();
+  if(S.hwp)hideHwp();TABS=TABS.filter(x=>x!==HWP_ID);tabsSave();renderTabs();
 }
 async function hwpOpen(o){
-  if(HWP.open||HWP.busy)return;
+  if(HWP.busy)return;
+  if(HWP.open){toast('늘한글에 열려 있는 문서를 먼저 닫아 주세요 (저장하지 않았다면 먼저 저장)');openHwpTab();return;}
+  if(tabsFull(HWP_ID)){
+    if(!S.doc&&!S.bible&&!S.hwp){const old=tabsValid()[0];TABS=TABS.filter(x=>x!==old);tabsSave();toast('탭이 가득 차서 가장 오래된 탭을 닫았습니다');}
+    else{toast(FULLMSG,'err');return;}}
   HWP.busy=true;loading(true);
   try{
     const m=await hwpMods();
@@ -3388,12 +3401,12 @@ async function hwpOpen(o){
     const st=await hwpStudioUrl();
     Object.assign(HWP,{doc:o.doc||null,title:o.title,catId:o.catId||'',dirty:false,saved:''});
     $('#hwpTtl').textContent=o.title;$('#hwpSt').textContent=st.local?'':'온라인 편집기 사용 중';
-    $('#hwpRoot').hidden=false;HWP.open=true;
+    HWP.open=true;try{await leaveTab();}catch(e){}showHwp();renderTabs();
     HWP.ed=await Promise.race([createEditor($('#hwpBody'),{studioUrl:st.url}),
       new Promise((_,no)=>setTimeout(()=>no(new Error(st.local?'편집기가 응답하지 않습니다':'편집기를 불러오지 못했습니다. 인터넷 연결을 확인하세요')),45000))]);
     await HWP.ed.loadFile(bytes,(o.title||'document')+'.hwp',{suppressDialogs:true,skipUnsavedGuard:true});
     HWP.poll=setInterval(hwpStat,2500);hwpStat();
-  }catch(e){console.error(e);hwpTeardown();toast('한글 편집기를 열지 못했습니다: '+(e&&e.message||e),'err');}
+  }catch(e){console.error(e);const was=S.hwp;hwpTeardown();if(was)await closeReader();toast('한글 편집기를 열지 못했습니다: '+(e&&e.message||e),'err');}
   finally{HWP.busy=false;loading(false);}
 }
 /* 저장: 편집기에서 HWP를 받아 → PDF(원본 첨부)로 변환 → 서재에 새로 넣거나 같은 문서를 갱신 */
@@ -3422,16 +3435,22 @@ async function hwpSave(){
   }catch(e){console.error(e);toast('저장하지 못했습니다: '+(e&&e.message||e),'err');return false;}
   finally{HWP.busy=false;loading(false);}
 }
-async function hwpClose(){
-  if(!HWP.open||HWP.busy)return;
-  await hwpStat();
-  if(HWP.dirty&&!confirm('저장하지 않은 변경이 있습니다.\n\n[확인] 저장 없이 서재로 돌아가기\n[취소] 계속 편집'))return;
-  hwpTeardown();renderCats();renderGrid();
+/* 늘한글 탭 닫기: 고친 곳이 있으면 먼저 묻고, 보던 탭이었다면 옆 탭(없으면 서재)으로 간다 */
+async function hwpCloseTab(o){
+  o=o||{};
+  if(!HWP.open||HWP.busy)return false;
+  if(!o.force){await hwpStat();
+    if(HWP.dirty&&!confirm('저장하지 않은 변경이 있습니다.\n\n[확인] 저장 없이 닫기\n[취소] 계속 편집'))return false;}
+  const was=S.hwp,ids=tabsValid(),i=ids.indexOf(HWP_ID),next=o.toShelf?null:(ids[i+1]||ids[i-1]);
+  hwpTeardown();
   if(HWP.win)try{window.close();}catch(e){}                       /* 새 창으로 열린 경우: 창을 닫는다 */
+  if(was){if(next)await switchTabForce(next);else await closeReader();}
+  renderCats();renderGrid();return true;
 }
 /* 서재 문서에서 한글 원본을 꺼내 편집기로 열기 */
 async function hwpEditDoc(d){
-  if(HWP.open||HWP.busy)return;
+  if(HWP.busy)return;
+  if(HWP.open){toast('늘한글에 열려 있는 문서를 먼저 닫아 주세요 (저장하지 않았다면 먼저 저장)');openHwpTab();return;}
   loading(true);
   try{
     const m=await hwpMods();
@@ -3463,7 +3482,7 @@ async function hwpPopOut(){
   await hwpStat();
   if(!HWP.doc||HWP.dirty){if(!await hwpSave()){try{win.close();}catch(e){}return;}}   /* 새 문서이거나 고친 곳이 있으면 먼저 저장 */
   win.location.href=hwpBase()+'?hwpdoc='+encodeURIComponent(HWP.doc.id);
-  hwpTeardown();renderCats();renderGrid();
+  await hwpCloseTab({force:true});
 }
 /* 다른 창에서 저장한 한글 문서를 이 창의 서재에도 바로 반영 */
 try{
@@ -3474,11 +3493,11 @@ try{
   };
 }catch(e){}
 $('#hwpPop').addEventListener('click',()=>{hwpPopOut();});
-$('#hwpBack').addEventListener('click',hwpClose);
+$('#hwpBack').addEventListener('click',()=>{hwpCloseTab();});
 $('#hwpSave').addEventListener('click',()=>{hwpSave();});
 $('#hwpView').addEventListener('click',async()=>{const id=HWP.doc&&HWP.doc.id;if(await hwpSave()){const did=(HWP.doc&&HWP.doc.id)||id;hwpTeardown();renderCats();renderGrid();
   if(HWP.win&&did){location.href=hwpBase()+'?doc='+encodeURIComponent(did);return;}      /* 새 창이면 이 창에서 그 문서를 바로 열람 */
-  if(did)openDoc(did);}});
+  if(did){await openDoc(did);if(!S.doc)await closeReader();}else await closeReader();}});
 window.addEventListener('beforeunload',e=>{if(HWP.open&&HWP.dirty){e.preventDefault();e.returnValue='';}});
 
 /* ================= 열람실: 열기 / 닫기 ================= */
@@ -3531,7 +3550,7 @@ function applyView(v){
 async function openDoc(id){
   const d=S.docs.find(x=>x.id===id);if(!d)return;
   if(tabsFull(id)){
-    if(!S.doc&&!S.bible){const old=tabsValid()[0];TABS=TABS.filter(x=>x!==old);tabsSave();toast('탭이 가득 차서 가장 오래된 탭을 닫았습니다');}   /* 서재에서 열 때는 오래된 탭을 비운다 */
+    if(!S.doc&&!S.bible&&!S.hwp){const old=tabsValid().find(x=>x!==HWP_ID);TABS=TABS.filter(x=>x!==old);tabsSave();toast('탭이 가득 차서 가장 오래된 탭을 닫았습니다');}   /* 서재에서 열 때는 오래된 탭을 비운다 */
     else{toast(FULLMSG,'err');return;}}
   loading(true);let fresh=false;const t0=performance.now();
   try{
@@ -3541,14 +3560,14 @@ async function openDoc(id){
     S.undo=[];S.redo=[];textCache.clear();S.search={q:'',results:[],cur:-1,token:0};
     fresh=!d.opened&&!d.view;
     d.opened=Date.now();d.pages=pdf.numPages;d.bookmarks=d.bookmarks||[];saveMeta(d);
-    if(S.bible)hideBible();$('#shelf').hidden=true;$('#reader').hidden=false;S.viewReady=false;
+    if(S.bible)hideBible();if(S.hwp)hideHwp();$('#shelf').hidden=true;$('#reader').hidden=false;S.viewReady=false;
     try{if(fresh){const ls=viewSnap().ls;ls['neul-pal']='0';ls['neul-barfold']='0';applyView({mode:'scroll',lock:false,ls});}else{applyView(d.view);if(!d.view){TONE.k=TONE.t=0;toneCss();S.spread=false;S.cover=false;S.bg='';bgApply();$('#reader').classList.remove('spread');updateSpreadUI();}}}catch(e){console.error(e);}
     setupReader();wlAcquire();try{tmpChipUpd();}catch(e){}await buildPages();
   }catch(e){console.error(e);toast('문서를 열 수 없습니다: '+(e&&e.message||e),'err');}
   finally{loading(false);setTimeout(()=>{S.viewReady=true;try{fabPlaceAll();placeBarTab();if(fresh)flushView();}catch(e){}},700);}
 }
 async function closeReader(keep){
-  if(!keep&&S.bible)hideBible();
+  if(!keep&&S.bible)hideBible();if(!keep&&S.hwp)hideHwp();
   wlRelease();try{ttsOff();}catch(e){}try{vfStop();}catch(e){}try{dictStop();}catch(e){}try{flushView();}catch(e){}S.viewReady=false;
   await flushSave();S.sid++;queue.length=0;
   for(const p of P)if(p.task){try{p.task.cancel();}catch(e){}}
@@ -3664,17 +3683,20 @@ const MAXT=6;
 const tabsOn=()=>matchMedia('(min-width:761px)').matches;
 const BIBLE_ID='bible';
 const BIBLE_URL=()=>lsGet('neul-bibleurl')||'https://daniel9ny-glitch.github.io/bible2/bible.html#books';
-const tabsValid=()=>TABS.filter(id=>id===BIBLE_ID||S.docs.some(d=>d.id===id));
+const HWP_ID='hwp';   /* 늘한글 탭 (편집기가 살아 있을 때만 유효) */
+const curTabId=()=>S.bible?BIBLE_ID:S.hwp?HWP_ID:(S.doc&&S.doc.id);
+const tabInfo=id=>id===BIBLE_ID?{title:'늘성경'}:id===HWP_ID?(HWP.open?{title:'늘한글 · '+(HWP.title||'새 문서')}:null):S.docs.find(x=>x.id===id);
+const tabsValid=()=>TABS.filter(id=>id===BIBLE_ID||(id===HWP_ID?HWP.open:S.docs.some(d=>d.id===id)));
 const tabsFull=id=>!TABS.includes(id)&&tabsValid().length>=MAXT;
 const FULLMSG='탭은 최대 6개까지 열 수 있습니다 — 안 보는 탭을 닫아 주세요';
 const tabCntBtn=n=>{const b=el('button','tabcnt',{type:'button'});b.setAttribute('aria-label','열려 있는 문서 '+n+'개');b.title='열려 있는 문서';b.innerHTML=ico('file')+'<b></b>';b.lastChild.textContent=n;return b;};
 function closeTabPop(){const p=document.getElementById('tabPop');if(p)p.remove();document.removeEventListener('pointerdown',closeTabPop._o,true);}
 function openTabPop(anchor,pos){
   closeTabPop();const ids=tabsValid();if(!ids.length)return;
-  const cur=S.bible?BIBLE_ID:(S.doc&&S.doc.id),pop=el('div','',{id:'tabPop'});pop.setAttribute('role','menu');
-  for(const id of ids){const d=id===BIBLE_ID?{title:'늘성경'}:S.docs.find(x=>x.id===id);if(!d)continue;
+  const cur=curTabId(),pop=el('div','',{id:'tabPop'});pop.setAttribute('role','menu');
+  for(const id of ids){const d=tabInfo(id);if(!d)continue;
     const row=el('div','tpr'+(id===cur?' on':''));row.dataset.id=id;
-    const fi=el('span','rti');fi.innerHTML=ico(id===BIBLE_ID?'bible':'file');const l=el('span','rtl',{text:d.title});
+    const fi=el('span','rti');fi.innerHTML=ico(id===BIBLE_ID?'bible':id===HWP_ID?'pen':'file');const l=el('span','rtl',{text:d.title});
     const x=el('button','rx',{type:'button'});x.setAttribute('aria-label','탭 닫기');x.innerHTML=ico('x');row.append(fi,l,x);pop.appendChild(row);}
   document.body.appendChild(pop);
   if(!pos){const r=anchor.getBoundingClientRect(),w=Math.min(300,innerWidth-16);pos={w,left:Math.max(8,Math.min(r.left,innerWidth-w-8)),top:r.bottom+6};}   /* 하나 지운 뒤 다시 그려도 같은 자리에 둔다 */
@@ -3682,7 +3704,7 @@ function openTabPop(anchor,pos){
   pop.addEventListener('click',async e=>{const row=e.target.closest('.tpr');if(!row)return;const id=row.dataset.id;
     if(e.target.closest('.rx')){e.stopPropagation();const ps=pop._pos;await closeTab(id);if(tabsValid().length)openTabPop(anchor,ps);else closeTabPop();return;}
     closeTabPop();if(id===cur)return;
-    if(!S.doc&&!S.bible){if(id===BIBLE_ID)openBibleTab();else openDoc(id);}else switchTab(id);});
+    if(!S.doc&&!S.bible&&!S.hwp){if(id===BIBLE_ID)openBibleTab();else if(id===HWP_ID)openHwpTab();else openDoc(id);}else switchTab(id);});
   closeTabPop._o=e=>{if(!e.target.closest('#tabPop')&&!e.target.closest('.tabcnt'))closeTabPop();};
   setTimeout(()=>document.addEventListener('pointerdown',closeTabPop._o,true),0);
 }
@@ -3691,9 +3713,9 @@ function renderShelfTabs(){
   const ids=tabsValid();box.replaceChildren();top.classList.toggle('tbs',ids.length>0);
   if(!ids.length){top.classList.remove('sq');return;}
   if(!tabsOn()){box.appendChild(tabCntBtn(ids.length));return;}
-  for(const id of ids){const d=id===BIBLE_ID?{title:'늘성경'}:S.docs.find(x=>x.id===id);if(!d)continue;
+  for(const id of ids){const d=tabInfo(id);if(!d)continue;
     const t=el('div','rtab');t.dataset.id=id;t.setAttribute('role','tab');t.title=d.title;
-    const fi=el('span','rti');fi.innerHTML=ico(id===BIBLE_ID?'bible':'file');const l=el('span','rtl',{text:d.title});
+    const fi=el('span','rti');fi.innerHTML=ico(id===BIBLE_ID?'bible':id===HWP_ID?'pen':'file');const l=el('span','rtl',{text:d.title});
     const x=el('button','rx',{type:'button'});x.title='탭 닫기';x.setAttribute('aria-label','탭 닫기');x.innerHTML=ico('x');
     t.append(fi,l,x);box.appendChild(t);}
 }
@@ -3702,19 +3724,19 @@ function bindShelfTabs(){
   try{matchMedia('(min-width:761px)').addEventListener('change',()=>{closeTabPop();renderTabs();renderShelfTabs();});}catch(e){}
   box.addEventListener('click',e=>{const cb=e.target.closest('.tabcnt');if(cb){openTabPop(cb);return;}const t=e.target.closest('.rtab');if(!t)return;const id=t.dataset.id;
     if(e.target.closest('.rx')){e.stopPropagation();tabsRemove(id);return;}
-    if(id===BIBLE_ID)openBibleTab();else openDoc(id);});
+    if(id===BIBLE_ID)openBibleTab();else if(id===HWP_ID)openHwpTab();else openDoc(id);});
   box.addEventListener('auxclick',e=>{const t=e.target.closest('.rtab');if(e.button===1&&t){e.preventDefault();tabsRemove(t.dataset.id);}});
 }
 function tabsAdd(id){if(!TABS.includes(id))TABS.push(id);tabsSave();renderTabs();}
-function tabsRemove(id){TABS=TABS.filter(x=>x!==id);tabsSave();renderTabs();}
+function tabsRemove(id){if(id===HWP_ID&&HWP.open){hwpCloseTab();return;}TABS=TABS.filter(x=>x!==id);tabsSave();renderTabs();}
 function renderTabs(){
   try{renderShelfTabs();}catch(e){}
   const box=document.getElementById('rTabs');if(!box)return;box.replaceChildren();
-  const cur=S.bible?BIBLE_ID:(S.doc&&S.doc.id);
+  const cur=curTabId();
   if(!tabsOn()){const n=tabsValid().length;if(n>=2)box.appendChild(tabCntBtn(n));return;}
-  for(const id of TABS){const d=id===BIBLE_ID?{title:'늘성경'}:S.docs.find(x=>x.id===id);if(!d)continue;
+  for(const id of TABS){const d=tabInfo(id);if(!d)continue;
     const t=el('div','rtab'+(id===cur?' on':''));t.dataset.id=id;t.setAttribute('role','tab');t.setAttribute('aria-selected',id===cur?'true':'false');t.title=d.title;
-    const fi=el('span','rti');fi.innerHTML=ico(id===BIBLE_ID?'bible':'file');const l=el('span','rtl',{text:d.title});
+    const fi=el('span','rti');fi.innerHTML=ico(id===BIBLE_ID?'bible':id===HWP_ID?'pen':'file');const l=el('span','rtl',{text:d.title});
     const x=el('button','rx',{type:'button'});x.title='탭 닫기';x.setAttribute('aria-label','탭 닫기');x.innerHTML=ico('x');
     t.append(fi,l,x);box.appendChild(t);}
   const nb=el('button','rtnew'+(tabsValid().length>=MAXT?' full':''),{type:'button'});nb.title=tabsValid().length>=MAXT?FULLMSG:'서재에서 문서 더 열기 (새 탭)';nb.setAttribute('aria-label','새 탭');nb.innerHTML=ico('plus');box.appendChild(nb);
@@ -3736,24 +3758,33 @@ function showBible(){
 function hideBible(){S.bible=false;$('#reader').classList.remove('bible','bfold');if(!$('#dictPane').hidden||DICT.on){dictStop();dictPaneShow(false);}const p=$('#dictPane'),rb=document.querySelector('#reader .rbody');if(p&&rb&&p.parentNode!==rb)rb.appendChild(p);const mm=$('#moreMenu');if(mm&&rb&&mm.parentNode!==rb){mm.hidden=true;rb.appendChild(mm);}}
 async function openBibleTab(){
   if(S.bible||TBUSY)return;
-  if(tabsFull(BIBLE_ID)){if(!S.doc&&!S.bible){const old=tabsValid()[0];TABS=TABS.filter(x=>x!==old);tabsSave();toast('탭이 가득 차서 가장 오래된 탭을 닫았습니다');}else{toast(FULLMSG,'err');return;}}
+  if(tabsFull(BIBLE_ID)){if(!S.doc&&!S.bible&&!S.hwp){const old=tabsValid().find(x=>x!==HWP_ID);TABS=TABS.filter(x=>x!==old);tabsSave();toast('탭이 가득 차서 가장 오래된 탭을 닫았습니다');}else{toast(FULLMSG,'err');return;}}
   TBUSY=true;
-  try{if(S.doc)await closeReader(true);showBible();}finally{TBUSY=false;renderTabs();}
+  try{await leaveTab();showBible();}finally{TBUSY=false;renderTabs();}
+}
+async function leaveTab(){if(S.bible)hideBible();else if(S.hwp)hideHwp();else if(S.doc)await closeReader(true);}
+async function openHwpTab(){
+  if(S.hwp||TBUSY||!HWP.open)return;
+  TBUSY=true;
+  try{await leaveTab();showHwp();}finally{TBUSY=false;renderTabs();}
 }
 async function switchTab(id){
-  const curId=S.bible?BIBLE_ID:(S.doc&&S.doc.id);
-  if(TBUSY||curId===id||(!S.doc&&!S.bible))return;
-  if(id!==BIBLE_ID&&!S.docs.some(d=>d.id===id))return;
+  const curId=curTabId();
+  if(TBUSY||curId===id||(!S.doc&&!S.bible&&!S.hwp))return;
+  if(id!==BIBLE_ID&&id!==HWP_ID&&!S.docs.some(d=>d.id===id))return;
+  if(id===HWP_ID&&!HWP.open)return;
   TBUSY=true;
   try{
-    if(id===BIBLE_ID){if(S.doc)await closeReader(true);showBible();}
-    else{if(S.bible)hideBible();else if(S.doc)await closeReader(true);
+    if(id===BIBLE_ID){await leaveTab();showBible();}
+    else if(id===HWP_ID){await leaveTab();showHwp();}
+    else{await leaveTab();
       await openDoc(id);
       if(!S.doc){$('#reader').hidden=true;$('#shelf').hidden=false;renderCats();renderGrid();}}}
   finally{TBUSY=false;renderTabs();}
 }
 async function closeTab(id){
-  const cur=S.bible?BIBLE_ID:(S.doc&&S.doc.id),ids=tabsValid(),i=ids.indexOf(id);
+  if(id===HWP_ID){await hwpCloseTab();return;}
+  const cur=curTabId(),ids=tabsValid(),i=ids.indexOf(id);
   if(id!==cur){tabsRemove(id);return;}
   const next=ids[i+1]||ids[i-1];tabsRemove(id);
   if(next){
@@ -3765,10 +3796,12 @@ async function switchTabForce(id){   /* 지금 열려 있는 탭을 막 닫은 �
   TBUSY=true;
   try{
     if(id===BIBLE_ID){if(S.doc)await closeReader(true);showBible();}
+    else if(id===HWP_ID){if(S.doc)await closeReader(true);showHwp();}
     else{if(S.doc)await closeReader(true);await openDoc(id);if(!S.doc){$('#reader').hidden=true;$('#shelf').hidden=false;renderCats();renderGrid();}}
   }finally{TBUSY=false;renderTabs();}
 }
 function popOutTab(id,ev){
+  if(id===HWP_ID){hwpPopOut();return;}
   const w=Math.min(1100,Math.max(640,screen.availWidth-120)),h=Math.min(860,Math.max(480,screen.availHeight-100));
   const left=Math.max(0,Math.round((ev&&ev.screenX||80)-w/2)),top=Math.max(0,Math.round((ev&&ev.screenY||80)-30));
   if(id===BIBLE_ID){const win=window.open(BIBLE_URL(),'neul-bible',`popup=yes,width=${w},height=${h},left=${left},top=${top}`);
@@ -3785,7 +3818,7 @@ function bindTabs(){
     const cb=e.target.closest('.tabcnt');if(cb){openTabPop(cb);return;}
     if(TDRAG){TDRAG=false;return;}
     const t=e.target.closest('.rtab');
-    if(e.target.closest('.rtnew')){if(tabsValid().length>=MAXT){toast(FULLMSG);return;}if(S.bible)hideBible();closeReader();toast('열 문서를 고르면 새 탭으로 열립니다');return;}
+    if(e.target.closest('.rtnew')){if(tabsValid().length>=MAXT){toast(FULLMSG);return;}if(S.bible)hideBible();if(S.hwp)hideHwp();closeReader();toast('열 문서를 고르면 새 탭으로 열립니다');return;}
     if(e.target.closest('.rx')&&t){e.stopPropagation();closeTab(t.dataset.id);return;}
     if(t)switchTab(t.dataset.id);
   });
@@ -7368,7 +7401,7 @@ function bindEvents(){
     else if(inRd()&&e.dataTransfer.files.length)filesFromDrop(e.dataTransfer).then(fl=>fl.length&&importFiles(fl,{os:true,tab:true})); /* 열람실에 끌어다 놓으면 새 탭으로 */});
 
   /* 열람실 */
-  $('#rBackX').addEventListener('click',()=>{if(S.bible)tabsRemove(BIBLE_ID);else if(S.doc)tabsRemove(S.doc.id);closeReader();});   /* 뒤로: 이 탭을 닫고 서재로 */
+  $('#rBackX').addEventListener('click',()=>{if(S.hwp){hwpCloseTab({toShelf:true});return;}if(S.bible)tabsRemove(BIBLE_ID);else if(S.doc)tabsRemove(S.doc.id);closeReader();});   /* 뒤로: 이 탭을 닫고 서재로 */
   $('#rBack').addEventListener('click',()=>{closeReader();});   /* 서재로 가도 탭은 남는다 (닫기는 탭의 ✕) */bindTabs();bindEditor();bindThumbPanel();
   $('#sideClose').addEventListener('click',()=>$('#side').classList.remove('open'));
   $('#rFold').addEventListener('click',()=>{if(S.bible)setBibleFold(true);else setBarFold(!$('#reader').classList.contains('barfold'));});
@@ -7449,7 +7482,7 @@ function bindEvents(){
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.doc)flushSave();});
 
   document.addEventListener('keydown',e=>{
-    if($('#reader').hidden||S.bible||document.querySelector('dialog[open]'))return;
+    if($('#reader').hidden||S.bible||S.hwp||document.querySelector('dialog[open]'))return;
     const typing=e.target.closest&&e.target.closest('input,textarea,[contenteditable="true"],select');
     const mod=e.ctrlKey||e.metaKey,k=e.key.toLowerCase();
     if(mod&&k==='f'){e.preventDefault();$('#rFind').click();return;}
