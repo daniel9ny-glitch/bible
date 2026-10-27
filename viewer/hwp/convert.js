@@ -47,9 +47,16 @@ function parsePage(svg) {
   const W = parseFloat((svg.match(/<svg[^>]*\swidth="([\d.]+)"/) || [])[1]);
   const H = parseFloat((svg.match(/<svg[^>]*\sheight="([\d.]+)"/) || [])[1]);
   const items = [];
-  for (const m of svg.matchAll(/<(text|line|rect|image|path|ellipse|polygon|polyline)\b([^>]*?)(\/>|>([\s\S]*?)<\/text>|>)/g)) {
-    const a = attrs(m[2]);
-    items.push({ t: m[1], a, text: m[1] === 'text' ? unesc(m[4] || '') : '' });
+  let depth = 0;
+  for (const m of svg.matchAll(/<text\b([^>]*)>([\s\S]*?)<\/text>|<(\/?)(svg|line|rect|image|path|ellipse|polygon|polyline)\b([^>]*?)\/?>/g)) {
+    if (m[4] === undefined) { items.push({ t: 'text', a: attrs(m[1]), text: unesc(m[2] || '') }); continue; }
+    const closing = m[3] === '/', tag = m[4];
+    if (tag === 'svg') {                       // 첫 <svg>는 쪽 자체. 그 안의 <svg>는 그림을 잘라 맞추는 상자
+      if (closing) { if (depth > 1) items.push({ t: 'svgClose', a: {}, text: '' }); depth = Math.max(0, depth - 1); }
+      else { if (depth >= 1) items.push({ t: 'svgOpen', a: attrs(m[5]), text: '' }); depth++; }
+      continue;
+    }
+    items.push({ t: tag, a: attrs(m[5]), text: '' });
   }
   return { W, H, items };
 }
@@ -96,25 +103,30 @@ export async function hwpToPdf(hwp, o) {
   } finally { try { doc.free(); } catch (_) { /* 이미 해제됨 */ } }
   if (!pages.length) throw new Error('쪽이 없는 문서입니다');
 
-  /* 글꼴: 전체 폰트로 지원 글자를 가리고, 쓰인 글자만 남긴 폰트를 PDF에 넣는다 */
-  const [regAll, boldAll, hbWasm] = await Promise.all([
-    fetchBytes(base + 'fonts/NotoSansKR-Regular.ttf'), fetchBytes(base + 'fonts/NotoSansKR-Bold.ttf'), fetchBytes(base + 'lib/harfbuzz-subset.wasm')]);
-  const fkR = fontkit.create(regAll), fkB = fontkit.create(boldAll);
-  const useR = new Set(), useB = new Set();
+  /* 글꼴: 본문 Noto Sans KR(Regular/Bold) + 본문에 없는 기호를 채우는 Pretendard 기호판(Regular/Bold).
+     전체 글꼴로 지원 글자를 가려낸 뒤, 쓰인 글자만 남긴 글꼴을 PDF에 넣는다. */
+  const FONTS = [['R', 'NotoSansKR-Regular'], ['B', 'NotoSansKR-Bold'], ['FR', 'Fallback-Regular'], ['FB', 'Fallback-Bold']];
+  const [raw, hbWasm] = await Promise.all([
+    Promise.all(FONTS.map(([, n]) => fetchBytes(base + 'fonts/' + n + '.ttf'))), fetchBytes(base + 'lib/harfbuzz-subset.wasm')]);
+  const F = {}; FONTS.forEach(([k], i) => { F[k] = { all: raw[i], fk: fontkit.create(raw[i]), use: new Set([0x41]) }; });
+  const pickFont = (bold, cp) => {
+    if (cp <= 32) return null;
+    const pri = bold ? 'B' : 'R', fb = bold ? 'FB' : 'FR';
+    if (F[pri].fk.hasGlyphForCodePoint(cp)) return pri;
+    if (F[fb].fk.hasGlyphForCodePoint(cp)) return fb;
+    return null;
+  };
   for (const p of pages) for (const it of p.items) if (it.t === 'text') {
     const bold = it.a['font-weight'] === 'bold';
-    for (const ch of it.text) { const cp = ch.codePointAt(0); (bold ? useB : useR).add(cp); }
+    for (const ch of it.text) { const cp = ch.codePointAt(0), k = pickFont(bold, cp); if (k) F[k].use.add(cp); }
   }
-  const okR = (cp) => cp > 32 && fkR.hasGlyphForCodePoint(cp), okB = (cp) => cp > 32 && fkB.hasGlyphForCodePoint(cp);
   onProg('글꼴 준비 중', 0, 1);
-  useR.add(0x41); useB.add(0x41);                  // 글자가 하나도 없어도 cmap이 남도록
-  const subR = await subsetFont(hbWasm, regAll, [...useR].filter(okR));
-  const subB = await subsetFont(hbWasm, boldAll, [...useB].filter(okB));
-
   const pdf = await PDFLib.PDFDocument.create();
   pdf.registerFontkit(fontkit);
-  const fR = await pdf.embedFont(subR, { subset: false });
-  const fB = await pdf.embedFont(subB, { subset: false });
+  for (const [k] of FONTS) {
+    if (k !== 'R' && F[k].use.size <= 1) continue;                  // 안 쓰인 글꼴은 넣지 않는다
+    F[k].emb = await pdf.embedFont(await subsetFont(hbWasm, F[k].all, [...F[k].use]), { subset: false });
+  }
   if (o.title) pdf.setTitle(o.title);
   pdf.setProducer('늘뷰어 한글 문서'); pdf.setCreator('늘뷰어');
 
@@ -128,7 +140,7 @@ export async function hwpToPdf(hwp, o) {
     const flush = () => {
       if (!run) return;
       const r = run; run = null;
-      const font = r.bold ? fB : fR, size = r.size * PX2PT;
+      const font = F[r.k].emb, size = r.size * PX2PT;
       page.setFont(font); const fontKey = page.getFont()[1];
       const arr = PDFLib.PDFArray.withContext(pdf.context);
       for (let i = 0; i < r.chs.length; i++) {
@@ -146,18 +158,27 @@ export async function hwpToPdf(hwp, o) {
         PDFLib.PDFOperator.of(PDFLib.PDFOperatorNames.ShowTextAdjusted, [arr]), PDFLib.endText());
       stat.text++;
     };
+    const boxes = [];
     for (const { t, a, text } of items) {
+      if (t === 'svgOpen') {
+        flush();
+        const vb = (a.viewBox || '').split(/[\s,]+/).map(Number);
+        boxes.push({ x: +a.x || 0, y: +a.y || 0, w: +a.width, h: +a.height, vb: vb.length === 4 && vb.every(Number.isFinite) ? vb : null });
+        continue;
+      }
+      if (t === 'svgClose') { flush(); boxes.pop(); continue; }
       if (t === 'text') {
         if (!text) continue;
-        const bold = a['font-weight'] === 'bold', ok = bold ? okB : okR;
+        const bold = a['font-weight'] === 'bold';
         const size = +a['font-size'], x = +a.x, y = +a.y, italic = a['font-style'] === 'italic';
         const color = hexColor(PDFLib, a.fill) || PDFLib.rgb(0, 0, 0), fill = a.fill || '';
         let cx = x;
         for (const ch of text) {
-          if (!ok(ch.codePointAt(0))) { if (ch.trim()) stat.missingChars++; cx += size * 0.5; continue; }
+          const k = pickFont(bold, ch.codePointAt(0));
+          if (!k) { if (ch.trim()) stat.missingChars++; cx += size * 0.5; continue; }
           const last = run && run.chs[run.chs.length - 1];
-          if (!(run && run.y === y && run.size === size && run.bold === bold && run.italic === italic && run.fill === fill && cx - last.x < size * 4 && cx >= last.x)) {
-            flush(); run = { y, size, bold, italic, fill, color, chs: [] };
+          if (!(run && run.y === y && run.size === size && run.k === k && run.italic === italic && run.fill === fill && cx - last.x < size * 4 && cx >= last.x)) {
+            flush(); run = { y, size, k, italic, fill, color, chs: [] };
           }
           run.chs.push({ ch, x: cx });
           cx += size * 0.5;                       // 한 <text>에 여러 글자가 오는 경우의 대략 간격 (rhwp는 글자마다 <text>를 냄)
@@ -183,13 +204,21 @@ export async function hwpToPdf(hwp, o) {
         stat.rect++;
       } else if (t === 'image') {
         const d = (a.href || a['xlink:href'] || '').match(/^data:image\/(png|jpe?g);base64,(.*)$/s);
-        if (!d) { stat.skippedImg++; continue; }
+        if (!d) { stat.skippedImg++; stat.imgErr = 'href ' + (a.href || a['xlink:href'] || '').slice(0, 30); continue; }
         try {
           const bin = Uint8Array.from(atob(d[2]), (c) => c.charCodeAt(0));
           const img = d[1] === 'png' ? await pdf.embedPng(bin) : await pdf.embedJpg(bin);
-          page.drawImage(img, { x: +a.x * PX2PT, y: (H - +a.y - +a.height) * PX2PT, width: +a.width * PX2PT, height: +a.height * PX2PT });
+          let ix = +a.x || 0, iy = +a.y || 0, iw = +a.width, ih = +a.height;
+          const bx = boxes[boxes.length - 1];
+          if (bx && bx.vb && bx.vb[2] > 0 && bx.vb[3] > 0) {                // 상자(viewBox) 좌표 → 쪽 좌표, 상자 밖은 잘라냄
+            const sx = bx.w / bx.vb[2], sy = bx.h / bx.vb[3];
+            ix = bx.x + (ix - bx.vb[0]) * sx; iy = bx.y + (iy - bx.vb[1]) * sy; iw *= sx; ih *= sy;
+            page.pushOperators(PDFLib.pushGraphicsState(), PDFLib.rectangle(bx.x * PX2PT, (H - bx.y - bx.h) * PX2PT, bx.w * PX2PT, bx.h * PX2PT), PDFLib.clip(), PDFLib.endPath());
+            page.drawImage(img, { x: ix * PX2PT, y: (H - iy - ih) * PX2PT, width: iw * PX2PT, height: ih * PX2PT });
+            page.pushOperators(PDFLib.popGraphicsState());
+          } else page.drawImage(img, { x: ix * PX2PT, y: (H - iy - ih) * PX2PT, width: iw * PX2PT, height: ih * PX2PT });
           stat.image++;
-        } catch (_) { stat.skippedImg++; }
+        } catch (e) { stat.skippedImg++; stat.imgErr = String((e && e.message) || e).slice(0, 80); }
       } else stat.skippedShape++;                                      // path·도형 등: 아직 지원 안 함
     }
     flush();
