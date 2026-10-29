@@ -4373,7 +4373,7 @@ const MM={t:0,pi:-1};
 function miniPing(){
   const mm=$('#miniMap');if(!mm||!S.pdf||!P.length||S.bible||$('#reader').hidden)return;
   const sr=$('#scroller').getBoundingClientRect();let best=null,ba=0;
-  for(const p of P){if(!p.el)continue;const r=p.el.getBoundingClientRect();
+  for(let i=Math.max(0,S.cur-2),e=Math.min(P.length-1,S.cur+2);i<=e;i++){const p=P[i];if(!p||!p.el)continue;const r=p.el.getBoundingClientRect();   /* 모든 쪽이 아니라 지금 쪽 주변만 잰다 (쪽이 많으면 확대 중 매 프레임 렌더 계산이 크게 늘어난다) */
     const w=Math.min(r.right,sr.right)-Math.max(r.left,sr.left),h=Math.min(r.bottom,sr.bottom)-Math.max(r.top,sr.top);
     if(w>0&&h>0&&w*h>ba){ba=w*h;best={p,r};}}
   if(!best||best.r.width<2||best.r.height<2)return;
@@ -4391,7 +4391,7 @@ function miniPing(){
   {const op=(mm.offsetParent||document.body).getBoundingClientRect();mm.style.top=Math.round(sr.top-op.top+8)+'px';mm.style.right=Math.round(op.right-sr.right+8)+'px';}   /* 위치는 늘 읽는 영역의 오른쪽 위 모서리 (바·도구·쪽메뉴 상태와 무관) */
   mm.classList.add('on');clearTimeout(MM.t);MM.t=setTimeout(()=>mm.classList.remove('on'),1800);
 }
-const ZOOM_MIN=20;const TP=new Set();let penDown=false,multi=false,penT=0;
+const ZOOM_MIN=10;const TP=new Set();let penDown=false,multi=false,penT=0;
 (function trackPointers(){
   const sc=$('#scroller');
   sc.addEventListener('pointerdown',e=>{
@@ -4433,7 +4433,7 @@ const ZOOM_MIN=20;const TP=new Set();let penDown=false,multi=false,penT=0;
     if(e.touches.length===2){const r=sc.getBoundingClientRect();
       const mx=(e.touches[0].clientX+e.touches[1].clientX)/2,my=(e.touches[0].clientY+e.touches[1].clientY)/2;
       S.pinching=true;two={sx:mx,sy:my,x:mx,y:my,ts:performance.now(),vx:0,vy:0,zoomed:false,mode:null,pm:0,d0:dist(e.touches),native:false};pendX=pendY=0;
-      if(!S.hlock){pinch={d:dist(e.touches),cx:mx-r.left,cy:my-r.top};live.f=1;live.cx=pinch.cx;live.cy=pinch.cy;}}
+      if(!S.hlock){pinch={d:dist(e.touches),cx:mx-r.left,cy:my-r.top};live.f=1;live.cx=pinch.cx;live.cy=pinch.cy;$('#pages').style.willChange='transform';}}   /* 두 손가락이 닿는 순간 미리 GPU 레이어로 올려, 확대가 시작될 때의 끊김을 피한다 */
   },{passive:true});
   sc.addEventListener('touchmove',e=>{
     if(two&&e.touches.length===2){if(!two.native&&e.cancelable)e.preventDefault();
