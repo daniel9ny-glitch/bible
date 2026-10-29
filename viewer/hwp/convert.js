@@ -163,7 +163,7 @@ export async function hwpToPdf(hwp, o) {
       for (let i = 0; i < r.chs.length; i++) {
         arr.push(font.encodeText(r.chs[i].ch));
         if (i + 1 < r.chs.length) {
-          const w = font.widthOfTextAtSize(r.chs[i].ch, size), dx = (r.chs[i + 1].x - r.chs[i].x) * PX2PT;
+          const w = font.widthOfTextAtSize(r.chs[i].ch, size) * r.sx, dx = (r.chs[i + 1].x - r.chs[i].x) * PX2PT;
           const adj = Math.round((-(dx - w) / size) * 1000);
           if (adj) arr.push(PDFLib.PDFNumber.of(adj));
         }
@@ -171,7 +171,7 @@ export async function hwpToPdf(hwp, o) {
       const sk = r.italic ? Math.tan(12 * Math.PI / 180) : 0;
       page.pushOperators(
         PDFLib.beginText(), PDFLib.setFillingColor(r.color), PDFLib.setFontAndSize(fontKey, size),
-        PDFLib.setTextMatrix(1, 0, sk, 1, r.chs[0].x * PX2PT, (H - r.y) * PX2PT),
+        PDFLib.setTextMatrix(r.sx, 0, sk, 1, r.chs[0].x * PX2PT, (H - r.y) * PX2PT),
         PDFLib.PDFOperator.of(PDFLib.PDFOperatorNames.ShowTextAdjusted, [arr]), PDFLib.endText());
       stat.text++;
     };
@@ -187,18 +187,24 @@ export async function hwpToPdf(hwp, o) {
       if (t === 'text') {
         if (!text) continue;
         const bold = a['font-weight'] === 'bold';
-        const size = +a['font-size'], x = +a.x, y = +a.y, italic = a['font-style'] === 'italic';
+        let x = +a.x, y = +a.y, sx = 1;
+        if (a.transform) {   /* 장평(글자 폭 비율)이 100%가 아닌 글자: translate(x,y) scale(폭비율,1) 로 온다 */
+          const tm = /translate\(\s*([-\d.eE]+)[\s,]+([-\d.eE]+)\s*\)/.exec(a.transform), sm = /scale\(\s*([-\d.eE]+)/.exec(a.transform);
+          if (tm) { x = +tm[1]; y = +tm[2]; } if (sm && +sm[1] > 0) sx = +sm[1];
+        }
+        const size = +a['font-size'], italic = a['font-style'] === 'italic';
+        if (!Number.isFinite(x) || !Number.isFinite(y)) { if (text.trim()) stat.missingChars += text.length; continue; }
         const color = hexColor(PDFLib, a.fill) || PDFLib.rgb(0, 0, 0), fill = a.fill || '';
         let cx = x;
         for (const ch of text) {
           const k = pickFont(bold, ch.codePointAt(0), fk);
-          if (!k) { if (ch.trim()) stat.missingChars++; cx += size * 0.5; continue; }
+          if (!k) { if (ch.trim()) stat.missingChars++; cx += size * 0.5 * sx; continue; }
           const last = run && run.chs[run.chs.length - 1];
-          if (!(run && run.y === y && run.size === size && run.k === k && run.italic === italic && run.fill === fill && cx - last.x < size * 4 && cx >= last.x)) {
-            flush(); run = { y, size, k, italic, fill, color, chs: [] };
+          if (!(run && run.y === y && run.size === size && run.sx === sx && run.k === k && run.italic === italic && run.fill === fill && cx - last.x < size * 4 && cx >= last.x)) {
+            flush(); run = { y, size, sx, k, italic, fill, color, chs: [] };
           }
           run.chs.push({ ch, x: cx });
-          cx += size * 0.5;                       // 한 <text>에 여러 글자가 오는 경우의 대략 간격 (rhwp는 글자마다 <text>를 냄)
+          cx += size * 0.5 * sx;                  // 한 <text>에 여러 글자가 오는 경우의 대략 간격 (rhwp는 글자마다 <text>를 냄)
         }
       } else if (t !== 'text') flush();
       if (t === 'text') continue;
