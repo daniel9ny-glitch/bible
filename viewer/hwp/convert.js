@@ -40,6 +40,13 @@ async function subsetFont(hbWasm, fontBytes, codepoints) {
   return res;
 }
 
+/* ---------- PDF에 실제로 넣는 글꼴 (편집기 글꼴 메뉴의 '늘뷰어 내장 글꼴'과 같은 목록) ---------- */
+const FAMILY_FILES = { ng: 'NanumGothic', nm: 'NanumMyeongjo', pt: 'Pretendard' };
+const FAMILY_MAP = {
+  '나눔고딕': 'ng', 'nanum gothic': 'ng', '나눔명조': 'nm', 'nanum myeongjo': 'nm',
+  'pretendard': 'pt', 'noto sans kr': '',
+};
+
 /* ---------- SVG 읽기 ---------- */
 function attrs(s) { const a = {}; for (const m of s.matchAll(/([\w:-]+)="([^"]*)"/g)) a[m[1]] = unescAttr(m[2]); return a; }
 const unescAttr = (v) => v.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
@@ -103,22 +110,32 @@ export async function hwpToPdf(hwp, o) {
   } finally { try { doc.free(); } catch (_) { /* 이미 해제됨 */ } }
   if (!pages.length) throw new Error('쪽이 없는 문서입니다');
 
-  /* 글꼴: 본문 Noto Sans KR(Regular/Bold) + 본문에 없는 기호를 채우는 Pretendard 기호판(Regular/Bold).
-     전체 글꼴로 지원 글자를 가려낸 뒤, 쓰인 글자만 남긴 글꼴을 PDF에 넣는다. */
+  /* 글꼴: 기본은 Noto Sans KR(Regular/Bold) + 본문에 없는 기호를 채우는 Pretendard 기호판.
+     문서가 고른 글꼴이 아래 표에 있으면(첫 이름 기준) 그 글꼴을, 명조·바탕 같은 세리프 계열은 나눔명조를 쓴다.
+     쓰인 글꼴 파일만 불러오고, 전체 글꼴로 지원 글자를 가려낸 뒤 쓰인 글자만 남겨 PDF에 넣는다. */
   const FONTS = [['R', 'NotoSansKR-Regular'], ['B', 'NotoSansKR-Bold'], ['FR', 'Fallback-Regular'], ['FB', 'Fallback-Bold']];
+  const famKey = (ff) => {
+    const list = String(ff || '').replace(/&apos;|&quot;|["']/g, '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+    const hit = FAMILY_MAP[list[0]]; if (hit) return hit;
+    return list.length && list[list.length - 1] === 'serif' ? 'nm' : '';
+  };
+  const famUsed = new Set();
+  for (const p of pages) for (const it of p.items) if (it.t === 'text') { it.fk = famKey(it.a['font-family']); if (it.fk) famUsed.add(it.fk); }
+  for (const fk of famUsed) for (const w of ['R', 'B']) FONTS.push([fk + ':' + w, FAMILY_FILES[fk] + '-' + (w === 'R' ? 'Regular' : 'Bold')]);
   const [raw, hbWasm] = await Promise.all([
     Promise.all(FONTS.map(([, n]) => fetchBytes(base + 'fonts/' + n + '.ttf'))), fetchBytes(base + 'lib/harfbuzz-subset.wasm')]);
   const F = {}; FONTS.forEach(([k], i) => { F[k] = { all: raw[i], fk: fontkit.create(raw[i]), use: new Set([0x41]) }; });
-  const pickFont = (bold, cp) => {
+  const pickFont = (bold, cp, fk) => {
     if (cp <= 32) return null;
-    const pri = bold ? 'B' : 'R', fb = bold ? 'FB' : 'FR';
+    const w = bold ? 'B' : 'R', pri = w, fb = bold ? 'FB' : 'FR';
+    if (fk && F[fk + ':' + w].fk.hasGlyphForCodePoint(cp)) return fk + ':' + w;
     if (F[pri].fk.hasGlyphForCodePoint(cp)) return pri;
     if (F[fb].fk.hasGlyphForCodePoint(cp)) return fb;
     return null;
   };
   for (const p of pages) for (const it of p.items) if (it.t === 'text') {
     const bold = it.a['font-weight'] === 'bold';
-    for (const ch of it.text) { const cp = ch.codePointAt(0), k = pickFont(bold, cp); if (k) F[k].use.add(cp); }
+    for (const ch of it.text) { const cp = ch.codePointAt(0), k = pickFont(bold, cp, it.fk); if (k) F[k].use.add(cp); }
   }
   onProg('글꼴 준비 중', 0, 1);
   const pdf = await PDFLib.PDFDocument.create();
@@ -159,7 +176,7 @@ export async function hwpToPdf(hwp, o) {
       stat.text++;
     };
     const boxes = [];
-    for (const { t, a, text } of items) {
+    for (const { t, a, text, fk } of items) {
       if (t === 'svgOpen') {
         flush();
         const vb = (a.viewBox || '').split(/[\s,]+/).map(Number);
@@ -174,7 +191,7 @@ export async function hwpToPdf(hwp, o) {
         const color = hexColor(PDFLib, a.fill) || PDFLib.rgb(0, 0, 0), fill = a.fill || '';
         let cx = x;
         for (const ch of text) {
-          const k = pickFont(bold, ch.codePointAt(0));
+          const k = pickFont(bold, ch.codePointAt(0), fk);
           if (!k) { if (ch.trim()) stat.missingChars++; cx += size * 0.5; continue; }
           const last = run && run.chs[run.chs.length - 1];
           if (!(run && run.y === y && run.size === size && run.k === k && run.italic === italic && run.fill === fill && cx - last.x < size * 4 && cx >= last.x)) {

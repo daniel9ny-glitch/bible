@@ -9,7 +9,7 @@
 - `core/`           @rhwp/core 0.8.7 (MIT) — WASM 파서·렌더러
 - `editor/`         @rhwp/editor 0.8.7 (MIT) — 편집기 iframe 연결 코드
 - `lib/`            @pdf-lib/fontkit (MIT), harfbuzz-subset.wasm (MIT) — PDF용 글꼴 서브셋
-- `fonts/`          Noto Sans KR Regular/Bold (SIL OFL 1.1) — PDF에 넣는 글꼴
+- `fonts/`          PDF에 넣는 글꼴: Noto Sans KR(기본)·나눔고딕·나눔명조·Pretendard Regular/Bold (모두 SIL OFL 1.1). 편집기 글꼴 메뉴의 '늘뷰어 글꼴'과 같은 목록이며, 명조·바탕 계열 문서는 나눔명조로 들어갑니다
 - `studio/`         (직접 넣어야 함) rhwp-studio 빌드 결과물. 없으면 온라인 편집기(edwardkim.github.io/rhwp)를 씁니다.
 
 ## studio/ 만들기 (오프라인에서도 편집하려면)
