@@ -2,6 +2,6 @@
   "name": "neulviewer-tests",
   "private": true,
   "description": "늘뷰어 자동 점검 (Playwright). 사용법은 README.md",
-  "scripts": { "test": "node e2e.cjs" },
+  "scripts": { "test": "node e2e.cjs", "unit": "node unit.cjs" },
   "devDependencies": { "playwright": "^1.45.0", "pdfjs-dist": "3.11.174", "pdf-lib": "1.17.1" }
 }
