@@ -1797,6 +1797,7 @@ body.spoid,body.spoid *{cursor:crosshair!important}
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
   <label class="gs-row"><span class="gs-rt"><b>문서를 볼 때 화면 꺼짐 방지</b><small id="setAwakeSub">문서를 보는 동안 화면이 저절로 꺼지지 않습니다</small></span><input type="checkbox" id="setAwake" class="gs-sw" role="switch"></label>
   <label class="gs-row"><span class="gs-rt"><b>야간 보기</b><small>문서 화면을 어둡게 바꿔 눈의 피로를 줄입니다</small></span><input type="checkbox" id="setNight" class="gs-sw" role="switch"></label>
+  <label class="gs-row"><span class="gs-rt"><b>QR 코드 눌러서 열기</b><small>문서 안의 QR 코드를 읽어 두었다가, 누르면 그 주소로 이동합니다. 끄면 읽지 않습니다</small></span><input type="checkbox" id="setQr" class="gs-sw" role="switch"></label>
   <label class="gs-row"><span class="gs-rt"><b>손가락으로도 필기</b><small>끄면 펜(스타일러스)·마우스로만 필기하고, 손가락은 화면 이동에 씁니다</small></span><input type="checkbox" id="setFinger" class="gs-sw" role="switch"></label>
   <button type="button" class="st-link" id="setSync"><span class="gs-rt"><b>구글 드라이브 동기화</b><small id="setSyncSub"></small></span><span data-i="chev-right"></span></button>
   <button type="button" class="st-link" id="setStore"><span class="gs-rt"><b>용량 관리</b><small>미분류 자동 정리 · 중복 의심 파일 · 임시 파일 정리</small></span><span data-i="chev-right"></span></button>
@@ -3635,6 +3636,65 @@ async function closeReader(keep){
   $('#reader').classList.remove('full','chrome');$('#reader').hidden=true;$('#shelf').hidden=false;updateFullUI();renderCats();renderGrid();
   try{gBadge();if(gOn()&&(lsGet(GK.dirty)==='1'||Date.now()-(+lsGet(GK.time)||0)>60000))setTimeout(gAuto,1500);}catch(e){}   /* 문서를 닫으면 바로 한 번 맞춘다 (보던 문서라 건너뛴 변경도 이때 받는다) */
 }
+/* ===== QR: 쪽 안의 QR 코드를 읽어 두었다가, 링크처럼 누르면 그 주소로 이동 ===== */
+const qrOn=()=>lsGet('neul-qr')!=='0';
+const QRC=new Map(),QRP=new Map();let qrLib=null,qrChain=Promise.resolve();
+function qrLoad(){return qrLib||(qrLib=new Promise((res,rej)=>{
+  if(window.jsQR)return res(window.jsQR);
+  const sc=document.createElement('script');sc.src='qr/jsqr.min.js';sc.onload=()=>window.jsQR?res(window.jsQR):(qrLib=null,rej(new Error('jsQR')));sc.onerror=()=>{qrLib=null;rej(new Error('jsQR load'));};document.head.appendChild(sc);}));}
+async function qrCandidate(page){   /* 그림이나 도형이 거의 없는 글자 쪽은 건너뛴다 (배터리·속도) */
+  try{const ol=await page.getOperatorList(),O=pdfjsLib.OPS;let img=0,path=0;
+    for(let k=0;k<ol.fnArray.length;k++){const f=ol.fnArray[k];
+      if(f===O.paintImageXObject||f===O.paintInlineImageXObject||f===O.paintImageMaskXObject||f===O.paintJpegXObject)img++;
+      else if(f===O.constructPath){const a=ol.argsArray[k];path+=(a&&a[0]&&a[0].length)||1;}
+      else if(f===O.rectangle)path++;}
+    return img>0||path>=60;}catch(e){return true;}
+}
+function qrDecode(jsQR,im,w,h,out){
+  for(let n=0;n<8;n++){
+    const r=jsQR(im.data,w,h,{inversionAttempts:'dontInvert'});if(!r||!r.data)break;
+    const c=[r.location.topLeftCorner,r.location.topRightCorner,r.location.bottomRightCorner,r.location.bottomLeftCorner];
+    const x0=Math.max(0,Math.floor(Math.min(...c.map(q=>q.x)))),x1=Math.min(w-1,Math.ceil(Math.max(...c.map(q=>q.x)))),
+          y0=Math.max(0,Math.floor(Math.min(...c.map(q=>q.y)))),y1=Math.min(h-1,Math.ceil(Math.max(...c.map(q=>q.y))));
+    out.push({fx:x0/w,fy:y0/h,fw:(x1-x0)/w,fh:(y1-y0)/h,text:r.data});
+    const pad=6,ax=Math.max(0,x0-pad),bx=Math.min(w-1,x1+pad),ay=Math.max(0,y0-pad),by=Math.min(h-1,y1+pad);   /* 읽은 자리는 흰색으로 덮고 다음 QR을 찾는다 */
+    for(let y=ay;y<=by;y++)im.data.fill(255,(y*w+ax)*4,(y*w+bx+1)*4);
+  }
+}
+function qrScan(p){
+  if(!qrOn()||!S.pdf)return Promise.resolve([]);
+  const sid=S.sid,pdf=S.pdf,i=p.i,key=sid+':'+i;
+  if(QRC.has(key))return Promise.resolve(QRC.get(key));
+  if(QRP.has(key))return QRP.get(key);
+  const job=qrChain=qrChain.then(async()=>{
+    if(sid!==S.sid)return[];
+    const out=[];
+    try{
+      const page=await pdf.getPage(i+1);
+      if(await qrCandidate(page)){
+        const jsQR=await qrLoad(),v1=page.getViewport({scale:1}),sc=clamp(2000/Math.max(v1.width,v1.height),.5,4),vp=page.getViewport({scale:sc});
+        const w=Math.ceil(vp.width),h=Math.ceil(vp.height),cv=document.createElement('canvas');cv.width=w;cv.height=h;
+        const cx=cv.getContext('2d',{willReadFrequently:true});cx.fillStyle='#fff';cx.fillRect(0,0,w,h);
+        await page.render({canvasContext:cx,viewport:vp}).promise;
+        qrDecode(jsQR,cx.getImageData(0,0,w,h),w,h,out);
+        if(!out.length){   /* 못 읽으면 반으로 줄여 한 번 더 (도형으로 그린 QR은 칸 사이에 가는 틈이 생겨 읽히지 않을 수 있다) */
+          const w2=Math.max(1,w>>1),h2=Math.max(1,h>>1),c2=document.createElement('canvas');c2.width=w2;c2.height=h2;
+          const x2=c2.getContext('2d',{willReadFrequently:true});x2.imageSmoothingQuality='high';x2.drawImage(cv,0,0,w2,h2);
+          qrDecode(jsQR,x2.getImageData(0,0,w2,h2),w2,h2,out);c2.width=c2.height=0;
+        }
+        cv.width=cv.height=0;
+      }
+    }catch(e){logErr('qr',e);}
+    if(sid===S.sid){if(QRC.size>300)QRC.clear();QRC.set(key,out);}
+    QRP.delete(key);return out;
+  });
+  QRP.set(key,job);return job;
+}
+function qrAuto(p){
+  if(!qrOn())return;const sid=S.sid,tok=p.tok;
+  const go=()=>{if(sid!==S.sid||tok!==p.tok||!p.rendered)return;qrScan(p).catch(()=>{});};
+  if(window.requestIdleCallback)requestIdleCallback(go,{timeout:3000});else setTimeout(go,300);
+}
 /* ===== 링크: PDF에 걸린 하이퍼링크 + 본문에 적힌 주소(http://, www.)를 누르면 인터넷 브라우저로 ===== */
 const URL_RE=/(?:https?:\/\/|www\.)[^\s<>"'`「」『』]+/gi;
 const cleanUrl=u=>u.replace(/[.,;:!?)\]}>'"，。、]+$/,'');
@@ -3659,11 +3719,19 @@ async function ensureLinks(p){
   return p._lkP;
 }
 function linkAt(p,e){
-  const L=p.links;if(!L||!L.length||!p.vp)return null;const r=p.el.getBoundingClientRect();if(!r.width||!r.height)return null;
+  if(!p.vp)return null;const r=p.el.getBoundingClientRect();if(!r.width||!r.height)return null;
   const x=(e.clientX-r.left)/r.width*p.vp.width,y=(e.clientY-r.top)/r.height*p.vp.height;
-  for(const b of L)if(x>=b.x-2&&x<=b.x+b.w+2&&y>=b.y-2&&y<=b.y+b.h+2)return b;return null;
+  const L=p.links;if(L&&L.length)for(const b of L)if(x>=b.x-2&&x<=b.x+b.w+2&&y>=b.y-2&&y<=b.y+b.h+2)return b;
+  const Q=qrOn()?QRC.get(S.sid+':'+p.i):null;   /* 쪽 안의 QR 코드 */
+  if(Q&&Q.length){const W=p.vp.width,H=p.vp.height;for(const q of Q)if(x>=q.fx*W-4&&x<=(q.fx+q.fw)*W+4&&y>=q.fy*H-4&&y<=(q.fy+q.fh)*H+4)return{url:q.text,qr:true};}
+  return null;
 }
 async function openLink(b){
+  if(b.url&&b.qr){   /* QR 내용: 주소면 열고, 아니면 글을 보여 주고 복사 */
+    let t=String(b.url).trim();if(/^www\./i.test(t))t='https://'+t;
+    if(/^(https?:|mailto:|tel:)/i.test(t))b={url:t};
+    else{try{await navigator.clipboard.writeText(t);}catch(e){}toast('QR 내용(복사됨): '+(t.length>80?t.slice(0,80)+'…':t));return;}
+  }
   if(b.url){
     if(!/^(https?:|mailto:|tel:)/i.test(b.url)){toast('열 수 없는 링크입니다','err');return;}
     const w=window.open(b.url,'_blank','noopener,noreferrer');
@@ -3679,13 +3747,13 @@ async function openLink(b){
     if(e.target.closest&&e.target.closest('.it,button,input,textarea'))return;
     const sel=getSelection();if(sel&&!sel.isCollapsed)return;
     const pe=e.target.closest&&e.target.closest('.page');if(!pe)return;const p=P[+pe.dataset.i];if(!p||!p.vp)return;
-    if(!p.links){ensureLinks(p);return;}
+    if(!p.links)ensureLinks(p);
     const b=linkAt(p,e);if(!b)return;
     e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();openLink(b);
   },true);
   sc.addEventListener('pointermove',e=>{
     if(e.pointerType!=='mouse')return;let on=false;
-    if(S.tool==='pan'&&S.pdf&&!VF.on){const pe=e.target.closest&&e.target.closest('.page');if(pe){const p=P[+pe.dataset.i];on=!!(p&&p.links&&linkAt(p,e));}}
+    if(S.tool==='pan'&&S.pdf&&!VF.on){const pe=e.target.closest&&e.target.closest('.page');if(pe){const p=P[+pe.dataset.i];on=!!(p&&linkAt(p,e));}}
     if(sc.classList.contains('onlink')!==on)sc.classList.toggle('onlink',on);
   },{passive:true});
 }}
@@ -4167,7 +4235,7 @@ function mountPage(p,cv,dpr,vp,low,sid,tok,pdf,page){
       pdfjsLib.renderTextLayer({textContentSource:tc,container:tl,viewport:pg.getViewport({scale:vp.scale}),textDivs:[]}).promise.then(()=>{if(sid===S.sid&&tok===p.tok&&p.rendered)mergeLines(tl);}).catch(()=>{});}catch(e){}
   };
   if(window.requestIdleCallback)requestIdleCallback(doText,{timeout:500});else setTimeout(doText,80);
-  setTimeout(()=>{if(sid===S.sid&&tok===p.tok&&p.rendered)ensureLinks(p);},500);
+  setTimeout(()=>{if(sid===S.sid&&tok===p.tok&&p.rendered){ensureLinks(p);qrAuto(p);}},500);
   drawSearch(p);if(TT.on){pageText(p.i).catch(()=>{});ttsDraw(p);}if(VF.on){vfGeo(p.i).then(()=>vfDraw(p)).catch(()=>{});vfDraw(p);}
 }
 function flipTo(i){
@@ -7372,7 +7440,7 @@ function bindEvents(){
         for(const P of TPALS){const b=el('button',null,{type:'button'});b.setAttribute('role','radio');b.setAttribute('aria-checked',String(P.id===cur));b.dataset.p=P.id;
           const i=document.createElement('i');{const A=P.id==='mint'?(dk?'#4fc2a8':'#0e6b5c'):(dk?P.d:P.l),B=P.b[dk?1:0];i.style.background=`linear-gradient(135deg,${A} 50%,${B} 50%)`;}b.append(i,P.name);box.append(b);}}
       const aw=$('#setAwake'),ok=!!navigator.wakeLock;aw.disabled=!ok;aw.checked=ok&&AWAKE.on;$('#setAwakeSub').textContent=ok?'문서를 보는 동안 화면이 저절로 꺼지지 않습니다':'이 브라우저는 이 기능을 지원하지 않습니다';
-      $('#setNight').checked=!!S.night;$('#setFinger').checked=!!S.finger;
+      $('#setNight').checked=!!S.night;$('#setFinger').checked=!!S.finger;$('#setQr').checked=qrOn();
       const t=+lsGet(GK.time)||0;$('#setSyncSub').textContent=!gOn()?'연결되지 않음':(gLastErr?'확인이 필요합니다':'연결됨'+(t?' · 마지막 '+gAgo(t):''));
     };
     $('#btnSettings').addEventListener('click',()=>{sync();dlg.showModal();});
@@ -7383,6 +7451,7 @@ function bindEvents(){
     $('#setErr').addEventListener('click',()=>{dlg.close();openErrDlg();});
     $('#setAwake').addEventListener('change',e=>{AWAKE.on=e.target.checked;lsSet('neul-awake',AWAKE.on?'1':'0');if(AWAKE.on)wlAcquire();else wlRelease();updateAwakeUI();});
     $('#setNight').addEventListener('change',e=>{S.night=e.target.checked;lsSet('neul-night',S.night?'1':'0');$('#pages').classList.toggle('night',S.night);const nb=$('[data-act="night"]');if(nb)nb.classList.toggle('on',S.night);});
+    $('#setQr').addEventListener('change',e=>{lsSet('neul-qr',e.target.checked?'1':'0');if(e.target.checked){for(const p of P)if(p.rendered)qrAuto(p);}});
     $('#setFinger').addEventListener('change',e=>{S.finger=e.target.checked;S.fingerSet=true;lsSet('neul-finger',S.finger?'1':'0');updateFingerUI();});
     $('#setSync').addEventListener('click',()=>{dlg.close();openSyncDlg();});
     dlg.addEventListener('click',e=>{const b=e.target.closest('button[data-edit]');if(!b)return;dlg.close();openBarEdit(b.dataset.edit);});

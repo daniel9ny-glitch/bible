@@ -1,6 +1,6 @@
 /* 늘뷰어 서비스 워커: 앱 틀과 라이브러리를 저장해 오프라인에서도 열리게 합니다. */
-const VERSION = 'neulviewer-v4';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png',
+const VERSION = 'neulviewer-v5';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './qr/jsqr.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'];
