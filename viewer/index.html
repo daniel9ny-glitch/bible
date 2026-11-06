@@ -229,9 +229,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 #thumbs .th{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
 .th{display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px;border-radius:9px;color:var(--fg2);font-size:11px;font-variant-numeric:tabular-nums}
 .th:hover{background:var(--surface2)}
-.th.cur{background:var(--accent);color:var(--accent-fg);font-weight:800;font-size:12px;box-shadow:0 0 0 2px var(--accent)}   /* 현재 쪽: 칸 전체를 강조색으로 채우고 큼직한 표식을 단다 */
+.th.cur{background:var(--accent);color:var(--accent-fg);font-weight:800;font-size:12px;box-shadow:0 0 0 2px var(--accent)}   /* 현재 쪽: 칸 전체를 강조색으로 채운다 */
 .th.cur .tw{outline:3px solid var(--accent-fg);outline-offset:-1px}
-.th.cur .tw::before{content:'현재';position:absolute;z-index:2;top:5px;right:5px;padding:2px 7px;border-radius:99px;background:var(--accent);color:var(--accent-fg);font-size:11px;font-weight:800;box-shadow:0 0 0 1.5px var(--accent-fg)}
 .th .tw{width:100%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .th canvas{display:block;width:100%;height:100%}
 .ol{list-style:none;margin:0;padding:0}
@@ -1842,7 +1841,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v200 · 11-06 21:10</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v201 · 11-06 21:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
