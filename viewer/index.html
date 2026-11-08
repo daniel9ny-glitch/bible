@@ -178,7 +178,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dcbox{flex:1;min-height:0;overflow-y:auto;padding:4px 12px 16px;font-size:15px;line-height:1.7;user-select:text;-webkit-user-select:text}
 .dcedit{flex:1;min-height:0;width:100%;box-sizing:border-box;resize:none;border:0;border-top:1px solid var(--line);background:var(--surface);color:var(--fg);padding:8px 12px;font:inherit;font-size:15px;line-height:1.7;outline:none}.dcedit[hidden]{display:none}
 .dctools{display:flex;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface);flex:none}
-.dct{flex:1 1 0;min-width:0;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:9px;font-size:11px;color:var(--fg)}.dct b{font-weight:500;white-space:nowrap}.dct svg{width:19px;height:19px}
+.dct{flex:1 1 0;min-width:0;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:9px;font-size:11px;color:var(--fg)}.dct b{font-weight:500;white-space:nowrap}.dct svg{width:19px;height:19px}
 .dct:hover:not(:disabled){background:color-mix(in srgb,var(--fg) 9%,transparent)}.dct:disabled{opacity:.35}.dct.on{color:var(--accent);background:var(--accent-soft)}
 .dct .rdot{width:14px;height:14px;border-radius:50%;background:#9ca3af;margin:2.5px 0}
 .dct[data-l=ok] .rdot{background:#22c55e;animation:vfp 1.2s infinite}.dct[data-l=mid] .rdot{background:#f59e0b;animation:vfp 1.2s infinite}.dct[data-l=bad] .rdot{background:#ef4444;animation:vfp 1.2s infinite}
@@ -194,7 +194,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 /* 접은 받아쓰기: 문서 위에 작은 막대로 떠 있고, 받아쓰기는 계속된다 */
 #reader #dictPane.dfold{position:fixed;left:12px;bottom:12px;width:auto!important;min-width:0!important;height:auto!important;order:0!important;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);z-index:40}
 #reader #dictPane.dfold .dphead{border-bottom:0;padding:5px 8px}
-#reader #dictPane.dfold .dcbox,#reader #dictPane.dfold .dctools,#reader #dictPane.dfold .dslist,#reader #dictPane.dfold #dcEdit,#reader #dictPane.dfold #dcCopy,#reader #dictPane.dfold #dcClr,#reader #dictPane.dfold #dcList{display:none!important}
+#reader #dictPane.dfold .dcbox,#reader #dictPane.dfold .dctools,#reader #dictPane.dfold .dslist,#reader #dictPane.dfold #dcEdit,#reader #dictPane.dfold #dcMore,#reader #dictPane.dfold #dpMenu,#reader #dictPane.dfold #dcList{display:none!important}
 #reader #dictPane.dfold .dfd{display:block}
 #reader #dictPane.dfold #dcTitle{flex:none;max-width:8em}
 #dictPane.dedit #dcRec,#dictPane.dedit #dcStop{display:none!important}
@@ -205,10 +205,19 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .mrta[data-mk]{padding-left:calc(6px + var(--mw));text-indent:calc(-1*var(--mw))}.dcbox p[data-mk]{padding-left:var(--mw);text-indent:calc(-1*var(--mw))}
 .mrta[data-mk]::before,.dcbox p[data-mk]::before{content:attr(data-mk);display:inline-block;width:var(--mw);text-indent:0;white-space:pre;pointer-events:none;-webkit-user-select:none;user-select:none}
 .dcrows.selall .mrta{background:rgba(26,115,232,.22)}
-.dcfmt{display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border-top:1px solid var(--line);flex:none;align-items:center}.dcfmt[hidden]{display:none}
-.dcfmt button{height:30px;padding:0 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font-size:12.5px;cursor:pointer}
-.dcfmt>i{width:1px;height:18px;background:var(--line);margin:0 2px}
-.dccols{display:flex;flex-wrap:wrap;gap:6px;padding:6px 10px;border-top:1px solid var(--line);flex:none}.dccols[hidden]{display:none}
+.dphead{position:relative}.dphead .dsic{border-color:transparent;background:none}.dphead .dsic:hover{background:color-mix(in srgb,var(--fg) 9%,transparent)}#dcMore{font-size:20px;line-height:1;padding-bottom:5px}
+.dpmenu{position:absolute;right:8px;top:calc(100% + 2px);z-index:30;min-width:190px;padding:5px;border:1px solid var(--line);border-radius:11px;background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column}.dpmenu[hidden]{display:none}
+.dpmenu hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
+.dpmi{display:flex;align-items:baseline;gap:8px;width:100%;height:36px;padding:0 11px;border-radius:7px;font-size:13.5px;text-align:left;color:var(--fg);cursor:pointer;white-space:nowrap}.dpmi small{opacity:.55;font-size:11.5px}.dpmi{align-items:center}.dpmi:hover{background:color-mix(in srgb,var(--fg) 9%,transparent)}.dpmi.dng{color:#d93025}
+.dcfmt{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:1px 2px;padding:5px 6px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--fg) 3.5%,var(--surface));flex:none}.dcfmt[hidden]{display:none}
+.dcfmt .g{display:inline-flex;gap:1px}
+.dcfmt button{min-width:28px;height:28px;padding:0 5px;border:0;border-radius:6px;background:none;color:var(--fg);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:1px}
+.dcfmt>button:hover,.dcfmt .g button:hover{background:color-mix(in srgb,var(--fg) 11%,transparent)}.dcfmt .g button small{font-size:8px;opacity:.6}
+.dcfmt button sub,.dcfmt button sup{font-size:12px;line-height:1;font-weight:700}
+.dcfmt .fa{border-bottom:3px solid #d93025;line-height:1.05;font-weight:700}.dcfmt .fh{background:#fff3a3;color:#222;padding:0 3px;border-radius:2px;line-height:1.2;font-size:12.5px}
+.dcfmt>i{width:1px;height:16px;background:var(--line);margin:0 3px}
+.dcfmt .dpmenu button{height:36px;min-width:0;padding:0 11px;font-size:13.5px;justify-content:flex-start}
+.dccols{display:flex;flex-wrap:wrap;gap:6px;padding:6px 10px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--fg) 3.5%,var(--surface));flex:none}.dccols[hidden]{display:none}
 .dcc{min-width:30px;height:30px;border-radius:15px;border:1px solid var(--line);color:var(--fg);font-size:12px;cursor:pointer;background:var(--surface)}
 .dpgrip{position:absolute;z-index:5;touch-action:none;background:transparent}.dpgrip::after{content:'';position:absolute;border-radius:3px;background:var(--line);transition:background .15s}.dpgrip:hover::after,.dpgrip.drag::after{background:var(--accent)}
 @media (min-width:701px){.dpgrip{top:0;bottom:0;right:-7px;width:14px;cursor:col-resize}.dpgrip::after{top:50%;left:5px;width:4px;height:44px;margin-top:-22px}}
@@ -217,7 +226,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 @media (min-width:701px){#reader #dictPane.dR{order:99;border-left:1px solid var(--line)}#reader #dictPane.dR .dpgrip{right:auto;left:-7px}}
 @media (max-width:700px){#dcSide{display:none}}
 .dpane.dlist #dcRows,.dpane.dlist #dcFmt,.dpane.dlist #dcCols,#reader #dictPane.dfold #dcCols,#reader #dictPane.dfold #dcRows,#reader #dictPane.dfold #dcFmt{display:none!important}
-.dpane.dlist .dcbox,.dpane.dlist .dctools,.dpane.dlist #dcEdit,.dpane.dlist #dcCopy,.dpane.dlist #dcClr{display:none!important}
+.dpane.dlist .dcbox,.dpane.dlist .dctools,.dpane.dlist #dcEdit,.dpane.dlist #dcCopy,.dpane.dlist #dcClr,.dpane.dlist #dcTxt,.dpane.dlist #dcFmtMore{display:none!important}
 .dsnew{width:100%;height:36px;margin-bottom:6px}
 .dsr{display:flex;align-items:center;gap:2px;border-bottom:1px solid var(--line)}
 .dsr .dsmain{flex:1;min-width:0;text-align:left;background:none;border:0;padding:8px 4px;color:var(--fg);cursor:pointer;font:inherit}
@@ -1637,8 +1646,15 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
       </div>
       </div>
       <section class="dpane" id="dictPane" hidden aria-label="받아쓰기"><div class="dpgrip" id="dpGrip" role="separator" aria-label="메모 창 크기 조절" title="끌어서 크기 조절 (두 번 누르면 처음 크기)"></div>
-        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><button type="button" class="btn" id="dcCopy">복사</button><button type="button" class="btn" id="dcClr">지우기</button><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcSide" aria-label="메모 창을 문서 반대쪽으로 옮기기" title="왼쪽/오른쪽으로 옮기기">⇄</button><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button></div>
-        <div class="dcfmt" id="dcFmt" hidden role="toolbar" aria-label="줄 서식"><button type="button" data-a="s-">가−</button><button type="button" data-a="s+">가+</button><button type="button" data-a="b"><b>굵게</b></button><button type="button" data-a="i"><i>기울임</i></button><button type="button" data-a="u"><u>밑줄</u></button><button type="button" data-a="cp">글자색</button><button type="button" data-a="hp">형광펜</button><button type="button" data-a="np">번호</button><i></i><button type="button" data-a="i-">⇤</button><button type="button" data-a="i+">⇥</button><button type="button" data-a="a">정렬 · 왼쪽</button><i></i><button type="button" data-a="g-">간격−</button><button type="button" data-a="g+">간격+</button><i></i><button type="button" data-a="join">윗줄과 합치기</button><button type="button" data-a="del">줄 지우기</button></div>
+        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcMore" aria-label="메뉴" aria-haspopup="true" aria-expanded="false" title="메뉴">⋯</button><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn dsic" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button>
+          <div class="dpmenu" id="dpMenu" role="menu" hidden><button type="button" class="dpmi" id="dcCopy" role="menuitem">복사 <small>서식 포함</small></button><button type="button" class="dpmi" id="dcTxt" role="menuitem">TXT 파일로 내보내기</button><button type="button" class="dpmi" id="dcSide" role="menuitem">왼쪽/오른쪽으로 옮기기</button><hr><button type="button" class="dpmi dng" id="dcClr" role="menuitem">전체 지우기</button></div></div>
+        <div class="dcfmt" id="dcFmt" hidden role="toolbar" aria-label="서식">
+          <span class="g"><button type="button" data-a="s-" title="글자 작게">가<sub>−</sub></button><button type="button" data-a="s+" title="글자 크게">가<sup>+</sup></button></span><i></i>
+          <span class="g"><button type="button" data-a="b" title="굵게"><b>B</b></button><button type="button" data-a="i" title="기울임"><em>I</em></button><button type="button" data-a="u" title="밑줄"><u>U</u></button></span><i></i>
+          <span class="g"><button type="button" data-a="cp" title="글자색"><span class="fa">A</span><small>▾</small></button><button type="button" data-a="hp" title="형광펜"><span class="fh">가</span><small>▾</small></button></span><i></i>
+          <span class="g"><button type="button" data-a="np" title="번호 매기기 (Ctrl+1~8)">1.<small>▾</small></button><button type="button" data-a="i-" title="내어쓰기">⇤</button><button type="button" data-a="i+" title="들여쓰기">⇥</button></span><i></i>
+          <button type="button" id="dcFmtMore" aria-haspopup="true" title="더 보기">⋯</button>
+          <div class="dpmenu" id="dpFmtMenu" role="menu" hidden><button type="button" class="dpmi" data-a="a" role="menuitem">정렬 · 왼쪽</button><button type="button" class="dpmi" data-a="g+" role="menuitem">문단 위 간격 넓게</button><button type="button" class="dpmi" data-a="g-" role="menuitem">문단 위 간격 좁게</button><hr><button type="button" class="dpmi" data-a="join" role="menuitem">윗줄과 합치기</button><button type="button" class="dpmi dng" data-a="del" role="menuitem">이 줄 지우기</button></div></div>
         <div class="dccols" id="dcCols" hidden role="toolbar" aria-label="글자색"></div>
         <div class="dcbox" id="dcBox" aria-live="polite"></div>
         <div class="dslist" id="dsList" hidden></div>
@@ -1648,7 +1664,6 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
           <button type="button" class="dct" id="dcRec" data-l="off" aria-label="녹음 상태"><i class="rdot"></i><b>시작</b></button>
           <button type="button" class="dct" id="dcStop" aria-label="멈춤" title="받아쓰기 멈춤"><span data-i="stop"></span><b>멈춤</b></button>
           <button type="button" class="dct" id="dcEd" aria-label="글 고치기" title="받아 적은 글 고치기"><span data-i="pencil"></span><b>수정</b></button>
-          <button type="button" class="dct" id="dcTxt" aria-label="TXT로 내보내기" title="TXT 파일로 내보내기"><span data-i="download"></span><b>TXT</b></button>
         </div>
       </section>
     </div>
@@ -1864,7 +1879,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v212 · 11-08 17:05</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v213 · 11-08 17:40</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7472,6 +7487,10 @@ function bindVf(){
    $('#dcFmt').addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;if(b.dataset.a==='np'){showCols('n');return;}if(b.dataset.a==='cp'){showCols('c');return;}if(b.dataset.a==='hp'){showCols('h');return;}rowsFmt(b.dataset.a);});
    cols.addEventListener('click',e=>{const b=e.target.closest('button[data-c],button[data-h],button[data-n]');if(!b)return;if(b.dataset.n!==undefined){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}if(!d._f.o&&+b.dataset.n)d._f.n=1;d._f.o=+b.dataset.n;if(!d._f.o)delete d._f.n;rowsAutoSoon();rowsCur(d);}else if(b.dataset.c!==undefined)rowsRun('c',+b.dataset.c);else rowsRun('h',+b.dataset.h);cols.hidden=true;});}
   $('#dcTxt').addEventListener('click',dictExportTxt);
+  {const pairs=[[$('#dcMore'),$('#dpMenu')],[$('#dcFmtMore'),$('#dpFmtMenu')]];const closeM=()=>pairs.forEach(([b,m])=>{m.hidden=true;b.setAttribute('aria-expanded','false');});
+   pairs.forEach(([b,m])=>{b.addEventListener('click',e=>{e.stopPropagation();const was=!m.hidden;closeM();m.hidden=was;b.setAttribute('aria-expanded',String(!was));});m.addEventListener('click',()=>setTimeout(closeM,0));});
+   document.addEventListener('pointerdown',e=>{if(!e.target.closest('.dpmenu,#dcMore,#dcFmtMore'))closeM();},true);
+   $('#dictPane').addEventListener('keydown',e=>{if(e.key==='Escape'&&pairs.some(([b,m])=>!m.hidden)){e.stopPropagation();closeM();}},true);}
   $('#dcClr').addEventListener('click',()=>{if(!DICT.fin.length&&!DICT.live)return;if(!confirm('이 받아쓰기의 내용을 모두 지울까요? (목록에서도 사라집니다)'))return;const id=DICT.sid;DICT.fin=[];DICT.fm={};DICT.int='';DICT.live='';DICT.lastFin=null;clearTimeout(DICT.cmt);if(id){DSESS=DSESS.filter(x=>x.id!==id);dsTomb(id);dsPersist();DICT.sid='';}DICT.startAt=Date.now();dictRender();});
   $('#dcList').addEventListener('click',()=>dsView(DICT.view!=='list'));
   $('#dcTitle').addEventListener('click',()=>{if(DICT.view!=='list'&&DICT.sid)dsRename(DICT.sid);else if(DICT.view!=='list')toast('받아 적은 글이 생기면 제목을 바꿀 수 있습니다');});
