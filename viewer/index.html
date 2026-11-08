@@ -202,7 +202,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dcrows{flex:1;min-height:0;overflow-y:auto;padding:8px 10px 14px;border-top:1px solid var(--line)}.dcrows[hidden]{display:none}
 .mrta{display:block;width:100%;box-sizing:border-box;min-height:calc(1.6em + 6px);white-space:pre-wrap;overflow-wrap:anywhere;border:0;outline:0;background:none;color:inherit;font:inherit;font-size:15px;line-height:1.6;padding:3px 6px;border-radius:6px;-webkit-user-select:text;user-select:text}
 .mrow.cur .mrta{background:var(--accent-soft)}
-.mrta[data-mk]::before,.dcbox p[data-mk]::before{content:attr(data-mk) ' ';white-space:pre;pointer-events:none;-webkit-user-select:none;user-select:none}
+.mrta[data-mk]{padding-left:calc(6px + var(--mw));text-indent:calc(-1*var(--mw))}.dcbox p[data-mk]{padding-left:var(--mw);text-indent:calc(-1*var(--mw))}
+.mrta[data-mk]::before,.dcbox p[data-mk]::before{content:attr(data-mk);display:inline-block;width:var(--mw);text-indent:0;white-space:pre;pointer-events:none;-webkit-user-select:none;user-select:none}
 .dcrows.selall .mrta{background:rgba(26,115,232,.22)}
 .dcfmt{display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border-top:1px solid var(--line);flex:none;align-items:center}.dcfmt[hidden]{display:none}
 .dcfmt button{height:30px;padding:0 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font-size:12.5px;cursor:pointer}
@@ -213,6 +214,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 @media (min-width:701px){.dpgrip{top:0;bottom:0;right:-7px;width:14px;cursor:col-resize}.dpgrip::after{top:50%;left:5px;width:4px;height:44px;margin-top:-22px}}
 @media (max-width:700px){.dpgrip{left:0;right:0;top:-8px;height:16px;cursor:row-resize}.dpgrip::after{left:50%;top:6px;height:4px;width:44px;margin-left:-22px}}
 #reader #dictPane.dfold .dpgrip{display:none}
+@media (min-width:701px){#reader #dictPane.dR{order:99;border-left:1px solid var(--line)}#reader #dictPane.dR .dpgrip{right:auto;left:-7px}}
+@media (max-width:700px){#dcSide{display:none}}
 .dpane.dlist #dcRows,.dpane.dlist #dcFmt,.dpane.dlist #dcCols,#reader #dictPane.dfold #dcCols,#reader #dictPane.dfold #dcRows,#reader #dictPane.dfold #dcFmt{display:none!important}
 .dpane.dlist .dcbox,.dpane.dlist .dctools,.dpane.dlist #dcEdit,.dpane.dlist #dcCopy,.dpane.dlist #dcClr{display:none!important}
 .dsnew{width:100%;height:36px;margin-bottom:6px}
@@ -1634,7 +1637,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
       </div>
       </div>
       <section class="dpane" id="dictPane" hidden aria-label="받아쓰기"><div class="dpgrip" id="dpGrip" role="separator" aria-label="메모 창 크기 조절" title="끌어서 크기 조절 (두 번 누르면 처음 크기)"></div>
-        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><button type="button" class="btn" id="dcCopy">복사</button><button type="button" class="btn" id="dcClr">지우기</button><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button></div>
+        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><button type="button" class="btn" id="dcCopy">복사</button><button type="button" class="btn" id="dcClr">지우기</button><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcSide" aria-label="메모 창을 문서 반대쪽으로 옮기기" title="왼쪽/오른쪽으로 옮기기">⇄</button><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button></div>
         <div class="dcfmt" id="dcFmt" hidden role="toolbar" aria-label="줄 서식"><button type="button" data-a="s-">가−</button><button type="button" data-a="s+">가+</button><button type="button" data-a="b"><b>굵게</b></button><button type="button" data-a="i"><i>기울임</i></button><button type="button" data-a="u"><u>밑줄</u></button><button type="button" data-a="cp">글자색</button><button type="button" data-a="hp">형광펜</button><button type="button" data-a="np">번호</button><i></i><button type="button" data-a="i-">⇤</button><button type="button" data-a="i+">⇥</button><button type="button" data-a="a">정렬 · 왼쪽</button><i></i><button type="button" data-a="g-">간격−</button><button type="button" data-a="g+">간격+</button><i></i><button type="button" data-a="join">윗줄과 합치기</button><button type="button" data-a="del">줄 지우기</button></div>
         <div class="dccols" id="dcCols" hidden role="toolbar" aria-label="글자색"></div>
         <div class="dcbox" id="dcBox" aria-live="polite"></div>
@@ -1861,7 +1864,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v208 · 11-08 15:00</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v209 · 11-08 15:40</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7003,7 +7006,7 @@ function dictRender(){
   dictTitleUI();if(DICT.view==='list')dsRenderList();
   const b=$('#dcBox');if(b){
     const stick=b.scrollTop+b.clientHeight>=b.scrollHeight-40;b.replaceChildren();
-    {const mk=numMarks(DICT.fin.map((t,i)=>DICT.fm[i]));DICT.fin.forEach((t,i)=>{const p=el('p','');runsFill(p,t,(DICT.fm[i]||{}).r);fmApply(p,DICT.fm[i]);if(mk[i])p.dataset.mk=mk[i];b.appendChild(p);});}
+    {const mk=numMarks(DICT.fin.map((t,i)=>DICT.fm[i]));DICT.fin.forEach((t,i)=>{const p=el('p','');runsFill(p,t,(DICT.fm[i]||{}).r);fmApply(p,DICT.fm[i]);mkSet(p,mk[i]);b.appendChild(p);});}
     if(DICT.live)b.appendChild(el('p',DICT.liveFinal?'':'dci',{text:DICT.live}));
     if(!DICT.fin.length&&!DICT.live)b.appendChild(el('p','dce',{text:DICT.on?'소리를 기다리는 중…':'[받아쓰기 시작]을 누르면 들리는 소리가 여기에 글자로 쌓입니다.'}));
     if(stick)b.scrollTop=b.scrollHeight;}
@@ -7032,6 +7035,8 @@ const HG='가나다라마바사아자차카타파하',NUMS=['1.','가.','1)','�
 function numLabel(o,n){const g=HG[(n-1)%14];
   switch(o){case 1:return n+'.';case 2:return g+'.';case 3:return n+')';case 4:return g+')';case 5:return '('+n+')';case 6:return '('+g+')';
     case 7:return n<=20?String.fromCharCode(0x2460+n-1):'('+n+')';case 8:return String.fromCharCode(0x326e+(n-1)%14);}return '';}
+function mkW(mk){let w=.4;for(const ch of mk)w+=/[0-9().)]/.test(ch)?.56:1.02;return +w.toFixed(2);}   /* 번호 칸 너비(em): 둘째 줄부터 번호가 아니라 번호 뒤 글자에 맞춘다 */
+function mkSet(el,mk){if(mk){el.dataset.mk=mk;el.style.setProperty('--mw',mkW(mk)+'em');}else{delete el.dataset.mk;el.style.removeProperty('--mw');}}
 function numMarks(fs){const cnt=new Array(10).fill(0);return fs.map(f=>{const o=(f&&f.o)|0;if(!o)return '';cnt[o]++;for(let k=o+1;k<=8;k++)cnt[k]=0;return numLabel(o,cnt[o]);});}
 function fmNorm(o){const r={};if(o&&typeof o==='object')for(const k of Object.keys(o)){const f=o[k];if(!f||typeof f!=='object'||!/^\d+$/.test(k))continue;const n={},c=(v,a,b)=>Math.max(a,Math.min(b,Math.round(+v)||0));
   const s=c(f.s,-3,8),i=c(f.i,0,6),a=c(f.a,0,2),g=c(f.g,0,4),ol=c(f.o,0,8);if(ol)n.o=ol;if(s)n.s=s;if(i)n.i=i;if(a)n.a=a;if(g)n.g=g;
@@ -7098,7 +7103,7 @@ function rowsBuild(){const box=$('#dcRows');box.replaceChildren();
 function rowsRead(){const lines=[],fm={};for(const r of $('#dcRows').children){const L=rowRead(r.firstChild),lead=L.text.length-L.text.trimStart().length,tx=L.text.trim();if(!tx)continue;
     const e=lead+tx.length,run=runsPack(L.S.slice(lead,e),L.B.slice(lead,e),L.C.slice(lead,e),L.H.slice(lead,e));
     const n=fmNorm({0:Object.assign({},r._f,{r:run})})[0];if(n)fm[lines.length]=n;lines.push(tx);}return{lines,fm};}
-function rowsRenumber(){const box=$('#dcRows');if(!box)return;const rs=[...box.children],mk=numMarks(rs.map(x=>x._f));rs.forEach((x,i)=>{const t=x.firstChild;if(mk[i])t.dataset.mk=mk[i];else delete t.dataset.mk;fmApply(t,x._f);});}
+function rowsRenumber(){const box=$('#dcRows');if(!box)return;const rs=[...box.children],mk=numMarks(rs.map(x=>x._f));rs.forEach((x,i)=>{const t=x.firstChild;mkSet(t,mk[i]);fmApply(t,x._f);});}
 function rowsLevel(o){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d)return;d._f.o=o;rowsAutoSoon();rowsCur(d);}   /* 엔터로 이어진 줄은 같은 단계를 물려받으므로 토글하지 않음. 해제는 Ctrl+0 */
 let rowsTm=0;function rowsAutoSoon(){rowsRenumber();clearTimeout(rowsTm);rowsTm=setTimeout(dictEdAuto,600);}
 function rowsRun(act,val){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}
@@ -7165,7 +7170,7 @@ function dictHtml(){const lines=DICT.fin.concat(DICT.live?[DICT.live]:[]);return
 function memoHtml(items){
   const mks=numMarks(items.map(x=>x.f));const esc=x=>x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),pt=l=>Math.round(11*Math.pow(1.12,l)*2)/2;let out='';
   items.forEach(({t,f},ix)=>{f=f||{};const base=f.s||0;
-    let st='margin:0;'+(f.g?'margin-top:'+f.g*7+'pt;':'')+(((f.i?f.i*15:0)+(f.o?(f.o-1)*11:0))?'margin-left:'+((f.i?f.i*15:0)+(f.o?(f.o-1)*11:0))+'pt;':'')+(f.a===1?'text-align:center;':f.a===2?'text-align:right;':'');
+    let st='margin:0;'+(f.g?'margin-top:'+f.g*7+'pt;':'')+(()=>{const hw=mks[ix]?Math.round(mkW(mks[ix])*Math.pow(1.12,base)*11*10)/10:0,ml=(f.i?f.i*15:0)+(f.o?(f.o-1)*11:0)+hw;return (ml?'margin-left:'+ml+'pt;':'')+(hw?'text-indent:-'+hw+'pt;':'');})()+(f.a===1?'text-align:center;':f.a===2?'text-align:right;':'');
     if(base)st+='font-size:'+pt(base)+'pt;';
     const{S,B,C,H}=runsExpand(t,f.r);let body='',k=0;
     while(k<t.length){let e=k+1;while(e<t.length&&S[e]===S[k]&&B[e]===B[k]&&C[e]===C[k]&&H[e]===H[k])e++;const seg=esc(t.slice(k,e));
@@ -7437,15 +7442,16 @@ function bindVf(){
   $('#dcStop').addEventListener('click',()=>{if(DICT.on)dictStop();});
   $('#dcEd').addEventListener('click',()=>{if($('#dcEdit').hidden){dictEditToggle();return;}dictEditToggle();if(!DICT.on)dictStart();});
   {const pane=$('#dictPane'),g=$('#dpGrip'),KEY='neul-dictsz';let sz={};try{sz=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
-   const apply=()=>{if(sz.w)pane.style.setProperty('--dpw',sz.w+'px');else pane.style.removeProperty('--dpw');if(sz.h)pane.style.setProperty('--dph',sz.h+'px');else pane.style.removeProperty('--dph');};apply();
+   const side=()=>pane.classList.toggle('dR',sz.side==='R');const apply=()=>{side();if(sz.w)pane.style.setProperty('--dpw',sz.w+'px');else pane.style.removeProperty('--dpw');if(sz.h)pane.style.setProperty('--dph',sz.h+'px');else pane.style.removeProperty('--dph');};apply();
    const narrow=()=>matchMedia('(max-width:700px)').matches,save=()=>{try{localStorage.setItem(KEY,JSON.stringify(sz));}catch(e){}};
    g.addEventListener('pointerdown',e=>{e.preventDefault();g.setPointerCapture(e.pointerId);g.classList.add('drag');
      const par=pane.parentElement.getBoundingClientRect();
      const mv=ev=>{const pr=pane.getBoundingClientRect();
        if(narrow()){sz.h=Math.round(Math.max(110,Math.min(par.height*.8,pr.bottom-ev.clientY)));}
-       else{sz.w=Math.round(Math.max(240,Math.min(par.width*.75,ev.clientX-pr.left)));}apply();};
+       else{sz.w=Math.round(Math.max(240,Math.min(par.width*.75,pane.classList.contains('dR')?pr.right-ev.clientX:ev.clientX-pr.left)));}apply();};
      const up=()=>{g.classList.remove('drag');g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);g.removeEventListener('pointercancel',up);save();try{window.dispatchEvent(new Event('resize'));}catch(x){}};
      g.addEventListener('pointermove',mv);g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);});
+   $('#dcSide').addEventListener('click',()=>{sz.side=sz.side==='R'?'L':'R';apply();save();try{fabPlaceAll();window.dispatchEvent(new Event('resize'));}catch(x){}});
    g.addEventListener('dblclick',()=>{if(narrow())delete sz.h;else delete sz.w;apply();save();});}
   rowsClipBind();
   $('#dcRows').addEventListener('focusout',()=>setTimeout(()=>{if(!$('#dcRows').contains(document.activeElement)&&!$('#dcRows').hidden)dictEdAuto();},0));
