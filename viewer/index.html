@@ -185,7 +185,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dcbox p{margin:0 0 8px}.dcbox .dci{color:var(--fg2)}.dcbox .dce{color:var(--fg2);font-size:13px}
 /* 받아쓰기: 쪽·목차와 별개로 화면을 나눠 쓰는 칸 — 넓은 화면은 오른쪽에 좌우 분할, 폰처럼 좁으면 아래쪽 1/3 */
 .rmain{flex:1;min-width:0;min-height:0;position:relative;display:flex}
-.dpane{flex:none;display:flex;flex-direction:column;width:min(36vw,380px);min-width:260px;min-height:0;background:var(--surface);border-left:1px solid var(--line);z-index:13}.dpane[hidden]{display:none}
+.dpane{position:relative;flex:none;display:flex;flex-direction:column;width:var(--dpw,min(36vw,380px));min-width:260px;min-height:0;background:var(--surface);border-left:1px solid var(--line);z-index:13}.dpane[hidden]{display:none}
 .dphead{display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;border-bottom:1px solid var(--line);flex:none}.dphead b{font-size:14px;flex:1}.dphead .btn{height:30px;padding:0 9px;font-size:12.5px}
 .dphead .dsic{width:30px;padding:0;display:grid;place-items:center;flex:none}.dphead .dsic svg{width:17px;height:17px}.dphead b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .dslist{flex:1;min-height:0;overflow:auto;padding:6px 8px}.dslist[hidden]{display:none}
@@ -197,6 +197,23 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 #reader #dictPane.dfold .dcbox,#reader #dictPane.dfold .dctools,#reader #dictPane.dfold .dslist,#reader #dictPane.dfold #dcEdit,#reader #dictPane.dfold #dcCopy,#reader #dictPane.dfold #dcClr,#reader #dictPane.dfold #dcList{display:none!important}
 #reader #dictPane.dfold .dfd{display:block}
 #reader #dictPane.dfold #dcTitle{flex:none;max-width:8em}
+#dictPane.dedit #dcRec,#dictPane.dedit #dcStop{display:none!important}
+#dcEdit{display:none!important}
+.dcrows{flex:1;min-height:0;overflow-y:auto;padding:8px 10px 14px;border-top:1px solid var(--line)}.dcrows[hidden]{display:none}
+.mrta{display:block;width:100%;box-sizing:border-box;min-height:calc(1.6em + 6px);white-space:pre-wrap;overflow-wrap:anywhere;border:0;outline:0;background:none;color:inherit;font:inherit;font-size:15px;line-height:1.6;padding:3px 6px;border-radius:6px;-webkit-user-select:text;user-select:text}
+.mrow.cur .mrta{background:var(--accent-soft)}
+.mrta[data-mk]::before,.dcbox p[data-mk]::before{content:attr(data-mk) ' ';white-space:pre;pointer-events:none;-webkit-user-select:none;user-select:none}
+.dcrows.selall .mrta{background:rgba(26,115,232,.22)}
+.dcfmt{display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border-top:1px solid var(--line);flex:none;align-items:center}.dcfmt[hidden]{display:none}
+.dcfmt button{height:30px;padding:0 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font-size:12.5px;cursor:pointer}
+.dcfmt>i{width:1px;height:18px;background:var(--line);margin:0 2px}
+.dccols{display:flex;flex-wrap:wrap;gap:6px;padding:6px 10px;border-top:1px solid var(--line);flex:none}.dccols[hidden]{display:none}
+.dcc{min-width:30px;height:30px;border-radius:15px;border:1px solid var(--line);color:var(--fg);font-size:12px;cursor:pointer;background:var(--surface)}
+.dpgrip{position:absolute;z-index:5;touch-action:none;background:transparent}.dpgrip::after{content:'';position:absolute;border-radius:3px;background:var(--line);transition:background .15s}.dpgrip:hover::after,.dpgrip.drag::after{background:var(--accent)}
+@media (min-width:701px){.dpgrip{top:0;bottom:0;right:-7px;width:14px;cursor:col-resize}.dpgrip::after{top:50%;left:5px;width:4px;height:44px;margin-top:-22px}}
+@media (max-width:700px){.dpgrip{left:0;right:0;top:-8px;height:16px;cursor:row-resize}.dpgrip::after{left:50%;top:6px;height:4px;width:44px;margin-left:-22px}}
+#reader #dictPane.dfold .dpgrip{display:none}
+.dpane.dlist #dcRows,.dpane.dlist #dcFmt,.dpane.dlist #dcCols,#reader #dictPane.dfold #dcCols,#reader #dictPane.dfold #dcRows,#reader #dictPane.dfold #dcFmt{display:none!important}
 .dpane.dlist .dcbox,.dpane.dlist .dctools,.dpane.dlist #dcEdit,.dpane.dlist #dcCopy,.dpane.dlist #dcClr{display:none!important}
 .dsnew{width:100%;height:36px;margin-bottom:6px}
 .dsr{display:flex;align-items:center;gap:2px;border-bottom:1px solid var(--line)}
@@ -208,7 +225,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dsempty{padding:24px 8px;text-align:center;color:var(--fg2);font-size:13px}
 .dpane .dcbox{flex:1;min-height:0}.dpane .dcedit{border-top:0}
 @media (min-width:701px){.dpane{order:-1;border-left:0;border-right:1px solid var(--line)}}
-@media (max-width:700px){.rbody:has(.dpane:not([hidden])){flex-direction:column}.dpane{width:auto;min-width:0;height:34%;border-left:0;border-top:1px solid var(--line)}#scroller{min-height:0}}
+@media (max-width:700px){.rbody:has(.dpane:not([hidden])){flex-direction:column}.dpane{width:auto;min-width:0;height:var(--dph,34%);border-left:0;border-top:1px solid var(--line)}#scroller{min-height:0}}
 .side-in{width:var(--sw);height:100%;display:flex;flex-direction:column}
 .tabs{display:flex;gap:2px;padding:8px;border-bottom:1px solid var(--line)}
 .tab{flex:1;height:32px;border-radius:8px;font-size:12.5px;color:var(--fg2);font-weight:500}
@@ -491,7 +508,7 @@ dialog.pdlg{width:min(660px,calc(100vw - 20px));max-height:calc(100dvh - 20px);o
 #hwpTools .hwpgo:hover{filter:brightness(1.08)}
 #hwpRoot>.dpane{order:-1;border-left:0;border-right:1px solid var(--line)}
 @media (max-width:900px){#hwpTools .hwpst{display:none}}
-@media (max-width:700px){#hwpRoot:has(.dpane:not([hidden])){flex-direction:column}#hwpRoot>.dpane{order:1;width:auto;min-width:0;height:34%;border-right:0;border-top:1px solid var(--line)}}
+@media (max-width:700px){#hwpRoot:has(.dpane:not([hidden])){flex-direction:column}#hwpRoot>.dpane{order:1;width:auto;min-width:0;height:var(--dph,34%);border-right:0;border-top:1px solid var(--line)}}
 #loading{position:absolute;inset:0;z-index:60;display:grid;place-items:center;background:color-mix(in srgb,var(--bg) 70%,transparent)}
 .spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -1311,7 +1328,7 @@ body.spoid,body.spoid *{cursor:crosshair!important}
 #reader.bible #bibleRow{display:flex}
 #bibleBox{flex:1 1 0;min-height:0;min-width:0;position:relative;background:var(--bg)}
 #bibleRow>.dpane{order:-1;border-left:0;border-right:1px solid var(--line)}
-@media (max-width:700px){#bibleRow:has(.dpane:not([hidden])){flex-direction:column}#bibleRow>.dpane{order:1;width:auto;min-width:0;height:34%;border-right:0;border-top:1px solid var(--line)}}
+@media (max-width:700px){#bibleRow:has(.dpane:not([hidden])){flex-direction:column}#bibleRow>.dpane{order:1;width:auto;min-width:0;height:var(--dph,34%);border-right:0;border-top:1px solid var(--line)}}
 #reader.bible #moreMenu>hr,#reader.bible #moreMenu .mhint,#reader.bible #mDyn,#reader.bible #moreMenu button[data-act]:not(.bonly),#reader.bible #moreMenu .mgrp,#reader.bible #moreMenu .msub{display:none!important}
 #bibleFrame{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:var(--bg)}
 /* 대조 보기: 탭을 다른 탭 위로 끌어 놓으면 두 문서를 나란히 연다 */
@@ -1463,7 +1480,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
       <button class="icon-btn" id="rMode" aria-label="보기 방식 전환"><span id="modeIco"></span></button>
       <button class="icon-btn" id="rTts" title="소리 내어 읽기 (TTS)" aria-label="소리 내어 읽기" aria-pressed="false"><span data-i="volume"></span></button>
       <button class="icon-btn" id="rVf" title="음성 따라가기 (말씀을 듣고 원고 위치 표시)" aria-label="음성 따라가기" aria-pressed="false"><span data-i="ear"></span></button>
-      <button class="icon-btn" id="rDict" title="음성 받아쓰기 (들리는 소리를 글자로)" aria-label="음성 받아쓰기" aria-pressed="false"><span data-i="ear-pen"></span></button>
+      <button class="icon-btn" id="rDict" title="메모 · 받아쓰기" aria-label="메모 · 받아쓰기" aria-pressed="false"><span data-i="doc-edit"></span></button>
       <button class="icon-btn" id="rFind" aria-label="본문 검색" title="본문 검색 (Ctrl+F)"><span data-i="search"></span></button>
       <button class="icon-btn" id="rMark" aria-label="이 쪽 북마크" title="이 쪽 북마크"><span data-i="bookmark"></span></button>
       <button class="icon-btn" id="rFold" aria-label="상단바 접기" title="상단바 접기"><span class="fi-on" data-i="chev-up"></span><span class="fi-off" data-i="chev-up-off"></span></button>
@@ -1616,11 +1633,14 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
         </div>
       </div>
       </div>
-      <section class="dpane" id="dictPane" hidden aria-label="받아쓰기">
+      <section class="dpane" id="dictPane" hidden aria-label="받아쓰기"><div class="dpgrip" id="dpGrip" role="separator" aria-label="메모 창 크기 조절" title="끌어서 크기 조절 (두 번 누르면 처음 크기)"></div>
         <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><button type="button" class="btn" id="dcCopy">복사</button><button type="button" class="btn" id="dcClr">지우기</button><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button></div>
+        <div class="dcfmt" id="dcFmt" hidden role="toolbar" aria-label="줄 서식"><button type="button" data-a="s-">가−</button><button type="button" data-a="s+">가+</button><button type="button" data-a="b"><b>굵게</b></button><button type="button" data-a="i"><i>기울임</i></button><button type="button" data-a="u"><u>밑줄</u></button><button type="button" data-a="cp">글자색</button><button type="button" data-a="hp">형광펜</button><button type="button" data-a="np">번호</button><i></i><button type="button" data-a="i-">⇤</button><button type="button" data-a="i+">⇥</button><button type="button" data-a="a">정렬 · 왼쪽</button><i></i><button type="button" data-a="g-">간격−</button><button type="button" data-a="g+">간격+</button><i></i><button type="button" data-a="join">윗줄과 합치기</button><button type="button" data-a="del">줄 지우기</button></div>
+        <div class="dccols" id="dcCols" hidden role="toolbar" aria-label="글자색"></div>
         <div class="dcbox" id="dcBox" aria-live="polite"></div>
         <div class="dslist" id="dsList" hidden></div>
-        <textarea class="dcedit" id="dcEdit" hidden aria-label="받아 적은 글 고치기" spellcheck="false"></textarea>
+        <div class="dcrows" id="dcRows" hidden></div>
+        <textarea class="dcedit" id="dcEdit" hidden aria-label="메모" placeholder="메모" spellcheck="false"></textarea>
         <div class="dctools" role="toolbar" aria-label="받아쓰기 도구">
           <button type="button" class="dct" id="dcRec" data-l="off" aria-label="녹음 상태"><i class="rdot"></i><b>시작</b></button>
           <button type="button" class="dct" id="dcStop" aria-label="멈춤" title="받아쓰기 멈춤"><span data-i="stop"></span><b>멈춤</b></button>
@@ -1841,7 +1861,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v201 · 11-06 21:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v208 · 11-08 15:00</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -5721,7 +5741,7 @@ function updateUndoUI(){if(S.undo.length>UNDO_MAX)S.undo.splice(0,S.undo.length-
 /* ----- 도구 팔레트 ----- */
 const WCFG={pen:{min:.5,max:10,step:.5},hl:{min:6,max:32,step:1},eraser:{min:6,max:48,step:1},tape:{min:8,max:52,step:1}};
 /* ----- 상단바 편집 / 접기 ----- */
-const BAR_DEF=[['side','썸네일·목차·검색','#rSide'],['title','문서 제목','.rtitle'],['grow','공백 (뒤쪽을 오른쪽으로 밀기)',null],['pager','쪽 번호 이동','.pager'],['zoom','확대·축소','.zoomg'],['lock','이동 고정','#bLock'],['tools','필기 도구 열기/닫기','#rTools'],['tts','소리 내어 읽기 (TTS)','#rTts'],['vf','음성 따라가기 (귀)','#rVf'],['dict','음성 받아쓰기 (마이크)','#rDict'],['tone','화면 조정 (진하기·밝기)','#rTone'],['mode','보기 방식 (스크롤 → 페이지 → 2장)','#rMode'],['find','본문 검색','#rFind'],['mark','북마크','#rMark'],['fold','상단바 접기','#rFold']];
+const BAR_DEF=[['side','썸네일·목차·검색','#rSide'],['title','문서 제목','.rtitle'],['grow','공백 (뒤쪽을 오른쪽으로 밀기)',null],['pager','쪽 번호 이동','.pager'],['zoom','확대·축소','.zoomg'],['lock','이동 고정','#bLock'],['tools','필기 도구 열기/닫기','#rTools'],['tts','소리 내어 읽기 (TTS)','#rTts'],['vf','음성 따라가기 (귀)','#rVf'],['dict','메모 · 받아쓰기','#rDict'],['tone','화면 조정 (진하기·밝기)','#rTone'],['mode','보기 방식 (스크롤 → 페이지 → 2장)','#rMode'],['find','본문 검색','#rFind'],['mark','북마크','#rMark'],['fold','상단바 접기','#rFold']];
 let BAR=null,PAL=null;
 const PAL_DEF=[['pan','보기·글 선택','.tb[data-tool=pan]'],['pen','펜','.tb[data-tool=pen]'],['hl','형광펜','.tb[data-tool=hl]'],['eraser','지우개','.tb[data-tool=eraser]'],['text','글상자','.tb[data-tool=text]'],['note','메모지','.tb[data-tool=note]'],['tape','테이프','.tb[data-tool=tape]'],['finger','손가락 필기 켜기/끄기','#pFinger'],['undo','실행 취소·다시 실행','#palUndo'],['addpage','쪽 추가','#pAdd'],['camera','카메라 촬영 (현재 쪽)','#pCamera'],['photo','사진 넣기 (현재 쪽)','#pPhoto'],['shape','도형 넣기','#pShape'],['paste','붙여넣기 (복사한 개체)','#pPaste'],['jpg','JPG로 내보내기','#pJpg']];
 function palDefault(){return{order:PAL_DEF.map(x=>x[0]),hidden:['text','note','addpage','camera','photo','jpg']};}
@@ -5801,7 +5821,7 @@ function barApply(){
 }
 function barSave(){lsSet('neul-bar',JSON.stringify(BAR));barApply();}
 let barWhich='top';
-const ROW_ICO={top:{vf:'ear',dict:'ear-pen',tone:'sliders',side:'panel-left',title:'file',grow:'arrows-h',pager:'book',zoom:'plus',lock:'lock',finger:'hand',tools:'pen',mode:'page1',full:'expand',find:'search',mark:'bookmark',fold:'chev-up'},
+const ROW_ICO={top:{vf:'ear',dict:'doc-edit',tone:'sliders',side:'panel-left',title:'file',grow:'arrows-h',pager:'book',zoom:'plus',lock:'lock',finger:'hand',tools:'pen',mode:'page1',full:'expand',find:'search',mark:'bookmark',fold:'chev-up'},
  more:{},
  pal:{pan:'pointer',pen:'pen',hl:'highlighter',eraser:'eraser',text:'type',note:'note',tape:'tape',finger:'hand',undo:'undo',addpage:'file-plus',camera:'camera',photo:'photo',shape:'shape',paste:'paste',jpg:'photo-out'}};
 function barRender(){
@@ -6935,7 +6955,7 @@ function vfFrame(ts){
   VF.lastSet=sc.scrollTop;
 }
 /* ---- 음성 받아쓰기: 들리는 소리를 실시간으로 글자로 받아 적는다 (왼쪽 쪽메뉴의 '받아쓰기' 탭). 음성 인식기는 한 번에 하나만 쓸 수 있어 따라가기·소리 내어 읽기와는 함께 켜지 않는다 ---- */
-const DICT={sid:'',startAt:0,view:'',on:false,rec:null,tok:0,fin:[],int:'',tmr:0,live:'',liveFinal:false,cmt:0,lastFin:null,docId:''};
+const DICT={sid:'',startAt:0,view:'',on:false,rec:null,tok:0,fin:[],int:'',tmr:0,live:'',liveFinal:false,cmt:0,lastFin:null,docId:'',fm:{}};
 /* 저장된 받아쓰기: 받아쓰기 창을 열어 시작할 때마다 한 건이 생기고(제목 = 시작 날짜·시간, 고칠 수 있음), 창을 닫아도 목록에 남는다 */
 const DS_KEY='neul-dictsess';let DSESS=[];
 try{DSESS=(JSON.parse(localStorage.getItem(DS_KEY)||'[]')||[]).filter(x=>x&&typeof x.id==='string'&&Array.isArray(x.lines));}catch(e){}
@@ -6951,18 +6971,18 @@ function dictSave(){
   if(!DICT.fin.length&&!DICT.sid)return;
   let s=dsGet(DICT.sid);
   if(!s){const t=DICT.startAt||Date.now();s={id:'ds'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:dsStamp(t),at:t,mod:t,lines:[]};DSESS.unshift(s);DICT.sid=s.id;}
-  s.lines=DICT.fin.slice(-2000);s.mod=Date.now();dsPersist();
+  s.lines=DICT.fin.slice(-2000);{const off=Math.max(0,DICT.fin.length-2000),m={};for(const k of Object.keys(DICT.fm)){const j=+k-off;if(j>=0)m[j]=DICT.fm[k];}s.fm=fmNorm(m);}s.mod=Date.now();dsPersist();
 }
 function dsOpen(id){const s=dsGet(id);if(!s)return;
   if(DICT.on)dictStop();if(!$('#dcEdit').hidden)dictEditToggle();
-  DICT.sid=s.id;DICT.fin=s.lines.slice();DICT.live='';DICT.int='';DICT.lastFin=null;dsView(false);dictRender();}
+  DICT.sid=s.id;DICT.fin=s.lines.slice();DICT.fm=fmNorm(s.fm);DICT.live='';DICT.int='';DICT.lastFin=null;dsView(false);dictRender();if($('#dcEdit').hidden)dictEditToggle();}
 function dsNewTake(){   /* 새 받아쓰기: 지금 것은 목록에 남기고 빈 창에서 다시 시작 */
   if(DICT.on)dictStop();if(!$('#dcEdit').hidden)dictEditToggle();
-  DICT.sid='';DICT.fin=[];DICT.live='';DICT.int='';DICT.lastFin=null;DICT.startAt=Date.now();dsView(false);dictRender();dictStart();}
+  DICT.sid='';DICT.fin=[];DICT.fm={};DICT.live='';DICT.int='';DICT.lastFin=null;DICT.startAt=Date.now();dsView(false);dictRender();if($('#dcEdit').hidden)dictEditToggle();}
 function dsRename(id){const s=dsGet(id);if(!s)return;const v=prompt('받아쓰기 제목',s.t);if(v==null)return;const t=v.trim();if(!t)return;s.t=t.slice(0,80);s.mod=Date.now();dsPersist();dictRender();if(DICT.view==='list')dsRenderList();}
 function dsDelete(id){const s=dsGet(id);if(!s)return;if(!confirm(`「${s.t}」을(를) 지울까요?`))return;
   DSESS=DSESS.filter(x=>x.id!==id);dsTomb(id);dsPersist();
-  if(id===DICT.sid){DICT.sid='';DICT.fin=[];DICT.live='';DICT.int='';DICT.lastFin=null;DICT.startAt=Date.now();}
+  if(id===DICT.sid){DICT.sid='';DICT.fin=[];DICT.fm={};DICT.live='';DICT.int='';DICT.lastFin=null;DICT.startAt=Date.now();}
   dictRender();if(DICT.view==='list')dsRenderList();}
 function dsView(on){DICT.view=on?'list':'';const p=$('#dictPane');if(p)p.classList.toggle('dlist',!!on);const l=$('#dsList');if(l)l.hidden=!on;if(on)dsRenderList();dictTitleUI();}
 function dsRenderList(){
@@ -6983,7 +7003,7 @@ function dictRender(){
   dictTitleUI();if(DICT.view==='list')dsRenderList();
   const b=$('#dcBox');if(b){
     const stick=b.scrollTop+b.clientHeight>=b.scrollHeight-40;b.replaceChildren();
-    for(const t of DICT.fin)b.appendChild(el('p','',{text:t}));
+    {const mk=numMarks(DICT.fin.map((t,i)=>DICT.fm[i]));DICT.fin.forEach((t,i)=>{const p=el('p','');runsFill(p,t,(DICT.fm[i]||{}).r);fmApply(p,DICT.fm[i]);if(mk[i])p.dataset.mk=mk[i];b.appendChild(p);});}
     if(DICT.live)b.appendChild(el('p',DICT.liveFinal?'':'dci',{text:DICT.live}));
     if(!DICT.fin.length&&!DICT.live)b.appendChild(el('p','dce',{text:DICT.on?'소리를 기다리는 중…':'[받아쓰기 시작]을 누르면 들리는 소리가 여기에 글자로 쌓입니다.'}));
     if(stick)b.scrollTop=b.scrollHeight;}
@@ -6999,13 +7019,159 @@ function dictLevelUI(){
   $('#dcStop').disabled=!DICT.on;
 }
 setInterval(()=>{if(DICT.on)dictLevelUI();},1000);
-function dictText(){return DICT.fin.concat(DICT.live?[DICT.live]:[]).join('\n');}
+function dictText(){const L=DICT.fin.concat(DICT.live?[DICT.live]:[]),mk=numMarks(L.map((t,i)=>DICT.fm[i]));return L.map((t,i)=>(mk[i]?mk[i]+' ':'')+t).join('\n');}
 function dictEditToggle(){
   const ta=$('#dcEdit'),box=$('#dcBox'),btn=$('#dcEd');if(!ta)return;
-  if(ta.hidden){dictCommit();DICT.edBase=DICT.fin.length;ta.value=DICT.fin.join('\n');ta.hidden=false;box.hidden=true;btn.classList.add('on');btn.lastChild.textContent='완료';ta.focus();}
+  if(ta.hidden){dictCommit();DICT.edBase=DICT.fin.length;ta.hidden=false;box.hidden=true;btn.classList.add('on');rowsBuild();dictEdUI(true);}
   else{const extra=DICT.fin.slice(DICT.edBase||0);   /* 고치는 동안 새로 받아 적은 줄은 뒤에 이어 붙인다 */
-    DICT.fin=ta.value.split('\n').map(x=>x.trim()).filter(Boolean).concat(extra);dictSave();ta.hidden=true;box.hidden=false;btn.classList.remove('on');btn.lastChild.textContent='수정';dictRender();}
+    {const rr=rowsRead();DICT.fin=rr.lines.concat(extra);DICT.fm=rr.fm;}dictSave();ta.hidden=true;$('#dcRows').hidden=true;$('#dcFmt').hidden=true;$('#dcCols').hidden=true;box.hidden=false;btn.classList.remove('on');dictEdUI(false);dictRender();}
 }
+/* ---- 메모 줄별 서식: 글자 크기(s) · 들여쓰기(i) · 정렬(a) · 문단 간격(g). 줄 번호(0부터) → 값이고 기본값은 적지 않는다 ---- */
+/* ---- 개요 번호: Ctrl+1~8 = 1. / 가. / 1) / 가) / (1) / (가) / ① / ㉮ . 높은 단계일수록 두 칸(1em)씩 들여쓴다. 번호는 글자에 넣지 않고 줄 순서로 매번 새로 매긴다 ---- */
+const HG='가나다라마바사아자차카타파하',NUMS=['1.','가.','1)','가)','(1)','(가)','①','㉮'];
+function numLabel(o,n){const g=HG[(n-1)%14];
+  switch(o){case 1:return n+'.';case 2:return g+'.';case 3:return n+')';case 4:return g+')';case 5:return '('+n+')';case 6:return '('+g+')';
+    case 7:return n<=20?String.fromCharCode(0x2460+n-1):'('+n+')';case 8:return String.fromCharCode(0x326e+(n-1)%14);}return '';}
+function numMarks(fs){const cnt=new Array(10).fill(0);return fs.map(f=>{const o=(f&&f.o)|0;if(!o)return '';cnt[o]++;for(let k=o+1;k<=8;k++)cnt[k]=0;return numLabel(o,cnt[o]);});}
+function fmNorm(o){const r={};if(o&&typeof o==='object')for(const k of Object.keys(o)){const f=o[k];if(!f||typeof f!=='object'||!/^\d+$/.test(k))continue;const n={},c=(v,a,b)=>Math.max(a,Math.min(b,Math.round(+v)||0));
+  const s=c(f.s,-3,8),i=c(f.i,0,6),a=c(f.a,0,2),g=c(f.g,0,4),ol=c(f.o,0,8);if(ol)n.o=ol;if(s)n.s=s;if(i)n.i=i;if(a)n.a=a;if(g)n.g=g;
+  if(Array.isArray(f.r)){const rr=[];for(const x of f.r.slice(0,80)){if(!Array.isArray(x))continue;const a0=Math.max(0,Math.round(+x[0])||0),b0=Math.max(0,Math.round(+x[1])||0),s0=c(x[2],-3,8),bb=c(x[3],0,7),cc=c(x[4],0,6),hh=c(x[5],0,4);if(b0>a0&&(s0||bb||cc||hh))rr.push([a0,b0,s0,bb,cc,hh]);}if(rr.length)n.r=rr;}
+  if(Object.keys(n).length)r[k]=n;}return r;}
+function fmApply(n,f){f=f||{};n.style.fontSize=f.s?(15*Math.pow(1.12,f.s)).toFixed(1)+'px':'';{const ml=(f.i?f.i*1.4:0)+(f.o?f.o-1:0);n.style.marginLeft=ml?ml+'em':'';}n.style.textAlign=f.a===1?'center':f.a===2?'right':'';n.style.marginTop=f.g?(f.g*.7)+'em':'';}
+/* 메모 고치기: 한 줄이 한 칸. 엔터로 줄이 나뉘고, 줄 맨 앞에서 지우기(⌫)로 윗줄에 합쳐진다 */
+/* ---- 글자 일부 서식: 글자 크기(s)·굵게(b)·글자색(c)을 글자 위치 구간 [시작,끝,크기,굵게,색]으로 따로 적는다. 글자 자체는 그대로 두므로 복사·TXT·동기화는 글자만 나간다 ---- */
+const RCOL=['','#d93025','#e8710a','#188038','#1a73e8','#8e24aa','#6b7280'],RHL=['','#fff3a3','#c8f2c2','#ffd0e0','#cfe3ff'];
+function runsExpand(text,r){const n=text.length,S=new Array(n).fill(0),B=new Array(n).fill(0),C=new Array(n).fill(0),H=new Array(n).fill(0);
+  for(const x of (r||[])){const a=Math.max(0,x[0]|0),b=Math.min(n,x[1]|0);for(let i=a;i<b;i++){S[i]=x[2]|0;B[i]=x[3]|0;C[i]=x[4]|0;H[i]=x[5]|0;}}return{S,B,C,H};}
+function runsPack(S,B,C,H){const out=[],n=S.length;let i=0;while(i<n){let j=i+1;while(j<n&&S[j]===S[i]&&B[j]===B[i]&&C[j]===C[i]&&H[j]===H[i])j++;if(S[i]||B[i]||C[i]||H[i])out.push([i,j,S[i],B[i],C[i],H[i]]);i=j;}return out;}
+function spanFmt(sp){const s=+sp.dataset.s||0,c=+sp.dataset.c||0,b=+sp.dataset.b||0,h=+sp.dataset.h||0;sp.style.fontSize=s?Math.pow(1.12,s).toFixed(3)+'em':'';sp.style.fontWeight=b&1?'700':'';sp.style.fontStyle=b&2?'italic':'';sp.style.textDecoration=b&4?'underline':'';
+  sp.style.color=c?RCOL[c]||'':(h?'#1b1b1b':'');sp.style.background=h?RHL[h]||'':'';}
+function runsFill(node,text,r){node.replaceChildren();if(!text)return;const{S,B,C,H}=runsExpand(text,r);let i=0;
+  while(i<text.length){let j=i+1;while(j<text.length&&S[j]===S[i]&&B[j]===B[i]&&C[j]===C[i]&&H[j]===H[i])j++;const seg=text.slice(i,j);
+    if(S[i]||B[i]||C[i]||H[i]){const sp=document.createElement('span');sp.dataset.s=S[i];sp.dataset.b=B[i];sp.dataset.c=C[i];sp.dataset.h=H[i];spanFmt(sp);sp.textContent=seg;node.appendChild(sp);}else node.appendChild(document.createTextNode(seg));i=j;}}
+function rowRead(node){let text='';const S=[],B=[],C=[],H=[];
+  const walk=(n,s,b,c,h)=>{if(n.nodeType===3){const v=n.nodeValue.replace(/\u00a0/g,' ');for(let i=0;i<v.length;i++){S.push(s);B.push(b);C.push(c);H.push(h);}text+=v;return;}
+    if(n.nodeType!==1||n.tagName==='BR')return;
+    if(n.dataset){if(n.dataset.s!==undefined)s=+n.dataset.s||0;if(n.dataset.b!==undefined)b=+n.dataset.b||0;if(n.dataset.c!==undefined)c=+n.dataset.c||0;if(n.dataset.h!==undefined)h=+n.dataset.h||0;}
+    for(const k of n.childNodes)walk(k,s,b,c,h);};
+  for(const k of node.childNodes)walk(k,0,0,0,0);return{text,S,B,C,H};}
+function selOffsets(node){const g=getSelection();if(!g||!g.rangeCount)return null;const r=g.getRangeAt(0);if(!node.contains(r.startContainer)||!node.contains(r.endContainer))return null;
+  const off=(c,o)=>{const p=document.createRange();p.selectNodeContents(node);p.setEnd(c,o);return p.toString().length;};return[off(r.startContainer,r.startOffset),off(r.endContainer,r.endOffset)];}
+function selSet(node,a,b){const tw=document.createTreeWalker(node,NodeFilter.SHOW_TEXT);let pos=0,n,sc,so,ec,eo;
+  while((n=tw.nextNode())){const L=n.nodeValue.length;if(sc===undefined&&a<=pos+L){sc=n;so=a-pos;}if(ec===undefined&&b<=pos+L){ec=n;eo=b-pos;}pos+=L;if(sc&&ec)break;}
+  const r=document.createRange();if(sc){r.setStart(sc,so);if(ec)r.setEnd(ec,eo);else r.setEnd(sc,so);}else{r.selectNodeContents(node);r.collapse(false);}
+  const g=getSelection();g.removeAllRanges();g.addRange(r);}
+/* 메모 고치기: 한 줄이 한 칸(서식이 들어가는 편집 영역). 엔터로 줄이 나뉘고, 줄 맨 앞에서 지우기(⌫)로 윗줄에 합쳐진다 */
+function rowsMake(text,f){
+  const d=document.createElement('div');d.className='mrow';const t=document.createElement('div');t.className='mrta';t.contentEditable='true';
+  t.spellcheck=false;t.setAttribute('autocomplete','off');t.setAttribute('autocorrect','off');t.setAttribute('autocapitalize','off');t.setAttribute('role','textbox');t.setAttribute('aria-label','메모 한 줄');
+  d._f=Object.assign({},f||{});runsFill(t,text||'',d._f.r);fmApply(t,d._f);d.appendChild(t);d._grow=()=>{};
+  const head=()=>{const o=selOffsets(t);return !!o&&o[0]===0&&o[1]===0;};
+  t.addEventListener('keydown',e=>{
+    if(e.isComposing||e.keyCode===229)return;
+    if(e.key==='Enter'){e.preventDefault();rowSplit(d);}
+    else if(e.key==='Backspace'&&head()&&d.previousElementSibling){e.preventDefault();rowsMerge(d);}
+    else if(e.key==='ArrowUp'&&head()&&d.previousElementSibling){e.preventDefault();rowFocus(d.previousElementSibling,true);}
+    else if(e.key==='ArrowDown'&&d.nextElementSibling){const o=selOffsets(t),L=rowRead(t).text.length;if(o&&o[0]===L&&o[1]===L){e.preventDefault();rowFocus(d.nextElementSibling,false);}}});
+  t.addEventListener('beforeinput',e=>{
+    if(e.inputType==='insertParagraph'||e.inputType==='insertLineBreak'){e.preventDefault();rowSplit(d);}
+    else if(e.inputType==='deleteContentBackward'&&head()&&d.previousElementSibling){e.preventDefault();rowsMerge(d);}});
+  t.addEventListener('paste',e=>{e.preventDefault();const tx=((e.clipboardData||window.clipboardData).getData('text')||'').replace(/\r/g,'');if(!tx)return;
+    const ls=tx.split('\n');document.execCommand('insertText',false,ls[0]);let prev=d;for(let i=1;i<ls.length;i++){const n=rowsMake(ls[i],d._f&&{...d._f,r:undefined});prev.after(n);prev=n;}if(prev!==d)rowFocus(prev,true);rowsAutoSoon();});
+  t.addEventListener('input',rowsAutoSoon);
+  t.addEventListener('focus',()=>rowsCur(d));
+  t.addEventListener('blur',()=>{try{const L=rowRead(t);runsFill(t,L.text,runsPack(L.S,L.B,L.C,L.H));}catch(e){}});   /* 브라우저가 만든 덧붙은 칸을 정리 */
+  return d;}
+document.addEventListener('selectionchange',()=>{const d=DICT.curRow;if(!d||!d.isConnected)return;const o=selOffsets(d.firstChild);if(o)d._sel=o;});
+function rowFocus(row,end){const t=row.firstChild;t.focus();const p=end?rowRead(t).text.length:0;try{selSet(t,p,p);}catch(e){}}
+function rowSplit(d){const t=d.firstChild,L=rowRead(t),o=selOffsets(t)||[L.text.length,L.text.length],a=o[0],b=o[1];
+  const sub=(x,y)=>({text:L.text.slice(x,y),r:runsPack(L.S.slice(x,y),L.B.slice(x,y),L.C.slice(x,y),L.H.slice(x,y))});const p1=sub(0,a),p2=sub(b,L.text.length);
+  runsFill(t,p1.text,p1.r);const n=rowsMake(p2.text,Object.assign({},d._f,{r:p2.r}));d.after(n);rowFocus(n,false);rowsAutoSoon();}
+function rowsMerge(d){const prev=d.previousElementSibling;if(!prev)return;const pt=prev.firstChild,A=rowRead(pt),Bq=rowRead(d.firstChild);
+  const text=A.text+Bq.text,S=A.S.concat(Bq.S),B=A.B.concat(Bq.B),C=A.C.concat(Bq.C),H=A.H.concat(Bq.H);runsFill(pt,text,runsPack(S,B,C,H));d.remove();pt.focus();try{selSet(pt,A.text.length,A.text.length);}catch(e){}rowsAutoSoon();}
+function rowsCur(d){DICT.curRow=d;const box=$('#dcRows');if(box)for(const x of box.children)x.classList.toggle('cur',x===d);
+  const b=$('#dcFmt [data-a=a]');if(b)b.textContent='정렬 · '+['왼쪽','가운데','오른쪽'][d._f.a||0];}
+function rowsBuild(){const box=$('#dcRows');box.replaceChildren();
+  if(!DICT.fin.length)box.appendChild(rowsMake('',{}));else DICT.fin.forEach((t,i)=>box.appendChild(rowsMake(t,DICT.fm[i])));
+  box.hidden=false;$('#dcFmt').hidden=false;DICT.curRow=null;rowsRenumber();
+  requestAnimationFrame(()=>{const l=box.lastElementChild;if(l){try{rowFocus(l,true);}catch(e){}}});}
+function rowsRead(){const lines=[],fm={};for(const r of $('#dcRows').children){const L=rowRead(r.firstChild),lead=L.text.length-L.text.trimStart().length,tx=L.text.trim();if(!tx)continue;
+    const e=lead+tx.length,run=runsPack(L.S.slice(lead,e),L.B.slice(lead,e),L.C.slice(lead,e),L.H.slice(lead,e));
+    const n=fmNorm({0:Object.assign({},r._f,{r:run})})[0];if(n)fm[lines.length]=n;lines.push(tx);}return{lines,fm};}
+function rowsRenumber(){const box=$('#dcRows');if(!box)return;const rs=[...box.children],mk=numMarks(rs.map(x=>x._f));rs.forEach((x,i)=>{const t=x.firstChild;if(mk[i])t.dataset.mk=mk[i];else delete t.dataset.mk;fmApply(t,x._f);});}
+function rowsLevel(o){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d)return;d._f.o=o;rowsAutoSoon();rowsCur(d);}   /* 엔터로 이어진 줄은 같은 단계를 물려받으므로 토글하지 않음. 해제는 Ctrl+0 */
+let rowsTm=0;function rowsAutoSoon(){rowsRenumber();clearTimeout(rowsTm);rowsTm=setTimeout(dictEdAuto,600);}
+function rowsRun(act,val){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}
+  const t=d.firstChild,L=rowRead(t);let o=selOffsets(t)||d._sel||[0,L.text.length];let[a,b]=o;const keep=[a,b];if(a===b){a=0;b=L.text.length;}   /* 글자를 고르지 않으면 줄 전체 */
+  if(a>=b)return;
+  if(act==='b'||act==='i'||act==='u'){const bit=act==='b'?1:act==='i'?2:4;let all=true;for(let i=a;i<b;i++)if(!(L.B[i]&bit)){all=false;break;}for(let i=a;i<b;i++)L.B[i]=all?(L.B[i]&~bit):(L.B[i]|bit);}
+  else if(act==='c'){for(let i=a;i<b;i++)L.C[i]=val;}
+  else if(act==='h'){for(let i=a;i<b;i++)L.H[i]=val;}
+  else{const dl=act==='s+'?1:-1;for(let i=a;i<b;i++)L.S[i]=clamp(L.S[i]+dl,-3,8);}
+  runsFill(t,L.text,runsPack(L.S,L.B,L.C,L.H));t.focus();try{selSet(t,keep[0],keep[1]);}catch(e){}d._sel=keep;rowsAutoSoon();}
+function rowsFmt(act){
+  if(act==='s+'||act==='s-'||act==='b'||act==='i'||act==='u'){rowsRun(act);return;}
+  const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}
+  const f=d._f;
+  if(act==='i+')f.i=clamp((f.i||0)+1,0,6);else if(act==='i-')f.i=clamp((f.i||0)-1,0,6);
+  else if(act==='a')f.a=((f.a||0)+1)%3;
+  else if(act==='g+')f.g=clamp((f.g||0)+1,0,4);else if(act==='g-')f.g=clamp((f.g||0)-1,0,4);
+  else if(act==='join'){if(d.previousElementSibling)rowsMerge(d);return;}
+  else if(act==='del'){const box=d.parentNode,nx=d.nextElementSibling||d.previousElementSibling;
+    if(box.children.length===1){d.firstChild.replaceChildren();d._f={};fmApply(d.firstChild,{});d.firstChild.focus();}else{d.remove();if(nx)rowFocus(nx,true);}
+    rowsAutoSoon();return;}
+  fmApply(d.firstChild,f);rowsCur(d);rowsAutoSoon();}
+/* Ctrl+C·Ctrl+X·Ctrl+V·Ctrl+A: 메모 줄 칸에서도 서식이 따라 나가고, 메모끼리 붙일 때 서식이 다시 들어온다 */
+function memoItemsAll(){const out=[];for(const rw of $('#dcRows').children){const L=rowRead(rw.firstChild),lead=L.text.length-L.text.trimStart().length,tx=L.text.trim();if(!tx)continue;const e=lead+tx.length;
+  const run=runsPack(L.S.slice(lead,e),L.B.slice(lead,e),L.C.slice(lead,e),L.H.slice(lead,e));out.push({t:tx,f:Object.assign({},rw._f,{r:run})});}return out;}
+function memoItemSel(d){const t=d.firstChild,L=rowRead(t),o=selOffsets(t);if(!o||o[0]===o[1])return null;const a=o[0],b=o[1];
+  return{t:L.text.slice(a,b),f:Object.assign({},d._f,{o:0,r:runsPack(L.S.slice(a,b),L.B.slice(a,b),L.C.slice(a,b),L.H.slice(a,b))})};}
+function memoSetClip(e,items){if(!items.length)return false;{const mk=numMarks(items.map(x=>x.f));e.clipboardData.setData('text/plain',items.map((x,i)=>(mk[i]?mk[i]+' ':'')+x.t).join('\n'));}e.clipboardData.setData('text/html',memoHtml(items));
+  try{e.clipboardData.setData('text/x-memo-runs',JSON.stringify(items));}catch(x){}return true;}
+function rowInsert(d,it){   /* 줄 칸의 커서 자리에 글자와 서식을 끼워 넣는다 */
+  const t=d.firstChild,L=rowRead(t),o=selOffsets(t)||[L.text.length,L.text.length],a=o[0],b=o[1],X=runsExpand(it.t,(it.f||{}).r);
+  const text=L.text.slice(0,a)+it.t+L.text.slice(b),S=L.S.slice(0,a).concat(X.S,L.S.slice(b)),B=L.B.slice(0,a).concat(X.B,L.B.slice(b)),C=L.C.slice(0,a).concat(X.C,L.C.slice(b)),H=L.H.slice(0,a).concat(X.H,L.H.slice(b));
+  runsFill(t,text,runsPack(S,B,C,H));const p=a+it.t.length;try{selSet(t,p,p);}catch(e){}}
+function rowsSelAll(on){DICT.selAll=!!on;const box=$('#dcRows');if(box)box.classList.toggle('selall',!!on);}
+function rowsClipBind(){const box=$('#dcRows');
+  box.addEventListener('copy',e=>{const d=e.target.closest&&e.target.closest('.mrow');let items=null;
+    if(DICT.selAll)items=memoItemsAll();else if(d){const it=memoItemSel(d);if(it)items=[it];}
+    if(items&&items.length&&memoSetClip(e,items))e.preventDefault();});
+  box.addEventListener('cut',e=>{const d=e.target.closest&&e.target.closest('.mrow');let items=null;
+    if(DICT.selAll)items=memoItemsAll();else if(d){const it=memoItemSel(d);if(it)items=[it];}
+    if(!(items&&items.length&&memoSetClip(e,items)))return;e.preventDefault();
+    if(DICT.selAll){box.replaceChildren(rowsMake('',{}));rowsSelAll(false);rowFocus(box.firstChild,false);}else document.execCommand('delete');rowsAutoSoon();});
+  box.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='a'){e.preventDefault();rowsSelAll(true);return;}
+    if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&/^[0-8]$/.test(e.key)){e.preventDefault();const o=+e.key;const d=e.target.closest&&e.target.closest('.mrow');if(d){DICT.curRow=d;if(o===0){d._f.o=0;rowsAutoSoon();rowsCur(d);}else rowsLevel(o);}return;}
+    if(e.key==='Tab'&&!e.ctrlKey&&!e.altKey&&!e.metaKey){const d=e.target.closest&&e.target.closest('.mrow');if(d&&d._f.o){e.preventDefault();DICT.curRow=d;const n=clamp(d._f.o+(e.shiftKey?-1:1),1,8);d._f.o=n;rowsAutoSoon();rowsCur(d);return;}}
+    if(DICT.selAll&&!(e.ctrlKey||e.metaKey)&&!['Shift','Control','Meta','Alt'].includes(e.key)){
+      if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();box.replaceChildren(rowsMake('',{}));rowsSelAll(false);rowFocus(box.firstChild,false);rowsAutoSoon();return;}
+      rowsSelAll(false);}},true);
+  box.addEventListener('pointerdown',()=>{if(DICT.selAll)rowsSelAll(false);},true);
+  box.addEventListener('paste',e=>{const raw=(e.clipboardData||window.clipboardData).getData('text/x-memo-runs');if(!raw)return;let items;try{items=JSON.parse(raw);}catch(x){return;}
+    if(!Array.isArray(items)||!items.length)return;const d=e.target.closest&&e.target.closest('.mrow');if(!d)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    const fm=fmNorm(Object.fromEntries(items.map((x,i)=>[i,x.f||{}])));
+    const clean=items.map((x,i)=>({t:String(x.t||''),f:fm[i]||{}}));
+    rowInsert(d,clean[0]);let prev=d;for(let i=1;i<clean.length;i++){const n=rowsMake(clean[i].t,clean[i].f);prev.after(n);prev=n;}if(prev!==d)rowFocus(prev,true);rowsAutoSoon();},true);}
+/* 메모가 기본: 고치는 칸이 열려 있는 동안 아래 단추는 [받아쓰기](누르면 받아 적기 시작), 받아 적는 화면에서는 [수정] */
+function dictEdUI(ed){const b=$('#dcEd'),p=$('#dictPane');if(!b)return;if(p)p.classList.toggle('dedit',ed);
+  const i=b.firstElementChild;if(i)i.innerHTML=ico(ed?'ear-pen':'pencil');b.lastChild.textContent=ed?'받아쓰기':'수정';
+  b.setAttribute('aria-label',ed?'받아쓰기 시작':'글 고치기');b.title=ed?'마이크로 들리는 소리를 받아 적기':'받아 적은 글 고치기';}
+function dictEdAuto(){const ta=$('#dcEdit');if(!ta||ta.hidden)return;const extra=DICT.fin.slice(DICT.edBase||0);{const rr=rowsRead();DICT.fin=rr.lines.concat(extra);DICT.fm=rr.fm;}DICT.edBase=DICT.fin.length-extra.length;dictSave();}
+/* 한글·워드에 붙이기용: 줄·글자 서식을 pt 단위 인라인 서식의 HTML로 만든다 */
+function dictHtml(){const lines=DICT.fin.concat(DICT.live?[DICT.live]:[]);return memoHtml(lines.map((t,i)=>({t,f:DICT.fm[i]||{}})));}
+function memoHtml(items){
+  const mks=numMarks(items.map(x=>x.f));const esc=x=>x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),pt=l=>Math.round(11*Math.pow(1.12,l)*2)/2;let out='';
+  items.forEach(({t,f},ix)=>{f=f||{};const base=f.s||0;
+    let st='margin:0;'+(f.g?'margin-top:'+f.g*7+'pt;':'')+(((f.i?f.i*15:0)+(f.o?(f.o-1)*11:0))?'margin-left:'+((f.i?f.i*15:0)+(f.o?(f.o-1)*11:0))+'pt;':'')+(f.a===1?'text-align:center;':f.a===2?'text-align:right;':'');
+    if(base)st+='font-size:'+pt(base)+'pt;';
+    const{S,B,C,H}=runsExpand(t,f.r);let body='',k=0;
+    while(k<t.length){let e=k+1;while(e<t.length&&S[e]===S[k]&&B[e]===B[k]&&C[e]===C[k]&&H[e]===H[k])e++;const seg=esc(t.slice(k,e));
+      if(S[k]||B[k]||C[k]||H[k]){let ss='';if(S[k])ss+='font-size:'+pt(base+S[k])+'pt;';if(B[k]&1)ss+='font-weight:bold;';if(B[k]&2)ss+='font-style:italic;';if(B[k]&4)ss+='text-decoration:underline;';if(C[k])ss+='color:'+RCOL[C[k]]+';';if(H[k])ss+='background-color:'+RHL[H[k]]+';';body+='<span style="'+ss+'">'+seg+'</span>';}else body+=seg;k=e;}
+    if(mks[ix])body=esc(mks[ix])+'&nbsp;'+body;out+='<p style="'+st+'">'+(body||'&nbsp;')+'</p>';});
+  return '<html><body>'+out+'</body></html>';}
 function dictExportTxt(){
   if(!$('#dcEdit').hidden)dictEditToggle();
   const t=dictText();if(!t){toast('내보낼 내용이 없습니다');return;}
@@ -7013,10 +7179,10 @@ function dictExportTxt(){
   download(new Blob(['\ufeff'+t.replace(/\n/g,'\r\n')+'\r\n'],{type:'text/plain;charset=utf-8'}),safeName(dsGet(DICT.sid)?`${dsGet(DICT.sid).t} 받아쓰기`:`받아쓰기${S.doc?' '+S.doc.title:''} ${ts}`)+'.txt');
   toast('TXT 파일로 내보냈습니다');
 }
-function dictPaneShow(on){const p=$('#dictPane'),r=$('#reader');if(!p)return;if(!on&&!$('#dcEdit').hidden)dictEditToggle();p.hidden=!on;DICT.fold=false;p.classList.remove('dfold');try{dictFoldUI();}catch(e){}r.classList.toggle('dictpane',on);if(!on){dictCommit();DICT.sid='';DICT.fin=[];DICT.live='';DICT.lastFin=null;}if(DICT.view)dsView(false);dictRender();try{fabPlaceAll();}catch(e){}setTimeout(()=>{try{fabPlaceAll();}catch(e){}},260);}
+function dictPaneShow(on){const p=$('#dictPane'),r=$('#reader');if(!p)return;if(!on&&!$('#dcEdit').hidden)dictEditToggle();p.hidden=!on;DICT.fold=false;p.classList.remove('dfold');try{dictFoldUI();}catch(e){}r.classList.toggle('dictpane',on);if(!on){dictCommit();DICT.sid='';DICT.fin=[];DICT.fm={};DICT.live='';DICT.lastFin=null;}if(DICT.view)dsView(false);dictRender();try{fabPlaceAll();}catch(e){}setTimeout(()=>{try{fabPlaceAll();}catch(e){}},260);}
 function dictFoldUI(){const b=$('#dcFold');if(!b)return;const f=!!DICT.fold;b.innerHTML=ico(f?'fold-r':'fold-l');b.setAttribute('aria-label',f?'받아쓰기 창 펼치기':'받아쓰기 창 접기');b.title=f?'창 펼치기':'창 접기 (받아쓰기는 계속됩니다)';}
 function dictFold(f){const p=$('#dictPane'),r=$('#reader');if(!p||p.hidden)return;DICT.fold=f;p.classList.toggle('dfold',f);r.classList.toggle('dictpane',!f);dictFoldUI();try{fabPlaceAll();}catch(e){}setTimeout(()=>{try{fabPlaceAll();}catch(e){}},260);}
-function dictCommit(){clearTimeout(DICT.cmt);if(DICT.live){DICT.live=dictFix(DICT.live);DICT.fin.push(DICT.live);DICT.lastFin={t:DICT.live,at:Date.now()};DICT.live='';DICT.liveFinal=false;if(DICT.fin.length>2000)DICT.fin.splice(0,DICT.fin.length-2000);dictSave();}}
+function dictCommit(){clearTimeout(DICT.cmt);if(DICT.live){DICT.live=dictFix(DICT.live);DICT.fin.push(DICT.live);DICT.lastFin={t:DICT.live,at:Date.now()};DICT.live='';DICT.liveFinal=false;if(DICT.fin.length>2000){const n=DICT.fin.length-2000;DICT.fin.splice(0,n);const m={};for(const k of Object.keys(DICT.fm)){if(+k-n>=0)m[+k-n]=DICT.fm[k];}DICT.fm=m;}dictSave();}}
 /* ---- 받아쓰기 원고 교정: 따라가기가 읽고 있는 자리 근처의 원고와 낱말 단위로 맞춰 보고, 거의 같은데 한두 글자 다르게 들린 낱말(참는 왕 → 참된 왕)만 원고의 낱말로 고친다.
    원고에 없는 즉흥적인 말은 맞는 짝이 없으므로 그대로 둔다. 바로 옆 낱말이 원고와 똑같이 이어질 때만 고친다 ---- */
 const DFX={on:true};
@@ -7263,19 +7429,49 @@ function bindVf(){
   $('#rDict').addEventListener('click',()=>{
     const pane=$('#dictPane');$('#moreMenu').hidden=true;
     if(!pane.hidden){dictStop();dictPaneShow(false);return;}
-    dictPaneShow(true);if(!DICT.on)dictStart();dictRender();});
+    dictPaneShow(true);if(!DICT.on&&$('#dcEdit').hidden)dictEditToggle();dictRender();});   /* 열면 받아 적지 않고 메모(고치기) 칸부터 */
   $('#dcClose').addEventListener('click',()=>{dictStop();dictPaneShow(false);});
   $('#dcFold').addEventListener('click',()=>dictFold(!DICT.fold));
   if(window.ResizeObserver)new ResizeObserver(()=>{try{fabPlaceAll();}catch(e){}}).observe($('#dictPane'));
   $('#dcRec').addEventListener('click',()=>{if(!DICT.on)dictStart();});
   $('#dcStop').addEventListener('click',()=>{if(DICT.on)dictStop();});
-  $('#dcEd').addEventListener('click',dictEditToggle);
+  $('#dcEd').addEventListener('click',()=>{if($('#dcEdit').hidden){dictEditToggle();return;}dictEditToggle();if(!DICT.on)dictStart();});
+  {const pane=$('#dictPane'),g=$('#dpGrip'),KEY='neul-dictsz';let sz={};try{sz=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
+   const apply=()=>{if(sz.w)pane.style.setProperty('--dpw',sz.w+'px');else pane.style.removeProperty('--dpw');if(sz.h)pane.style.setProperty('--dph',sz.h+'px');else pane.style.removeProperty('--dph');};apply();
+   const narrow=()=>matchMedia('(max-width:700px)').matches,save=()=>{try{localStorage.setItem(KEY,JSON.stringify(sz));}catch(e){}};
+   g.addEventListener('pointerdown',e=>{e.preventDefault();g.setPointerCapture(e.pointerId);g.classList.add('drag');
+     const par=pane.parentElement.getBoundingClientRect();
+     const mv=ev=>{const pr=pane.getBoundingClientRect();
+       if(narrow()){sz.h=Math.round(Math.max(110,Math.min(par.height*.8,pr.bottom-ev.clientY)));}
+       else{sz.w=Math.round(Math.max(240,Math.min(par.width*.75,ev.clientX-pr.left)));}apply();};
+     const up=()=>{g.classList.remove('drag');g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);g.removeEventListener('pointercancel',up);save();try{window.dispatchEvent(new Event('resize'));}catch(x){}};
+     g.addEventListener('pointermove',mv);g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);});
+   g.addEventListener('dblclick',()=>{if(narrow())delete sz.h;else delete sz.w;apply();save();});}
+  rowsClipBind();
+  $('#dcRows').addEventListener('focusout',()=>setTimeout(()=>{if(!$('#dcRows').contains(document.activeElement)&&!$('#dcRows').hidden)dictEdAuto();},0));
+  {const cols=$('#dcCols');RCOL.forEach((c,i)=>{const b=document.createElement('button');b.type='button';b.dataset.c=i;b.className='dcc';b.setAttribute('aria-label',i?'글자색 '+i:'기본 글자색');if(c)b.style.background=c;else b.textContent='기본';cols.appendChild(b);});
+   RHL.forEach((c,i)=>{const b=document.createElement('button');b.type='button';b.dataset.h=i;b.className='dcc';b.hidden=true;b.setAttribute('aria-label',i?'형광펜 '+i:'형광펜 없음');if(c)b.style.background=c;else b.textContent='없음';cols.appendChild(b);});
+   NUMS.forEach((lb,i)=>{const b=document.createElement('button');b.type='button';b.dataset.n=i+1;b.className='dcc';b.hidden=true;b.textContent=lb;b.setAttribute('aria-label',(i+1)+'단계 번호 '+lb+' (Ctrl+'+(i+1)+')');cols.appendChild(b);});
+   {const b=document.createElement('button');b.type='button';b.dataset.n=0;b.className='dcc';b.hidden=true;b.textContent='번호 없음';cols.appendChild(b);}
+   const showCols=m=>{const was=!cols.hidden&&cols.dataset.m===m;cols.dataset.m=m;for(const b of cols.children){b.hidden=m==='c'?b.dataset.c===undefined:m==='h'?b.dataset.h===undefined:b.dataset.n===undefined;}cols.hidden=was;};
+   const guard=e=>{if(e.target.closest('button'))e.preventDefault();};
+   for(const el2 of [$('#dcFmt'),cols]){el2.addEventListener('pointerdown',guard);el2.addEventListener('mousedown',guard);}
+   $('#dcFmt').addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;if(b.dataset.a==='np'){showCols('n');return;}if(b.dataset.a==='cp'){showCols('c');return;}if(b.dataset.a==='hp'){showCols('h');return;}rowsFmt(b.dataset.a);});
+   cols.addEventListener('click',e=>{const b=e.target.closest('button[data-c],button[data-h],button[data-n]');if(!b)return;if(b.dataset.n!==undefined){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}d._f.o=+b.dataset.n;rowsAutoSoon();rowsCur(d);}else if(b.dataset.c!==undefined)rowsRun('c',+b.dataset.c);else rowsRun('h',+b.dataset.h);cols.hidden=true;});}
   $('#dcTxt').addEventListener('click',dictExportTxt);
-  $('#dcClr').addEventListener('click',()=>{if(!DICT.fin.length&&!DICT.live)return;if(!confirm('이 받아쓰기의 내용을 모두 지울까요? (목록에서도 사라집니다)'))return;const id=DICT.sid;DICT.fin=[];DICT.int='';DICT.live='';DICT.lastFin=null;clearTimeout(DICT.cmt);if(id){DSESS=DSESS.filter(x=>x.id!==id);dsTomb(id);dsPersist();DICT.sid='';}DICT.startAt=Date.now();dictRender();});
+  $('#dcClr').addEventListener('click',()=>{if(!DICT.fin.length&&!DICT.live)return;if(!confirm('이 받아쓰기의 내용을 모두 지울까요? (목록에서도 사라집니다)'))return;const id=DICT.sid;DICT.fin=[];DICT.fm={};DICT.int='';DICT.live='';DICT.lastFin=null;clearTimeout(DICT.cmt);if(id){DSESS=DSESS.filter(x=>x.id!==id);dsTomb(id);dsPersist();DICT.sid='';}DICT.startAt=Date.now();dictRender();});
   $('#dcList').addEventListener('click',()=>dsView(DICT.view!=='list'));
   $('#dcTitle').addEventListener('click',()=>{if(DICT.view!=='list'&&DICT.sid)dsRename(DICT.sid);else if(DICT.view!=='list')toast('받아 적은 글이 생기면 제목을 바꿀 수 있습니다');});
-  $('#dcCopy').addEventListener('click',async()=>{const t=DICT.fin.concat(DICT.live?[DICT.live]:[]).join('\n');if(!t){toast('복사할 내용이 없습니다');return;}
-    try{await navigator.clipboard.writeText(t);toast('받아 적은 내용을 복사했습니다');}catch(e){const ta=el('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(x){}ta.remove();if(ok)toast('받아 적은 내용을 복사했습니다');else toast('복사하지 못했습니다','err');}});
+  $('#dcCopy').addEventListener('click',async()=>{
+    if(!$('#dcEdit').hidden)dictEdAuto();   /* 고치는 중이면 지금 칸의 내용부터 반영 */
+    const t=dictText();if(!t){toast('복사할 내용이 없습니다');return;}
+    const html=dictHtml();let ok=false;
+    try{if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){await navigator.clipboard.write([new ClipboardItem({'text/plain':new Blob([t],{type:'text/plain'}),'text/html':new Blob([html],{type:'text/html'})})]);ok=true;}}catch(e){ok=false;}
+    if(!ok){   /* 보이지 않는 칸에 서식 그대로 넣고 선택해서 복사 */
+      const d=document.createElement('div');d.contentEditable='true';d.style.cssText='position:fixed;left:-9999px;top:0;white-space:pre-wrap';d.innerHTML=html;document.body.appendChild(d);
+      try{const r=document.createRange();r.selectNodeContents(d);const g=getSelection();g.removeAllRanges();g.addRange(r);ok=document.execCommand('copy');g.removeAllRanges();}catch(x){}d.remove();}
+    if(!ok){try{await navigator.clipboard.writeText(t);ok=true;}catch(e){}}
+    toast(ok?'복사했습니다 (한글·워드에 붙이면 서식이 그대로 들어갑니다)':'복사하지 못했습니다',ok?undefined:'err');});
   dictRender();
   $('#rVf').addEventListener('click',()=>{if(VF.on)vfStop();else{vfStart();if(S.mode==='flip')setChrome(false);}$('#moreMenu').hidden=true;});
   $('#vfOff').addEventListener('click',vfStop);
@@ -8777,7 +8973,7 @@ async function gSyncDict(token,map){
   for(const [name,f] of map){const m=name.match(/^nv_(s|sx)_(.+)\.json$/);if(m)(m[1]==='s'?rS:rX).set(m[2],f);}
   const ids=new Set([...rS.keys(),...rX.keys(),...Object.keys(DSDEL),...DSESS.map(x=>x.id)]);
   const paneOpen=()=>{const p=$('#dictPane');return p&&!p.hidden;};
-  const putSess=async(s,ex)=>{await gPutJson(token,'nv_s_'+s.id+'.json',{id:s.id,t:s.t,at:s.at,mod:s.mod,lines:s.lines},s.mod,ex);s.sy=s.mod;pushed++;};
+  const putSess=async(s,ex)=>{await gPutJson(token,'nv_s_'+s.id+'.json',{id:s.id,t:s.t,at:s.at,mod:s.mod,lines:s.lines,fm:s.fm||{}},s.mod,ex);s.sy=s.mod;pushed++;};
   let dirty=false;
   for(const id of ids){
     const s=dsGet(id),rs=rS.get(id),rx=rX.get(id),lt=+DSDEL[id]||0,rt=rx?rx.ts:0,T=Math.max(lt,rt);
@@ -8795,22 +8991,22 @@ async function gSyncDict(token,map){
     }
     if(s&&!rs){await putSess(s,null);continue;}
     if(!s&&rs){const r=await gGetJson(token,rs.id);
-      if(r&&typeof r.t==='string'&&Array.isArray(r.lines)){DSESS.unshift({id,t:r.t,at:+r.at||rs.ts,mod:+r.mod||rs.ts,lines:r.lines.filter(x=>typeof x==='string'),sy:rs.ts});pulled++;dirty=true;}
+      if(r&&typeof r.t==='string'&&Array.isArray(r.lines)){DSESS.unshift({id,t:r.t,at:+r.at||rs.ts,mod:+r.mod||rs.ts,lines:r.lines.filter(x=>typeof x==='string'),fm:fmNorm(r.fm),sy:rs.ts});pulled++;dirty=true;}
       continue;}
     if(!s||!rs)continue;
     const sy=+s.sy||0,lc=s.mod>sy,rc=rs.ts!==sy;
     if(!lc&&!rc)continue;
     if(lc&&!rc){await putSess(s,rs);continue;}
     const r=await gGetJson(token,rs.id);if(!r||!Array.isArray(r.lines))continue;
-    if(rc&&!lc){if(active)continue;Object.assign(s,{t:String(r.t||s.t),mod:+r.mod||rs.ts,lines:r.lines.filter(x=>typeof x==='string'),sy:rs.ts});pulled++;dirty=true;continue;}
+    if(rc&&!lc){if(active)continue;Object.assign(s,{t:String(r.t||s.t),mod:+r.mod||rs.ts,lines:r.lines.filter(x=>typeof x==='string'),fm:fmNorm(r.fm),sy:rs.ts});pulled++;dirty=true;continue;}
     /* 양쪽 모두 바뀜: 최근 쪽을 본체로, 진 쪽은 사본 */
     const rm=+r.mod||rs.ts;
     if(rm>s.mod){
-      DSESS.unshift({id:'ds'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:s.t+' (이 기기 사본)',at:s.at,mod:Date.now(),lines:s.lines.slice(),sy:0});
-      if(!active)Object.assign(s,{t:String(r.t||s.t),mod:rm,lines:r.lines.filter(x=>typeof x==='string'),sy:rs.ts});
+      DSESS.unshift({id:'ds'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:s.t+' (이 기기 사본)',at:s.at,mod:Date.now(),lines:s.lines.slice(),fm:fmNorm(s.fm),sy:0});
+      if(!active)Object.assign(s,{t:String(r.t||s.t),mod:rm,lines:r.lines.filter(x=>typeof x==='string'),fm:fmNorm(r.fm),sy:rs.ts});
       pulled++;dirty=true;
     }else{
-      DSESS.unshift({id:'ds'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:String(r.t||s.t)+' (다른 기기 사본)',at:+r.at||s.at,mod:Date.now(),lines:r.lines.filter(x=>typeof x==='string'),sy:0});
+      DSESS.unshift({id:'ds'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:String(r.t||s.t)+' (다른 기기 사본)',at:+r.at||s.at,mod:Date.now(),lines:r.lines.filter(x=>typeof x==='string'),fm:fmNorm(r.fm),sy:0});
       dirty=true;await putSess(s,rs);
     }
   }
