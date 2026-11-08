@@ -204,6 +204,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .mrow.cur .mrta{background:var(--accent-soft)}
 .mrta[data-mk]{padding-left:calc(6px + var(--mw));text-indent:calc(-1*var(--mw))}.dcbox p[data-mk]{padding-left:var(--mw);text-indent:calc(-1*var(--mw))}
 .mrta[data-mk]::before,.dcbox p[data-mk]::before{content:attr(data-mk);display:inline-block;width:var(--mw);text-indent:0;white-space:pre;pointer-events:none;-webkit-user-select:none;user-select:none}
+.dcrows.msing .mrta{-webkit-user-select:none;user-select:none}.mrow.msel{box-shadow:inset 3px 0 0 var(--accent)}
+::highlight(msel){background:rgba(26,115,232,.3);color:inherit}
 .dcrows.selall .mrta{background:rgba(26,115,232,.22)}
 .dphead{position:relative}.dphead .dsic{border-color:transparent;background:none}.dphead .dsic:hover{background:color-mix(in srgb,var(--fg) 9%,transparent)}#dcMore{font-size:20px;line-height:1;padding-bottom:5px}
 .dpmenu{position:absolute;right:8px;top:calc(100% + 2px);z-index:30;min-width:190px;padding:5px;border:1px solid var(--line);border-radius:11px;background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column}.dpmenu[hidden]{display:none}
@@ -1879,7 +1881,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v213 · 11-08 17:40</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v215 · 11-08 18:40</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7117,18 +7119,26 @@ function rowsMerge(d){const prev=d.previousElementSibling;if(!prev)return;const 
   const text=A.text+Bq.text,S=A.S.concat(Bq.S),B=A.B.concat(Bq.B),C=A.C.concat(Bq.C),H=A.H.concat(Bq.H);runsFill(pt,text,runsPack(S,B,C,H));d.remove();pt.focus();try{selSet(pt,A.text.length,A.text.length);}catch(e){}rowsAutoSoon();}
 function rowsCur(d){DICT.curRow=d;const box=$('#dcRows');if(box)for(const x of box.children)x.classList.toggle('cur',x===d);
   const b=$('#dcFmt [data-a=a]');if(b)b.textContent='정렬 · '+['왼쪽','가운데','오른쪽'][d._f.a||0];}
-function rowsBuild(){const box=$('#dcRows');box.replaceChildren();
+function rowsBuild(){const box=$('#dcRows');msClear();box.replaceChildren();
   if(!DICT.fin.length)box.appendChild(rowsMake('',{}));else DICT.fin.forEach((t,i)=>box.appendChild(rowsMake(t,DICT.fm[i])));
   box.hidden=false;$('#dcFmt').hidden=false;DICT.curRow=null;rowsRenumber();
-  requestAnimationFrame(()=>{const l=box.lastElementChild;if(l){try{rowFocus(l,true);}catch(e){}}});}
+  requestAnimationFrame(()=>{const l=box.lastElementChild;if(l){try{rowFocus(l,true);}catch(e){}}});undoReset();}
 function rowsRead(){const lines=[],fm={};for(const r of $('#dcRows').children){const L=rowRead(r.firstChild),lead=L.text.length-L.text.trimStart().length,tx=L.text.trim();if(!tx)continue;
     const e=lead+tx.length,run=runsPack(L.S.slice(lead,e),L.B.slice(lead,e),L.C.slice(lead,e),L.H.slice(lead,e));
     const n=fmNorm({0:Object.assign({},r._f,{r:run})})[0];if(n)fm[lines.length]=n;lines.push(tx);}return{lines,fm};}
 function rowsRenumber(){const box=$('#dcRows');if(!box)return;const rs=[...box.children],mk=numMarks(rs.map(x=>x._f));rs.forEach((x,i)=>{const t=x.firstChild;mkSet(t,mk[i]);fmApply(t,x._f);});}
-function rowsLevel(o){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d)return;if(!d._f.o)d._f.n=1;d._f.o=o;   /* 번호 없던 줄에 새로 매기면 앞 번호와 상관없이 처음부터 */
+function msLevel(o){const rows=msRowsList();rows.forEach((d,k)=>{if(o===0){d._f.o=0;delete d._f.n;}else{if(!d._f.o&&k===0)d._f.n=1;d._f.o=o;}});rowsAutoSoon();msPaint();}
+function rowsLevel(o){if(msNorm()){msLevel(o);return;}const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d)return;if(!d._f.o)d._f.n=1;d._f.o=o;   /* 번호 없던 줄에 새로 매기면 앞 번호와 상관없이 처음부터 */
  rowsAutoSoon();rowsCur(d);}   /* 엔터로 이어진 줄은 같은 단계를 물려받으므로 토글하지 않음. 해제는 Ctrl+0 */
-let rowsTm=0;function rowsAutoSoon(){rowsRenumber();clearTimeout(rowsTm);rowsTm=setTimeout(dictEdAuto,600);}
-function rowsRun(act,val){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}
+let rowsTm=0;function rowsAutoSoon(){rowsRenumber();undoWatch();clearTimeout(rowsTm);rowsTm=setTimeout(dictEdAuto,600);}
+function rowsRun(act,val){
+  if(msNorm()){const sg=msSegs().filter(x=>x.a<x.b);if(!sg.length)return;
+    if(act==='b'||act==='i'||act==='u'){const bit=act==='b'?1:act==='i'?2:4;let all=true;for(const x of sg){for(let i=x.a;i<x.b;i++)if(!(x.L.B[i]&bit)){all=false;break;}if(!all)break;}for(const x of sg)for(let i=x.a;i<x.b;i++)x.L.B[i]=all?(x.L.B[i]&~bit):(x.L.B[i]|bit);}
+    else if(act==='c'){for(const x of sg)for(let i=x.a;i<x.b;i++)x.L.C[i]=val;}
+    else if(act==='h'){for(const x of sg)for(let i=x.a;i<x.b;i++)x.L.H[i]=val;}
+    else{const dl=act==='s+'?1:-1;for(const x of sg)for(let i=x.a;i<x.b;i++)x.L.S[i]=clamp(x.L.S[i]+dl,-3,8);}
+    for(const x of sg)runsFill(x.row.firstChild,x.L.text,runsPack(x.L.S,x.L.B,x.L.C,x.L.H));rowsAutoSoon();msPaint();return;}
+  const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}
   const t=d.firstChild,L=rowRead(t);let o=selOffsets(t)||d._sel||[0,L.text.length];let[a,b]=o;const keep=[a,b];if(a===b){a=0;b=L.text.length;}   /* 글자를 고르지 않으면 줄 전체 */
   if(a>=b)return;
   if(act==='b'||act==='i'||act==='u'){const bit=act==='b'?1:act==='i'?2:4;let all=true;for(let i=a;i<b;i++)if(!(L.B[i]&bit)){all=false;break;}for(let i=a;i<b;i++)L.B[i]=all?(L.B[i]&~bit):(L.B[i]|bit);}
@@ -7138,6 +7148,13 @@ function rowsRun(act,val){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curR
   runsFill(t,L.text,runsPack(L.S,L.B,L.C,L.H));t.focus();try{selSet(t,keep[0],keep[1]);}catch(e){}d._sel=keep;rowsAutoSoon();}
 function rowsFmt(act){
   if(act==='s+'||act==='s-'||act==='b'||act==='i'||act==='u'){rowsRun(act);return;}
+  if(msNorm()){const rows=msRowsList();
+    if(act==='del'){const box=$('#dcRows'),keep=rows[0].previousElementSibling||rows[rows.length-1].nextElementSibling;msClear();rows.forEach(x=>x.remove());if(!box.children.length)box.appendChild(rowsMake('',{}));rowFocus(keep||box.firstChild,true);rowsAutoSoon();return;}
+    if(act==='join')return;
+    const a0=((rows[0]._f.a||0)+1)%3;for(const x of rows){const g=x._f;
+      if(act==='i+')g.i=clamp((g.i||0)+1,0,6);else if(act==='i-')g.i=clamp((g.i||0)-1,0,6);else if(act==='a')g.a=a0;
+      else if(act==='g+')g.g=clamp((g.g||0)+1,0,4);else if(act==='g-')g.g=clamp((g.g||0)-1,0,4);fmApply(x.firstChild,g);}
+    rowsAutoSoon();msPaint();return;}
   const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}
   const f=d._f;
   if(act==='i+')f.i=clamp((f.i||0)+1,0,6);else if(act==='i-')f.i=clamp((f.i||0)-1,0,6);
@@ -7159,25 +7176,93 @@ function rowInsert(d,it){   /* 줄 칸의 커서 자리에 글자와 서식을 �
   const t=d.firstChild,L=rowRead(t),o=selOffsets(t)||[L.text.length,L.text.length],a=o[0],b=o[1],X=runsExpand(it.t,(it.f||{}).r);
   const text=L.text.slice(0,a)+it.t+L.text.slice(b),S=L.S.slice(0,a).concat(X.S,L.S.slice(b)),B=L.B.slice(0,a).concat(X.B,L.B.slice(b)),C=L.C.slice(0,a).concat(X.C,L.C.slice(b)),H=L.H.slice(0,a).concat(X.H,L.H.slice(b));
   runsFill(t,text,runsPack(S,B,C,H));const p=a+it.t.length;try{selSet(t,p,p);}catch(e){}}
-function rowsSelAll(on){DICT.selAll=!!on;const box=$('#dcRows');if(box)box.classList.toggle('selall',!!on);}
+/* ---- 실행 취소(Ctrl+Z)·다시 실행(Ctrl+Shift+Z / Ctrl+Y): 고칠 때마다 전체 줄 모습을 비교해 바뀌면 이전 모습을 쌓는다. 같은 줄에서 이어 치는 글자는 1초 안이면 한 번으로 묶는다 ---- */
+function undoSnap(){const box=$('#dcRows'),rows=[...box.children];const items=rows.map(rw=>{const L=rowRead(rw.firstChild);return{t:L.text,f:Object.assign({},rw._f,{r:runsPack(L.S,L.B,L.C,L.H)})};});
+  const ci=Math.max(0,rows.indexOf(DICT.curRow));let co=0;if(rows[ci]){const o=selOffsets(rows[ci].firstChild);co=o?o[1]:(rows[ci]._sel?rows[ci]._sel[1]:0);}return{s:JSON.stringify(items),ci,co};}
+function undoReset(){DICT.uh={st:[],rs:[],last:undoSnap(),kind:'',t:0,busy:false};}
+function undoWatch(){const h=DICT.uh;if(!h||h.busy)return;const cur=undoSnap();if(cur.s===h.last.s)return;
+  const strip=a=>JSON.stringify(a.map(x=>Object.assign({},x.f,{r:0}))),A=JSON.parse(h.last.s),B=JSON.parse(cur.s);const typing=A.length===B.length&&strip(A)===strip(B),now=Date.now();
+  if(!(typing&&h.kind==='type'&&now-h.t<1000)){h.st.push(h.last);if(h.st.length>100)h.st.shift();}
+  h.kind=typing?'type':'op';h.t=now;h.rs=[];h.last=cur;}
+function undoRestore(sn){const h=DICT.uh,box=$('#dcRows');h.busy=true;msClear();box.replaceChildren();JSON.parse(sn.s).forEach(it=>box.appendChild(rowsMake(it.t,it.f)));rowsRenumber();
+  const row=box.children[Math.min(sn.ci,box.children.length-1)];if(row){DICT.curRow=row;row.firstChild.focus();try{selSet(row.firstChild,sn.co,sn.co);}catch(e){}rowsCur(row);}
+  h.last=undoSnap();h.kind='';h.busy=false;rowsAutoSoon();}
+function rowsUndo(){msClear();undoWatch();const h=DICT.uh;if(!h||!h.st.length){toast('되돌릴 내용이 없습니다');return;}h.rs.push(h.last);const sn=h.st.pop();undoRestore(sn);}
+function rowsRedo(){msClear();const h=DICT.uh;if(!h||!h.rs.length){toast('다시 실행할 내용이 없습니다');return;}h.st.push(h.last);const sn=h.rs.pop();undoRestore(sn);}
+/* ---- 여러 줄 선택(마우스 끌기·Shift+클릭): 줄마다 편집 칸이 따로라 브라우저는 줄 밖 선택을 못 하므로 직접 범위를 들고 있는다 ---- */
+function msNorm(){const m=DICT.ms;if(!m)return null;const rs=[...$('#dcRows').children],ia=rs.indexOf(m.a.row),ib=rs.indexOf(m.b.row);if(ia<0||ib<0)return null;
+  let A=m.a,B=m.b,i0=ia,i1=ib;if(ia>ib||(ia===ib&&A.off>B.off)){[A,B]=[B,A];[i0,i1]=[i1,i0];}return i0===i1?null:{rs,i0,i1,A,B};}
+function msSegs(){const n=msNorm();if(!n)return [];const arr=n.rs.slice(n.i0,n.i1+1);return arr.map((row,k)=>{const L=rowRead(row.firstChild),len=L.text.length;
+  const a=Math.min(len,k===0?n.A.off:0),b=Math.min(len,k===arr.length-1?n.B.off:len);return{row,L,a,b,full:a===0&&b===len};});}
+function msRowsList(){return msSegs().map(x=>x.row);}
+function offRange(t,a,b){const tw=document.createTreeWalker(t,NodeFilter.SHOW_TEXT);let pos=0,n,sc,so,ec,eo;
+  while((n=tw.nextNode())){const L=n.nodeValue.length;if(sc===undefined&&a<=pos+L){sc=n;so=a-pos;}if(ec===undefined&&b<=pos+L){ec=n;eo=b-pos;}pos+=L;if(sc&&ec)break;}
+  if(!sc||!ec)return null;const r=document.createRange();r.setStart(sc,so);r.setEnd(ec,eo);return r;}
+function msAll(){const rs=[...$('#dcRows').children];if(rs.length<2)return;const l=rs[rs.length-1];DICT.ms={a:{row:rs[0],off:0},b:{row:l,off:rowRead(l.firstChild).text.length}};try{getSelection().removeAllRanges();}catch(e){}msPaint();}
+function msPaint(){const box=$('#dcRows');if(!box)return;const segs=msSegs(),set=new Set(segs.map(x=>x.row));for(const x of box.children)x.classList.toggle('msel',set.has(x));
+  try{if(window.CSS&&CSS.highlights&&window.Highlight){const rg=segs.filter(x=>x.a<x.b).map(x=>offRange(x.row.firstChild,x.a,x.b)).filter(Boolean);if(rg.length)CSS.highlights.set('msel',new Highlight(...rg));else CSS.highlights.delete('msel');}}catch(e){}}
+function msClear(){if(!DICT.ms)return;DICT.ms=null;DICT.drag=null;const box=$('#dcRows');if(box){box.classList.remove('msing');for(const x of box.children)x.classList.remove('msel');}try{if(window.CSS&&CSS.highlights)CSS.highlights.delete('msel');}catch(e){}}
+function msItems(){return msSegs().map(({row,L,a,b,full})=>({t:L.text.slice(a,b),f:Object.assign({},row._f,full?{}:{o:0,n:0},{r:runsPack(L.S.slice(a,b),L.B.slice(a,b),L.C.slice(a,b),L.H.slice(a,b))})}));}
+function msDelete(){const sg=msSegs();if(!sg.length)return null;const F=sg[0],E=sg[sg.length-1],A=F.L,Bq=E.L;
+  const text=A.text.slice(0,F.a)+Bq.text.slice(E.b),S=A.S.slice(0,F.a).concat(Bq.S.slice(E.b)),B=A.B.slice(0,F.a).concat(Bq.B.slice(E.b)),C=A.C.slice(0,F.a).concat(Bq.C.slice(E.b)),H=A.H.slice(0,F.a).concat(Bq.H.slice(E.b));
+  const box=$('#dcRows');if(F.row===box.firstElementChild&&E.row===box.lastElementChild&&F.a===0&&E.b===Bq.text.length){msClear();box.replaceChildren(rowsMake('',{}));const nr=box.firstChild;rowFocus(nr,false);rowsCur(nr);rowsAutoSoon();return nr;}   /* 전체를 지우면 서식도 처음 상태로 */
+  const t=F.row.firstChild;runsFill(t,text,runsPack(S,B,C,H));for(let i=1;i<sg.length;i++)sg[i].row.remove();msClear();t.focus();try{selSet(t,F.a,F.a);}catch(e){}rowsCur(F.row);rowsAutoSoon();return F.row;}
+function msCaret(row,x,y){const t=row.firstChild,len=rowRead(t).text.length;let c=null;
+  try{if(document.caretPositionFromPoint){const p=document.caretPositionFromPoint(x,y);if(p)c={n:p.offsetNode,o:p.offset};}else if(document.caretRangeFromPoint){const q=document.caretRangeFromPoint(x,y);if(q)c={n:q.startContainer,o:q.startOffset};}}catch(e){}
+  if(c&&t.contains(c.n)){const p=document.createRange();p.selectNodeContents(t);p.setEnd(c.n,c.o);return Math.min(len,p.toString().length);}
+  const rc=t.getBoundingClientRect();return x<rc.left+rc.width/2?0:len;}
+function msRowAt(y){const rs=[...$('#dcRows').children];if(!rs.length)return null;for(const r of rs){const q=r.getBoundingClientRect();if(y<q.bottom)return y<q.top&&r===rs[0]?r:r;}return rs[rs.length-1];}
+function msPointer(){const box=$('#dcRows');let down=null;
+  box.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.button!==0)return;const row=e.target.closest&&e.target.closest('.mrow');if(!row){msClear();return;}
+    if(e.shiftKey&&DICT.curRow&&DICT.curRow.isConnected&&DICT.curRow!==row){e.preventDefault();const a=DICT.curRow,ao=(a._sel||[0,0])[0];DICT.ms={a:{row:a,off:ao},b:{row,off:msCaret(row,e.clientX,e.clientY)}};getSelection().removeAllRanges();msPaint();return;}
+    msClear();down={row,x:e.clientX,y:e.clientY};},true);
+  document.addEventListener('pointermove',e=>{if(!down||!(e.buttons&1))return;const row=msRowAt(e.clientY);if(!row)return;
+    if(!DICT.ms){if(row===down.row)return;DICT.ms={a:{row:down.row,off:msCaret(down.row,down.x,down.y)},b:{row,off:0}};box.classList.add('msing');}
+    if(row===DICT.ms.a.row&&e.clientY>=row.getBoundingClientRect().top&&e.clientY<=row.getBoundingClientRect().bottom){DICT.ms.b={row,off:msCaret(row,e.clientX,e.clientY)};}
+    else{const q=row.getBoundingClientRect(),rs=[...box.children],len=rowRead(row.firstChild).text.length;let off;
+      if(e.clientY<q.top)off=0;else if(e.clientY>q.bottom)off=len;else off=msCaret(row,e.clientX,e.clientY);DICT.ms.b={row,off};
+      const br=box.getBoundingClientRect();if(e.clientY<br.top+18)box.scrollTop-=14;else if(e.clientY>br.bottom-18)box.scrollTop+=14;}
+    try{getSelection().removeAllRanges();}catch(x){}msPaint();});
+  const up=()=>{down=null;box.classList.remove('msing');if(DICT.ms&&!msNorm())msClear();};document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);}
+function rowsSelAll(on){if(on)msClear();DICT.selAll=!!on;const box=$('#dcRows');if(box)box.classList.toggle('selall',!!on);}
 function rowsClipBind(){const box=$('#dcRows');
   box.addEventListener('copy',e=>{const d=e.target.closest&&e.target.closest('.mrow');let items=null;
-    if(DICT.selAll)items=memoItemsAll();else if(d){const it=memoItemSel(d);if(it)items=[it];}
+    if(DICT.selAll)items=memoItemsAll();else if(msNorm())items=msItems();else if(d){const it=memoItemSel(d);if(it)items=[it];}
     if(items&&items.length&&memoSetClip(e,items))e.preventDefault();});
   box.addEventListener('cut',e=>{const d=e.target.closest&&e.target.closest('.mrow');let items=null;
-    if(DICT.selAll)items=memoItemsAll();else if(d){const it=memoItemSel(d);if(it)items=[it];}
+    if(DICT.selAll)items=memoItemsAll();else if(msNorm())items=msItems();else if(d){const it=memoItemSel(d);if(it)items=[it];}
     if(!(items&&items.length&&memoSetClip(e,items)))return;e.preventDefault();
+    if(!DICT.selAll&&msNorm()){msDelete();return;}
     if(DICT.selAll){box.replaceChildren(rowsMake('',{}));rowsSelAll(false);rowFocus(box.firstChild,false);}else document.execCommand('delete');rowsAutoSoon();});
   box.addEventListener('keydown',e=>{
-    if((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='a'){e.preventDefault();rowsSelAll(true);return;}
-    if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&/^[0-8]$/.test(e.key)){e.preventDefault();const o=+e.key;const d=e.target.closest&&e.target.closest('.mrow');if(d){DICT.curRow=d;if(o===0){d._f.o=0;delete d._f.n;rowsAutoSoon();rowsCur(d);}else rowsLevel(o);}return;}
+    if((e.ctrlKey||e.metaKey)&&!e.altKey){const kc=e.code;
+      if(kc==='KeyZ'||e.key.toLowerCase()==='z'){e.preventDefault();e.stopImmediatePropagation();if(e.shiftKey)rowsRedo();else rowsUndo();return;}
+      if(kc==='KeyY'||e.key.toLowerCase()==='y'){e.preventDefault();e.stopImmediatePropagation();rowsRedo();return;}}
+    if(msNorm()){const k=e.key,mod=e.ctrlKey||e.metaKey;
+      if(!mod&&!e.altKey&&(k==='Backspace'||k==='Delete')){e.preventDefault();e.stopImmediatePropagation();msDelete();return;}
+      if(!mod&&k==='Enter'){e.preventDefault();e.stopImmediatePropagation();const rw=msDelete();if(rw)rowSplit(rw);return;}
+      if(k==='Escape'){e.preventDefault();e.stopImmediatePropagation();msClear();return;}
+      if(!mod&&['ArrowLeft','ArrowUp','ArrowRight','ArrowDown','Home','End'].includes(k)){e.preventDefault();e.stopImmediatePropagation();const n=msNorm(),back=k==='ArrowLeft'||k==='ArrowUp'||k==='Home',row=back?n.rs[n.i0]:n.rs[n.i1],off=back?n.A.off:n.B.off;msClear();row.firstChild.focus();try{selSet(row.firstChild,off,off);}catch(x){}return;}
+      if(!mod&&(e.isComposing||e.keyCode===229||k==='Process'||(k.length===1&&!e.altKey))){msDelete();}   /* 글자를 치면 고른 범위를 지우고 그 자리에서 쓴다 */
+    }
+    if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyA'||e.key.toLowerCase()==='a')){e.preventDefault();e.stopImmediatePropagation();   /* 한 번: 지금 줄(문단)만 / 한 번 더: 메모 전체 */
+      const d=(e.target.closest&&e.target.closest('.mrow'))||DICT.curRow,rs=[...box.children];
+      if(msNorm()||!d){msAll();return;}
+      const t=d.firstChild,len=rowRead(t).text.length,o=selOffsets(t),full=!!o&&o[0]===0&&o[1]===len&&len>0;
+      if(!full&&len>0){t.focus();try{selSet(t,0,len);}catch(x){}}else msAll();return;}
+    if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&/^[0-8]$/.test(e.key)){e.preventDefault();const o=+e.key;if(msNorm()){msLevel(o);return;}const d=e.target.closest&&e.target.closest('.mrow');if(d){DICT.curRow=d;if(o===0){d._f.o=0;delete d._f.n;rowsAutoSoon();rowsCur(d);}else rowsLevel(o);}return;}
     if(e.key==='Tab'&&!e.ctrlKey&&!e.altKey&&!e.metaKey){const d=e.target.closest&&e.target.closest('.mrow');if(d&&d._f.o){e.preventDefault();DICT.curRow=d;const n=clamp(d._f.o+(e.shiftKey?-1:1),1,8);d._f.o=n;rowsAutoSoon();rowsCur(d);return;}}
     if(DICT.selAll&&!(e.ctrlKey||e.metaKey)&&!['Shift','Control','Meta','Alt'].includes(e.key)){
       if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();box.replaceChildren(rowsMake('',{}));rowsSelAll(false);rowFocus(box.firstChild,false);rowsAutoSoon();return;}
       rowsSelAll(false);}},true);
   box.addEventListener('pointerdown',()=>{if(DICT.selAll)rowsSelAll(false);},true);
-  box.addEventListener('paste',e=>{const raw=(e.clipboardData||window.clipboardData).getData('text/x-memo-runs');if(!raw)return;let items;try{items=JSON.parse(raw);}catch(x){return;}
-    if(!Array.isArray(items)||!items.length)return;const d=e.target.closest&&e.target.closest('.mrow');if(!d)return;
+  box.addEventListener('beforeinput',e=>{if(e.inputType==='historyUndo'){e.preventDefault();rowsUndo();return;}if(e.inputType==='historyRedo'){e.preventDefault();rowsRedo();return;}if(!msNorm())return;const it=e.inputType||'';if(it.startsWith('delete')){e.preventDefault();e.stopImmediatePropagation();msDelete();}
+    else if(it==='insertText'){e.preventDefault();e.stopImmediatePropagation();const rw=msDelete();if(rw&&e.data)rowInsert(rw,{t:e.data});rowsAutoSoon();}},true);
+  msPointer();
+  box.addEventListener('paste',e=>{let ms=null;if(msNorm()){ms=msDelete();}
+    const raw=(e.clipboardData||window.clipboardData).getData('text/x-memo-runs');let items=null;if(raw){try{items=JSON.parse(raw);}catch(x){}}
+    if(!Array.isArray(items)||!items.length){if(ms){e.preventDefault();e.stopImmediatePropagation();const tx=((e.clipboardData||window.clipboardData).getData('text')||'').replace(/\r/g,'');if(tx){const ls=tx.split('\n');document.execCommand('insertText',false,ls[0]);let prev=ms;for(let i=1;i<ls.length;i++){const n=rowsMake(ls[i],{...ms._f,r:undefined,n:undefined});prev.after(n);prev=n;}if(prev!==ms)rowFocus(prev,true);rowsAutoSoon();}}return;}
+    const d=ms||(e.target.closest&&e.target.closest('.mrow'));if(!d)return;
     e.preventDefault();e.stopImmediatePropagation();
     const fm=fmNorm(Object.fromEntries(items.map((x,i)=>[i,x.f||{}])));
     const clean=items.map((x,i)=>({t:String(x.t||''),f:fm[i]||{}}));
@@ -7485,7 +7570,7 @@ function bindVf(){
    const guard=e=>{if(e.target.closest('button'))e.preventDefault();};
    for(const el2 of [$('#dcFmt'),cols]){el2.addEventListener('pointerdown',guard);el2.addEventListener('mousedown',guard);}
    $('#dcFmt').addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;if(b.dataset.a==='np'){showCols('n');return;}if(b.dataset.a==='cp'){showCols('c');return;}if(b.dataset.a==='hp'){showCols('h');return;}rowsFmt(b.dataset.a);});
-   cols.addEventListener('click',e=>{const b=e.target.closest('button[data-c],button[data-h],button[data-n]');if(!b)return;if(b.dataset.n!==undefined){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}if(!d._f.o&&+b.dataset.n)d._f.n=1;d._f.o=+b.dataset.n;if(!d._f.o)delete d._f.n;rowsAutoSoon();rowsCur(d);}else if(b.dataset.c!==undefined)rowsRun('c',+b.dataset.c);else rowsRun('h',+b.dataset.h);cols.hidden=true;});}
+   cols.addEventListener('click',e=>{const b=e.target.closest('button[data-c],button[data-h],button[data-n]');if(!b)return;if(b.dataset.n!==undefined&&msNorm()){msLevel(+b.dataset.n);cols.hidden=true;return;}if(b.dataset.n!==undefined){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}if(!d._f.o&&+b.dataset.n)d._f.n=1;d._f.o=+b.dataset.n;if(!d._f.o)delete d._f.n;rowsAutoSoon();rowsCur(d);}else if(b.dataset.c!==undefined)rowsRun('c',+b.dataset.c);else rowsRun('h',+b.dataset.h);cols.hidden=true;});}
   $('#dcTxt').addEventListener('click',dictExportTxt);
   {const pairs=[[$('#dcMore'),$('#dpMenu')],[$('#dcFmtMore'),$('#dpFmtMenu')]];const closeM=()=>pairs.forEach(([b,m])=>{m.hidden=true;b.setAttribute('aria-expanded','false');});
    pairs.forEach(([b,m])=>{b.addEventListener('click',e=>{e.stopPropagation();const was=!m.hidden;closeM();m.hidden=was;b.setAttribute('aria-expanded',String(!was));});m.addEventListener('click',()=>setTimeout(closeM,0));});
