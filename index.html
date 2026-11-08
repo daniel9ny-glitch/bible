@@ -1864,7 +1864,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v209 · 11-08 15:40</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v212 · 11-08 17:05</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7035,11 +7035,11 @@ const HG='가나다라마바사아자차카타파하',NUMS=['1.','가.','1)','�
 function numLabel(o,n){const g=HG[(n-1)%14];
   switch(o){case 1:return n+'.';case 2:return g+'.';case 3:return n+')';case 4:return g+')';case 5:return '('+n+')';case 6:return '('+g+')';
     case 7:return n<=20?String.fromCharCode(0x2460+n-1):'('+n+')';case 8:return String.fromCharCode(0x326e+(n-1)%14);}return '';}
-function mkW(mk){let w=.4;for(const ch of mk)w+=/[0-9().)]/.test(ch)?.56:1.02;return +w.toFixed(2);}   /* 번호 칸 너비(em): 둘째 줄부터 번호가 아니라 번호 뒤 글자에 맞춘다 */
+function mkW(mk){let w=.3;for(const ch of mk)w+=/[0-9]/.test(ch)?.56:/[().)]/.test(ch)?.3:1.02;return +w.toFixed(2);}   /* 번호 칸 너비(em): 둘째 줄부터 번호가 아니라 번호 뒤 글자에 맞춘다 */
 function mkSet(el,mk){if(mk){el.dataset.mk=mk;el.style.setProperty('--mw',mkW(mk)+'em');}else{delete el.dataset.mk;el.style.removeProperty('--mw');}}
-function numMarks(fs){const cnt=new Array(10).fill(0);return fs.map(f=>{const o=(f&&f.o)|0;if(!o)return '';cnt[o]++;for(let k=o+1;k<=8;k++)cnt[k]=0;return numLabel(o,cnt[o]);});}
+function numMarks(fs){const cnt=new Array(10).fill(0);return fs.map(f=>{const o=(f&&f.o)|0;if(!o)return '';if(f.n)cnt[o]=0;cnt[o]++;for(let k=o+1;k<=8;k++)cnt[k]=0;return numLabel(o,cnt[o]);});}
 function fmNorm(o){const r={};if(o&&typeof o==='object')for(const k of Object.keys(o)){const f=o[k];if(!f||typeof f!=='object'||!/^\d+$/.test(k))continue;const n={},c=(v,a,b)=>Math.max(a,Math.min(b,Math.round(+v)||0));
-  const s=c(f.s,-3,8),i=c(f.i,0,6),a=c(f.a,0,2),g=c(f.g,0,4),ol=c(f.o,0,8);if(ol)n.o=ol;if(s)n.s=s;if(i)n.i=i;if(a)n.a=a;if(g)n.g=g;
+  const s=c(f.s,-3,8),i=c(f.i,0,6),a=c(f.a,0,2),g=c(f.g,0,4),ol=c(f.o,0,8);if(ol){n.o=ol;if(f.n)n.n=1;}if(s)n.s=s;if(i)n.i=i;if(a)n.a=a;if(g)n.g=g;
   if(Array.isArray(f.r)){const rr=[];for(const x of f.r.slice(0,80)){if(!Array.isArray(x))continue;const a0=Math.max(0,Math.round(+x[0])||0),b0=Math.max(0,Math.round(+x[1])||0),s0=c(x[2],-3,8),bb=c(x[3],0,7),cc=c(x[4],0,6),hh=c(x[5],0,4);if(b0>a0&&(s0||bb||cc||hh))rr.push([a0,b0,s0,bb,cc,hh]);}if(rr.length)n.r=rr;}
   if(Object.keys(n).length)r[k]=n;}return r;}
 function fmApply(n,f){f=f||{};n.style.fontSize=f.s?(15*Math.pow(1.12,f.s)).toFixed(1)+'px':'';{const ml=(f.i?f.i*1.4:0)+(f.o?f.o-1:0);n.style.marginLeft=ml?ml+'em':'';}n.style.textAlign=f.a===1?'center':f.a===2?'right':'';n.style.marginTop=f.g?(f.g*.7)+'em':'';}
@@ -7075,6 +7075,11 @@ function rowsMake(text,f){
   t.addEventListener('keydown',e=>{
     if(e.isComposing||e.keyCode===229)return;
     if(e.key==='Enter'){e.preventDefault();rowSplit(d);}
+    else if((e.key==='Delete'||e.key==='Backspace')&&head()&&d._f.o){e.preventDefault();
+      if(!t.textContent.replace(/[\u200b\s]/g,'')){   /* 번호만 있고 내용이 없는 줄: Del=서식 모두 지움, Backspace=번호 한 단계 위로(1단계면 해제) */
+        if(e.key==='Delete'){d._f={};}else if(d._f.o>1)d._f.o--;else{d._f.o=0;delete d._f.n;}}
+      else{d._f.o=0;delete d._f.n;}   /* 내용이 있는 줄 맨 앞: 번호만 지움 */
+      rowsAutoSoon();rowsCur(d);}
     else if(e.key==='Backspace'&&head()&&d.previousElementSibling){e.preventDefault();rowsMerge(d);}
     else if(e.key==='ArrowUp'&&head()&&d.previousElementSibling){e.preventDefault();rowFocus(d.previousElementSibling,true);}
     else if(e.key==='ArrowDown'&&d.nextElementSibling){const o=selOffsets(t),L=rowRead(t).text.length;if(o&&o[0]===L&&o[1]===L){e.preventDefault();rowFocus(d.nextElementSibling,false);}}});
@@ -7089,9 +7094,10 @@ function rowsMake(text,f){
   return d;}
 document.addEventListener('selectionchange',()=>{const d=DICT.curRow;if(!d||!d.isConnected)return;const o=selOffsets(d.firstChild);if(o)d._sel=o;});
 function rowFocus(row,end){const t=row.firstChild;t.focus();const p=end?rowRead(t).text.length:0;try{selSet(t,p,p);}catch(e){}}
-function rowSplit(d){const t=d.firstChild,L=rowRead(t),o=selOffsets(t)||[L.text.length,L.text.length],a=o[0],b=o[1];
+function rowSplit(d){const t=d.firstChild;if(d._f.o&&!t.textContent.replace(/[\u200b\s]/g,'')){const ov=d._f.o,nf=Object.assign({},d._f,{o:ov,r:undefined});delete nf.n;delete nf.r;d._f.o=0;delete d._f.n;const nn=rowsMake('',nf);d.after(nn);rowFocus(nn,false);rowsAutoSoon();return;}   /* 빈 번호 줄에서 엔터: 이 줄은 번호를 지우고, 아래 새 줄이 앞 번호를 이어 간다 */
+  const L=rowRead(t),o=selOffsets(t)||[L.text.length,L.text.length],a=o[0],b=o[1];
   const sub=(x,y)=>({text:L.text.slice(x,y),r:runsPack(L.S.slice(x,y),L.B.slice(x,y),L.C.slice(x,y),L.H.slice(x,y))});const p1=sub(0,a),p2=sub(b,L.text.length);
-  runsFill(t,p1.text,p1.r);const n=rowsMake(p2.text,Object.assign({},d._f,{r:p2.r}));d.after(n);rowFocus(n,false);rowsAutoSoon();}
+  runsFill(t,p1.text,p1.r);const nf2=Object.assign({},d._f,{r:p2.r});delete nf2.n;const n=rowsMake(p2.text,nf2);d.after(n);rowFocus(n,false);rowsAutoSoon();}
 function rowsMerge(d){const prev=d.previousElementSibling;if(!prev)return;const pt=prev.firstChild,A=rowRead(pt),Bq=rowRead(d.firstChild);
   const text=A.text+Bq.text,S=A.S.concat(Bq.S),B=A.B.concat(Bq.B),C=A.C.concat(Bq.C),H=A.H.concat(Bq.H);runsFill(pt,text,runsPack(S,B,C,H));d.remove();pt.focus();try{selSet(pt,A.text.length,A.text.length);}catch(e){}rowsAutoSoon();}
 function rowsCur(d){DICT.curRow=d;const box=$('#dcRows');if(box)for(const x of box.children)x.classList.toggle('cur',x===d);
@@ -7104,7 +7110,8 @@ function rowsRead(){const lines=[],fm={};for(const r of $('#dcRows').children){c
     const e=lead+tx.length,run=runsPack(L.S.slice(lead,e),L.B.slice(lead,e),L.C.slice(lead,e),L.H.slice(lead,e));
     const n=fmNorm({0:Object.assign({},r._f,{r:run})})[0];if(n)fm[lines.length]=n;lines.push(tx);}return{lines,fm};}
 function rowsRenumber(){const box=$('#dcRows');if(!box)return;const rs=[...box.children],mk=numMarks(rs.map(x=>x._f));rs.forEach((x,i)=>{const t=x.firstChild;mkSet(t,mk[i]);fmApply(t,x._f);});}
-function rowsLevel(o){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d)return;d._f.o=o;rowsAutoSoon();rowsCur(d);}   /* 엔터로 이어진 줄은 같은 단계를 물려받으므로 토글하지 않음. 해제는 Ctrl+0 */
+function rowsLevel(o){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d)return;if(!d._f.o)d._f.n=1;d._f.o=o;   /* 번호 없던 줄에 새로 매기면 앞 번호와 상관없이 처음부터 */
+ rowsAutoSoon();rowsCur(d);}   /* 엔터로 이어진 줄은 같은 단계를 물려받으므로 토글하지 않음. 해제는 Ctrl+0 */
 let rowsTm=0;function rowsAutoSoon(){rowsRenumber();clearTimeout(rowsTm);rowsTm=setTimeout(dictEdAuto,600);}
 function rowsRun(act,val){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}
   const t=d.firstChild,L=rowRead(t);let o=selOffsets(t)||d._sel||[0,L.text.length];let[a,b]=o;const keep=[a,b];if(a===b){a=0;b=L.text.length;}   /* 글자를 고르지 않으면 줄 전체 */
@@ -7130,7 +7137,7 @@ function rowsFmt(act){
 function memoItemsAll(){const out=[];for(const rw of $('#dcRows').children){const L=rowRead(rw.firstChild),lead=L.text.length-L.text.trimStart().length,tx=L.text.trim();if(!tx)continue;const e=lead+tx.length;
   const run=runsPack(L.S.slice(lead,e),L.B.slice(lead,e),L.C.slice(lead,e),L.H.slice(lead,e));out.push({t:tx,f:Object.assign({},rw._f,{r:run})});}return out;}
 function memoItemSel(d){const t=d.firstChild,L=rowRead(t),o=selOffsets(t);if(!o||o[0]===o[1])return null;const a=o[0],b=o[1];
-  return{t:L.text.slice(a,b),f:Object.assign({},d._f,{o:0,r:runsPack(L.S.slice(a,b),L.B.slice(a,b),L.C.slice(a,b),L.H.slice(a,b))})};}
+  return{t:L.text.slice(a,b),f:Object.assign({},d._f,{o:0,n:0,r:runsPack(L.S.slice(a,b),L.B.slice(a,b),L.C.slice(a,b),L.H.slice(a,b))})};}
 function memoSetClip(e,items){if(!items.length)return false;{const mk=numMarks(items.map(x=>x.f));e.clipboardData.setData('text/plain',items.map((x,i)=>(mk[i]?mk[i]+' ':'')+x.t).join('\n'));}e.clipboardData.setData('text/html',memoHtml(items));
   try{e.clipboardData.setData('text/x-memo-runs',JSON.stringify(items));}catch(x){}return true;}
 function rowInsert(d,it){   /* 줄 칸의 커서 자리에 글자와 서식을 끼워 넣는다 */
@@ -7148,7 +7155,7 @@ function rowsClipBind(){const box=$('#dcRows');
     if(DICT.selAll){box.replaceChildren(rowsMake('',{}));rowsSelAll(false);rowFocus(box.firstChild,false);}else document.execCommand('delete');rowsAutoSoon();});
   box.addEventListener('keydown',e=>{
     if((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='a'){e.preventDefault();rowsSelAll(true);return;}
-    if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&/^[0-8]$/.test(e.key)){e.preventDefault();const o=+e.key;const d=e.target.closest&&e.target.closest('.mrow');if(d){DICT.curRow=d;if(o===0){d._f.o=0;rowsAutoSoon();rowsCur(d);}else rowsLevel(o);}return;}
+    if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&/^[0-8]$/.test(e.key)){e.preventDefault();const o=+e.key;const d=e.target.closest&&e.target.closest('.mrow');if(d){DICT.curRow=d;if(o===0){d._f.o=0;delete d._f.n;rowsAutoSoon();rowsCur(d);}else rowsLevel(o);}return;}
     if(e.key==='Tab'&&!e.ctrlKey&&!e.altKey&&!e.metaKey){const d=e.target.closest&&e.target.closest('.mrow');if(d&&d._f.o){e.preventDefault();DICT.curRow=d;const n=clamp(d._f.o+(e.shiftKey?-1:1),1,8);d._f.o=n;rowsAutoSoon();rowsCur(d);return;}}
     if(DICT.selAll&&!(e.ctrlKey||e.metaKey)&&!['Shift','Control','Meta','Alt'].includes(e.key)){
       if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();box.replaceChildren(rowsMake('',{}));rowsSelAll(false);rowFocus(box.firstChild,false);rowsAutoSoon();return;}
@@ -7463,7 +7470,7 @@ function bindVf(){
    const guard=e=>{if(e.target.closest('button'))e.preventDefault();};
    for(const el2 of [$('#dcFmt'),cols]){el2.addEventListener('pointerdown',guard);el2.addEventListener('mousedown',guard);}
    $('#dcFmt').addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;if(b.dataset.a==='np'){showCols('n');return;}if(b.dataset.a==='cp'){showCols('c');return;}if(b.dataset.a==='hp'){showCols('h');return;}rowsFmt(b.dataset.a);});
-   cols.addEventListener('click',e=>{const b=e.target.closest('button[data-c],button[data-h],button[data-n]');if(!b)return;if(b.dataset.n!==undefined){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}d._f.o=+b.dataset.n;rowsAutoSoon();rowsCur(d);}else if(b.dataset.c!==undefined)rowsRun('c',+b.dataset.c);else rowsRun('h',+b.dataset.h);cols.hidden=true;});}
+   cols.addEventListener('click',e=>{const b=e.target.closest('button[data-c],button[data-h],button[data-n]');if(!b)return;if(b.dataset.n!==undefined){const d=DICT.curRow&&DICT.curRow.isConnected?DICT.curRow:null;if(!d){toast('고칠 줄을 먼저 눌러 주세요');return;}if(!d._f.o&&+b.dataset.n)d._f.n=1;d._f.o=+b.dataset.n;if(!d._f.o)delete d._f.n;rowsAutoSoon();rowsCur(d);}else if(b.dataset.c!==undefined)rowsRun('c',+b.dataset.c);else rowsRun('h',+b.dataset.h);cols.hidden=true;});}
   $('#dcTxt').addEventListener('click',dictExportTxt);
   $('#dcClr').addEventListener('click',()=>{if(!DICT.fin.length&&!DICT.live)return;if(!confirm('이 받아쓰기의 내용을 모두 지울까요? (목록에서도 사라집니다)'))return;const id=DICT.sid;DICT.fin=[];DICT.fm={};DICT.int='';DICT.live='';DICT.lastFin=null;clearTimeout(DICT.cmt);if(id){DSESS=DSESS.filter(x=>x.id!==id);dsTomb(id);dsPersist();DICT.sid='';}DICT.startAt=Date.now();dictRender();});
   $('#dcList').addEventListener('click',()=>dsView(DICT.view!=='list'));
