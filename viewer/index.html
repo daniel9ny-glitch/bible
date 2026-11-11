@@ -150,6 +150,51 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .name{font-weight:700;font-size:13.5px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all}
 .sub{font-size:12px;color:var(--fg2);margin-top:2px}
 .card-meta .icon-btn{width:28px;height:28px;margin-top:-2px}
+/* 서재 보기 설정: 제목 항상 표시(촘촘한 크기에서도), 표지 위쪽 확대, 파일명 목록(탐색기 '자세히' 방식) */
+.grid.capall.dense .card{gap:4px}
+.grid.capall.dense .card-meta{display:flex}
+.grid.capall.dense .card-meta .icon-btn,.grid.capall.dense .sub,.grid.capall.dense .rdinfo,.grid.capall.dense .flbl{display:none}
+.grid.capall.dense .name{font-size:11px;line-height:1.25;-webkit-line-clamp:3}
+.grid.topcrop .cover{aspect-ratio:4/3}
+.grid.topcrop .cover img{width:150%;max-width:none;height:auto;margin-left:-25%;object-fit:initial}
+.grid.list{display:flex;flex-direction:column;gap:0!important;container-type:inline-size}
+.grid.list .daylbl{margin:12px 0 2px}
+.lhead{display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-bottom:2px solid var(--line);font-size:12px;font-weight:700;color:var(--fg2);background:var(--bg);position:sticky;top:-22px;z-index:6}
+.lhead .lsp{flex:none}
+.lhead button{color:inherit;font:inherit;padding:0;height:30px;white-space:nowrap;cursor:pointer}
+.lhead button:hover,.lhead button.on{color:var(--accent)}
+.lhead .rname{flex:1 1 0;min-width:0;text-align:left}
+.grid.list .row,.grid.list .fold{flex-direction:row;align-items:center;gap:8px;height:42px;padding:0 8px;border-bottom:1px solid var(--line);border-radius:0}
+.grid.list .row:hover,.grid.list .fold:hover{background:var(--surface2)}
+.grid.list .card.sel{background:var(--accent-soft)}
+.grid.list .card.sel .cover{outline:none;transform:none}
+.grid.list .card.dropt,.grid.list .fold.dropt{background:var(--accent-soft);outline:2px solid var(--accent);outline-offset:-2px}
+.grid.list .card.dropt .cover::before{display:none}
+.row .cover{flex:none;width:24px;aspect-ratio:3/4;border-radius:2px;box-shadow:0 0 0 1px var(--line);transform:none!important}
+.row .cover::after,.row .cover .badge,.row .cover .prog,.row .cover .sugchip,.row .nb-title{display:none}
+.row .cover.nb{padding:0}
+.row .selck{left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);width:18px;height:18px;font-size:11px}
+.row .rname{flex:1 1 0;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc{flex:none;font-size:12.5px;color:var(--fg2);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.rc.rf{width:96px;text-align:left;overflow:hidden;text-overflow:ellipsis}
+.rc.rz{width:56px}.rc.rp{width:44px}.rc.rr{width:48px}.rc.rd{width:70px}
+.lhead .rc{text-align:right}.lhead .rc.rf{text-align:left}
+.row .fav{position:static;flex:none;width:28px;height:28px;background:none;color:var(--fg2)}
+.row .icon-btn{flex:none;width:28px;height:28px}
+#shelf.selmode .row .icon-btn{visibility:hidden}
+.grid.list .fold .fold-art{flex:none;width:24px;height:24px;aspect-ratio:auto;background:none;border-radius:0}
+.grid.list .fold .fold-art svg{width:22px;height:22px}
+.grid.list .fold .fold-art b{display:none}
+.grid.list .fold:hover .fold-art{transform:none}
+.grid.list .fold .card-meta{flex:1;min-width:0}
+.grid.list .fold .card-meta>div{display:flex;align-items:center;gap:10px;min-width:0}
+.grid.list .fold .name{font-size:14px;-webkit-line-clamp:1;display:block;white-space:nowrap;text-overflow:ellipsis}
+.grid.list .fold .sub{margin:0;flex:none;white-space:nowrap}
+@container (max-width:560px){.rc.rf,.rc.rz{display:none}}
+@container (max-width:430px){.rc.rr{display:none}}
+.shviewmenu{min-width:230px}
+.shviewmenu .sec{padding:6px 10px 2px;font-size:11.5px;color:var(--fg2)}
+.shviewmenu button[hidden]{display:none}
 .empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:64px 16px;text-align:center}
 .empty h3{margin:0;font-family:var(--font-display);font-size:20px}
 .empty p{margin:0;max-width:34ch;color:var(--fg2)}
@@ -1438,6 +1483,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
           <div><h2 id="catTitle">모든 문서</h2><p id="catDesc" class="muted"></p></div>
           <div class="head-tools">
           <span class="sizer" title="두 손가락으로 벌리면 크게, 오므리면 작게"><button class="icon-btn" id="shMinus" aria-label="책 작게"><span data-i="minus"></span></button><span id="shLbl">한 줄 3권</span><button class="icon-btn" id="shPlus" aria-label="책 크게"><span data-i="plus"></span></button></span>
+          <div class="sortw"><button type="button" class="sortbtn" id="shViewBtn" aria-haspopup="menu" aria-expanded="false" aria-label="서재 보기 방식"><span id="shViewLbl">표지</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="menu sortmenu shviewmenu" id="shViewMenu" role="menu" hidden></div></div>
           <button type="button" class="icon-btn viewbtn" id="viewBtn" hidden></button>
           <button type="button" class="sortbtn emptytrash" id="btnEmptyTrash" hidden aria-label="휴지통 비우기">휴지통 비우기</button>
           <div class="sortw"><button type="button" class="sortbtn" id="sortBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="정렬"><span id="sortLbl">최근 사용순</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="menu sortmenu" id="sortMenu" role="listbox" hidden></div></div>
@@ -2726,8 +2772,26 @@ function renderGrid(){try{renderShelfTabs();}catch(e){}
   if(!PERF.boot&&S.docs.length)PERF.boot=Math.round(performance.now());
 }
 let gridIO=null,gridFill=null;
+/* 서재 보기: mode 'thumb'(표지) | 'list'(파일명 목록), cap=제목 항상 표시, crop=표지 위쪽 확대 */
+const SV={mode:lsGet('neul-shelfmode')==='list'?'list':'thumb',cap:lsGet('neul-shelfcap')!=='0',crop:lsGet('neul-shelfcrop')==='1'};
+let shelfSortSet=null;
+const LCOLS=[['name','이름','rname',['name']],['rf','폴더','rc rf',null],['size','용량','rc rz',['size']],['pg','쪽','rc rp',['pages','pagesAsc']],['rd','읽음','rc rr',['read','unread']],['dt','최근 사용','rc rd',['recent']]];
+function listHead(){
+  const h=el('div','lhead');h.appendChild(el('span','lsp')).style.width='24px';
+  for(const[k,t,cls,m]of LCOLS){
+    const b=el(m?'button':'span',cls,{text:t});if(m){b.type='button';b.dataset.k=k;const i=m.indexOf(S.sort);if(i>=0){b.classList.add('on');b.textContent=t+(m[0]==='name'||i===1?' ▲':' ▼');}}h.appendChild(b);}
+  h.appendChild(el('span','lsp')).style.width='64px';
+  h.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b||!shelfSortSet)return;const m=LCOLS.find(x=>x[0]===b.dataset.k)[3];shelfSortSet(S.sort===m[0]&&m[1]?m[1]:m[0]);});
+  return h;
+}
+function shelfViewApply(){
+  const g=$('#grid');g.classList.toggle('list',SV.mode==='list');g.classList.toggle('capall',SV.cap&&SV.mode!=='list');g.classList.toggle('topcrop',SV.crop&&SV.mode!=='list');
+  const sz=document.querySelector('.sizer');if(sz)sz.hidden=SV.mode==='list';
+  const l=$('#shViewLbl');if(l)l.textContent=SV.mode==='list'?'파일명 목록':'표지';
+  try{shelfDensity();}catch(e){}
+}
 function renderGridImpl(){
-  const grid=$('#grid');grid.replaceChildren();
+  const grid=$('#grid');grid.replaceChildren();shelfViewApply();if(SV.mode==='list')grid.appendChild(listHead());
   {const eb=$('#btnEmptyTrash');if(eb)eb.hidden=!(S.catId==='trash'&&S.docs.some(d=>d.trash));}   /* 휴지통을 볼 때만, 정렬 옆에 '휴지통 비우기' */
   const q=S.q.toLowerCase();
   let list=(q&&S.catId!=='trash'?S.docs.filter(inLib):docsOf(S.catId)).filter(d=>!q||d.title.toLowerCase().includes(q));
@@ -2797,13 +2861,20 @@ function buildCard(d,lbl){
   cover.appendChild(el('span','badge',{text:d.trash?'삭제됨':d.tmp?(h=>h>=24?'임시 '+Math.ceil(h/24)+'일':h>=1?'임시 '+h+'시간':'임시 곧 삭제')(Math.floor(((d.created||0)+TMP_MS-Date.now())/36e5)):d.hwp?'한글':d.type==='pdf'?'PDF':'노트'}));
   if(d.sug&&!d.trash&&!d.catId){const sc=el('button','sugchip',{type:'button',text:'추천 · '+d.sug.l});sc.title='누르면 \''+d.sug.l+'\'로 분류';sc.addEventListener('click',e=>{e.stopPropagation();applySug([d]);});cover.appendChild(sc);}
   cover.appendChild(el('span','selck',{text:'✓'}));c.dataset.id=d.id;if(S.sel.has(d.id))c.classList.add('sel');
-  const fav=el('button','fav'+(d.fav?' on':''),{type:'button'});fav.innerHTML=ico('star');fav.setAttribute('aria-label','즐겨찾기');fav.setAttribute('aria-pressed',String(!!d.fav));cover.appendChild(fav);
+  const fav=el('button','fav'+(d.fav?' on':''),{type:'button'});fav.innerHTML=ico('star');fav.setAttribute('aria-label','즐겨찾기');fav.setAttribute('aria-pressed',String(!!d.fav));
+  const isList=SV.mode==='list';if(!isList)cover.appendChild(fav);
   const pct=progPct(d);if(d.pages>1&&pct>0){const pr=el('div','prog');pr.innerHTML=`<i style="width:${pct}%"></i>`;cover.appendChild(pr);}
+  const menu=el('button','icon-btn',{type:'button'});menu.innerHTML=ico('more');menu.setAttribute('aria-label','문서 관리');
+  if(isList){   /* 파일명 목록: 한 줄에 이름 · 폴더 · 용량 · 쪽 · 읽음 · 날짜 (탐색기 '자세히' 방식) */
+    c.classList.add('row');
+    const nm=el('div','rname',{text:d.title});nm.title=d.title;
+    const cat=catById(d.catId),fn=subOf(d)?subName(d.catId,subOf(d)):(cat?cat.name:''),rc=(k,t)=>el('div','rc '+k,{text:t});
+    c.append(cover,nm,rc('rf',fn||''),rc('rz',d.size?fmtBytes(d.size):''),rc('rp',`${d.pages||1}쪽`),rc('rr',`${pct}%`),rc('rd',(d.opened||d.modified)?fmtDate(d.opened||d.modified):''),fav,menu);
+  }else{
   const meta=el('div','card-meta');const info=el('div');
   const fl=lbl&&subOf(d)?el('div','flbl'):null;if(fl){const fc=subColor(d.catId,subOf(d));if(fc){fl.classList.add('colored');fl.style.setProperty('--fc',fc);}fl.innerHTML=ico('folder')+'<span></span>';fl.lastChild.textContent=subName(d.catId,subOf(d));}
   info.append(el('div','name',{text:d.title}),...(fl?[fl]:[]),el('div','sub',{text:`${d.pages||1}쪽 · ${fmtDate(d.opened||d.modified)}`}),el('div','rdinfo',{text:d.pages>1||d.readMs?`읽음 ${pct}% · ${fmtDur(d.readMs||0)}`:'아직 읽지 않음'}));
-  const menu=el('button','icon-btn',{type:'button'});menu.innerHTML=ico('more');menu.setAttribute('aria-label','문서 관리');
-  meta.append(info,menu);c.append(cover,meta);
+  meta.append(info,menu);c.append(cover,meta);}
   const open=()=>openDoc(d.id);
   c.addEventListener('click',e=>{if(Date.now()<selSwallow)return;if(selMode){e.preventDefault();selToggle(d.id);return;}if(e.target.closest('.fav')||e.target.closest('.icon-btn'))return;open();});
   c.addEventListener('contextmenu',e=>e.preventDefault());
@@ -2828,8 +2899,8 @@ function selAdd(id){if(!S.sel.has(id)){S.sel.add(id);syncSel();}}
 
 /* 서재 책 크기: 한 줄에 보이는 권수 (두 손가락 벌리면 크게=적게, 오므리면 작게=많이) */
 const SH={cols:0,pinchEnd:0};
-const shelfRange=()=>Math.min(screen.width,screen.height)<600?{min:2,max:8,def:3}:{min:4,max:12,def:6};
-function shelfDensity(){const g=$('#grid');const w=g.clientWidth;if(!w||!SH.cols)return;const gx=parseFloat(getComputedStyle(g).columnGap)||0,cw=(w-gx*(SH.cols-1))/SH.cols;
+const shelfRange=()=>Math.min(screen.width,screen.height)<600?{min:2,max:8,def:3}:{min:2,max:12,def:6};
+function shelfDensity(){const g=$('#grid');if(g.classList.contains('list')){g.classList.remove('mid','dense');return;}const w=g.clientWidth;if(!w||!SH.cols)return;const gx=parseFloat(getComputedStyle(g).columnGap)||0,cw=(w-gx*(SH.cols-1))/SH.cols;
   g.style.setProperty('--cw',cw.toFixed(1)+'px');g.classList.toggle('mid',cw<112);g.classList.toggle('dense',cw<84);}
 function shelfApply(c,save){
   const R=shelfRange();c=clamp(Math.round(c),R.min,R.max);const ch=c!==SH.cols;SH.cols=c;const g=$('#grid');
@@ -2852,6 +2923,26 @@ function bindShelfZoom(){
   $('#shMinus').addEventListener('click',()=>{shelfApply(SH.cols+1,true);shelfHint();});
   $('#shPlus').addEventListener('click',()=>{shelfApply(SH.cols-1,true);shelfHint();});
   new ResizeObserver(()=>shelfDensity()).observe($('#grid'));
+}
+/* 서재 '보기' 메뉴: 표지 보기 / 파일명 목록 보기, 제목 항상 표시, 표지 위쪽 확대 */
+function bindShelfView(){
+  const btn=$('#shViewBtn'),menu=$('#shViewMenu');if(!btn||!menu)return;
+  const close=()=>{menu.hidden=true;btn.setAttribute('aria-expanded','false');};
+  const build=()=>{menu.replaceChildren();
+    const it=(k,t,on,role)=>{const b=el('button','',{type:'button'});b.dataset.k=k;b.setAttribute('role',role);b.setAttribute('aria-checked',String(on));b.classList.toggle('on',on);b.innerHTML='<span></span>'+(on?'<span class="ck">✓</span>':'');b.firstChild.textContent=t;menu.appendChild(b);};
+    it('thumb','표지 보기',SV.mode==='thumb','menuitemradio');it('list','파일명 목록 보기',SV.mode==='list','menuitemradio');
+    if(SV.mode==='thumb'){menu.appendChild(document.createElement('hr'));it('cap','제목 항상 표시',SV.cap,'menuitemcheckbox');it('crop','표지 위쪽 확대',SV.crop,'menuitemcheckbox');}
+  };
+  btn.addEventListener('click',e=>{e.stopPropagation();if(menu.hidden){const sm=$('#sortMenu');if(sm){sm.hidden=true;$('#sortBtn').setAttribute('aria-expanded','false');}build();menu.hidden=false;btn.setAttribute('aria-expanded','true');}else close();});
+  menu.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b)return;const k=b.dataset.k;
+    if(k==='thumb'||k==='list'){if(SV.mode!==k){SV.mode=k;lsSet('neul-shelfmode',k);renderGrid();}close();return;}
+    if(k==='cap'){SV.cap=!SV.cap;lsSet('neul-shelfcap',SV.cap?'1':'0');}
+    if(k==='crop'){SV.crop=!SV.crop;lsSet('neul-shelfcrop',SV.crop?'1':'0');}
+    shelfViewApply();build();});
+  document.addEventListener('click',e=>{if(!e.target.closest('#shViewBtn,#shViewMenu'))close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){close();btn.focus();}});
+  addEventListener('resize',close);
+  shelfViewApply();
 }
 function bindShelfSelect(){
   const grid=$('#grid');let tm=0,st=null,dragSel=false,base=null,lastRange='';
@@ -8182,6 +8273,7 @@ function bindEvents(){
     build();
     btn.addEventListener('click',e=>{e.stopPropagation();if(menu.hidden){build();menu.hidden=false;btn.setAttribute('aria-expanded','true');}else close();});
     menu.addEventListener('click',e=>{const b=e.target.closest('button[data-v]');if(!b)return;S.sort=b.dataset.v;lsSet('neul-sort',S.sort);build();close();renderGrid();});
+    shelfSortSet=v=>{S.sort=v;lsSet('neul-sort',v);build();renderGrid();};
     document.addEventListener('click',e=>{if(!e.target.closest('.sortw'))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){close();btn.focus();}});
     addEventListener('resize',close);}
@@ -9609,7 +9701,7 @@ async function init(){
   bindFab('detFab','neul-detfab',()=>{$('#reader').classList.remove('detfold');lsSet('neul-detfold','0');setTimeout(fabPlaceAll,30);});
   $('#detHide').addEventListener('click',()=>{$('#reader').classList.add('detfold');lsSet('neul-detfold','1');});
   if(lsGet('neul-detfold')==='1')$('#reader').classList.add('detfold');
-  bindEvents();bindShelfTabs();bindGSync();bindShelfSelect();bindShelfZoom();updateAwakeUI();updateMiniUI();setTool('pan');barApply();palApply();setTimeout(barFoldLbl,0);if(lsGet('neul-barfold')==='1'){{const x=parseFloat(lsGet('neul-bartabx'));if(x>0)$('#barTab').style.left=x+'px';}placeBarTab();$('#reader').classList.add('barfold');}
+  bindEvents();bindShelfTabs();bindGSync();bindShelfSelect();bindShelfZoom();bindShelfView();updateAwakeUI();updateMiniUI();setTool('pan');barApply();palApply();setTimeout(barFoldLbl,0);if(lsGet('neul-barfold')==='1'){{const x=parseFloat(lsGet('neul-bartabx'));if(x>0)$('#barTab').style.left=x+'px';}placeBarTab();$('#reader').classList.add('barfold');}
   $('#barTab').addEventListener('click',()=>{if(S.bible||S.hwp)setBibleFold(false);else setBarFold(false);});
   $('#barDone').addEventListener('click',()=>$('#dlgBar').close());
   $('#barReset').addEventListener('click',()=>{if(barWhich==='more'){MORE=moreDefault();moreSave();}else if(barWhich==='pal'){PAL=palDefault();palSave();}else{BAR=barDefault();barSave();}barRender();});
