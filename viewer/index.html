@@ -88,7 +88,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .main-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:nowrap}
 .main-head>div:first-child{flex:1;min-width:0}
 .main-head h2{margin:0;font-family:var(--font-display);font-size:26px;letter-spacing:-.01em;line-height:1.25;text-wrap:balance}
-.main-head p{margin:2px 0 0;font-size:13px}
+.main-head p{margin:2px 0 0;font-size:13px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}   /* 제목 아래 설명은 두 줄까지, 넘으면 … */
 .sort{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--fg2)}
 .sort select{height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);padding:0 8px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:26px 20px}
@@ -1931,7 +1931,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v224 · 11-11 22:29</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v225 · 11-11 23:23</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -2854,7 +2854,7 @@ function buildCard(d,lbl){
     c.classList.add('row');
     const nm=el('div','rname',{text:d.title});nm.title=d.title;
     const cat=catById(d.catId),sn=subOf(d)?subName(d.catId,subOf(d)):'',fnm=sn||(cat?cat.name:''),fl=el('div','rfl');
-    if(fnm){const fc=sn?subColor(d.catId,subOf(d)):'';if(fc)fl.style.setProperty('--fc',fc);fl.innerHTML=ico('folder')+'<span></span>';fl.lastChild.textContent=fnm;}
+    if(fnm){const fc=sn?subColor(d.catId,subOf(d)):'';if(fc)fl.style.setProperty('--fc',fc);fl.innerHTML=ico('folder')+'<span></span>';fl.lastChild.textContent=[...fnm].length>4?[...fnm].slice(0,3).join('')+'..':fnm;fl.title=fnm;}   /* 폴더명은 4글자까지, 넘으면 3글자+.. */
     if(d.fav){const fm=el('span','favmk');fm.innerHTML=ico('star');cover.appendChild(fm);}
     c.append(cover,nm,fl,menu);
   }else{
