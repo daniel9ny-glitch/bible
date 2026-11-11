@@ -375,7 +375,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 #scroller.vlock{overflow:hidden;touch-action:none}
 #scroller.toolsopen{touch-action:none}
 .fsx{position:absolute;top:10px;right:10px;z-index:16;width:42px;height:42px;border-radius:50%;display:none;place-items:center;background:var(--surface);color:var(--fg);border:1px solid var(--line);box-shadow:var(--shadow);opacity:.88}
-.fspage{position:absolute;left:10px;top:10px;z-index:16;display:none;padding:4px 11px;border-radius:99px;background:var(--surface);color:var(--fg2);border:1px solid var(--line);font-size:12px;font-variant-numeric:tabular-nums;opacity:.88;pointer-events:none}
+.fspage{position:absolute;left:10px;top:10px;z-index:16;display:none;padding:4px 11px;border-radius:99px;background:var(--surface);color:var(--fg2);border:1px solid var(--line);font-size:12px;font-variant-numeric:tabular-nums;opacity:.88;pointer-events:none;transition:opacity .6s}
 #reader.full .fsx{display:grid}
 #reader.full .fspage{display:block}
 .addpage{margin-top:10px;display:flex;justify-content:center}
@@ -925,6 +925,8 @@ kbd{display:inline-block;min-width:24px;padding:2px 7px;border-radius:6px;border
 .fslide span{min-width:64px;text-align:right;font-variant-numeric:tabular-nums;color:var(--fg2);font-size:13px}
 #reader.flip:not(.chrome) .fspage{display:block;left:auto;top:auto;right:10px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;border:0;font-weight:700;font-size:13px;opacity:1}
 #reader.flip.chrome .fspage{display:none}
+/* 쪽을 넘길 때만 또렷하게 보이고 잠시 뒤 20%만 남겨 문서를 가리지 않는다 */
+#reader .fspage.dim,#reader.flip:not(.chrome) .fspage.dim{opacity:.2}@media (prefers-reduced-motion:reduce){.fspage{transition:none}}
 #rMode.on{color:var(--accent);background:var(--accent-soft)}
 
 /* ---- 상단바 도구 / 전체화면 플로팅바 ---- */
@@ -1888,7 +1890,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v218 · 11-11 13:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v219 · 11-11 16:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -4720,7 +4722,7 @@ function goTo(i,smooth){
 }
 function updatePageUI(){
   const gl=flipGrp(S.cur),pl=gl.length>1?`${gl[0]+1}-${gl[1]+1}`:`${S.cur+1}`;
-  $('#pageIn').value=S.cur+1;$('#fsPage').textContent=`${pl}/${P.length}`;
+  $('#pageIn').value=S.cur+1;{const fp=$('#fsPage'),tx=`${pl}/${P.length}`;if(fp.textContent!==tx||!fp.dataset.t){fp.textContent=tx;fp.dataset.t='1';fp.classList.remove('dim');clearTimeout(fp._dt);fp._dt=setTimeout(()=>fp.classList.add('dim'),1400);}}
   {const r=$('#fRange');r.max=P.length;r.value=S.cur+1;$('#fNum').textContent=`${pl}/${P.length}`;
    $$('.fth').forEach(t=>t.classList.toggle('cur',+t.dataset.i===S.cur));
    if(S.mode==='flip'&&$('#reader').classList.contains('chrome')){const t=$(`.fth[data-i="${S.cur}"]`);if(t)t.scrollIntoView({block:'nearest',inline:'center'});}}
