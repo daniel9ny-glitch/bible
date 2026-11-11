@@ -1452,6 +1452,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
       <button class="btn" id="selMove" type="button">이동</button>
       <button class="btn" id="selCopy" type="button">복사</button>
       <button class="btn" id="selMerge" type="button" title="고른 책을 한 권으로 합치기 (2권 이상)">병합</button>
+      <button class="btn" id="selSync" type="button" title="고른 책만 구글 드라이브와 동기화">동기화</button>
       <button class="btn" id="selRen" type="button">이름</button>
       <button class="btn danger" id="selDel" type="button">삭제</button>
     </div>
@@ -1881,7 +1882,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v215 · 11-08 18:40</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v216 · 11-11 11:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -2809,8 +2810,8 @@ function syncSel(){
   $$('#grid .card').forEach(c=>c.classList.toggle('sel',S.sel.has(c.dataset.id)));
   const n=S.sel.size;$('#selBar').hidden=!selMode;$('#selCnt').textContent=n+'개 선택';
   $('#selRen').disabled=n!==1;$('#selRen').title=n===1?'':'하나만 선택했을 때 이름을 수정할 수 있습니다';
-  for(const id of['#selMove','#selCopy','#selDel','#selFold'])$(id).disabled=!n;$('#selMerge').disabled=n<2;$('#selFold').hidden=!S.cats.some(c=>c.id===S.catId);
-  {const tr=S.catId==='trash';$('#selRestore').hidden=!tr;$('#selRestore').disabled=!n;if(tr){$('#selFold').hidden=true;$('#selMove').hidden=true;$('#selCopy').hidden=true;$('#selMerge').hidden=true;}else{$('#selMove').hidden=false;$('#selCopy').hidden=false;$('#selMerge').hidden=false;}}
+  for(const id of['#selMove','#selCopy','#selDel','#selFold','#selSync'])$(id).disabled=!n;$('#selMerge').disabled=n<2;$('#selFold').hidden=!S.cats.some(c=>c.id===S.catId);
+  {const tr=S.catId==='trash';$('#selRestore').hidden=!tr;$('#selSync').hidden=tr;$('#selRestore').disabled=!n;if(tr){$('#selFold').hidden=true;$('#selMove').hidden=true;$('#selCopy').hidden=true;$('#selMerge').hidden=true;}else{$('#selMove').hidden=false;$('#selCopy').hidden=false;$('#selMerge').hidden=false;}}
 }
 function selExit(){selMode=false;S.sel.clear();syncSel();}
 function selToggle(id){if(S.sel.has(id))S.sel.delete(id);else S.sel.add(id);if(!S.sel.size){selExit();return;}syncSel();}
@@ -2961,6 +2962,7 @@ function bindShelfSelect(){
     selExit();renderCats();renderGrid();if(n)toast(`${n}개 문서를 복사했습니다`);
   });
   $('#selMerge').addEventListener('click',()=>{const list=[...S.sel].map(id=>S.docs.find(d=>d.id===id)).filter(Boolean);if(list.length<2){toast('병합하려면 책을 2권 이상 고르세요');return;}mergeOpen(list);});
+  $('#selSync').addEventListener('click',()=>{gSyncSel();});
   $('#selRen').addEventListener('click',async()=>{
     const d=picked()[0];if(!d||S.sel.size!==1)return;const t=await askText({title:'이름 수정',label:'제목',value:d.title,ok:'저장'});
     if(t==null)return;const v=t.trim();if(!v)return;d.title=v;await saveMeta(d);selExit();renderCats();renderGrid();toast('이름을 바꿨습니다');
@@ -8872,8 +8874,11 @@ async function gDropConflictCopies(){
   }
   if(n){try{renderCats();renderGrid();}catch(e){}}
 }
-async function gSyncRun(token,mode){
-  try{await gDropConflictCopies();}catch(e){logErr('gDropConflictCopies',e);}
+/* opt.only: 고른 책(들)만 동기화 — 분류·설정·받아쓰기 등 나머지는 건드리지 않고, 큰 PDF도 받는다.
+   opt.defer: 내려받을 PDF가 여럿이면 정보·필기·표지를 먼저 끝내고 PDF는 뒤에서 하나씩 받는다 */
+async function gSyncRun(token,mode,opt){
+  opt=opt||{};const only=opt.only||null;
+  if(!only){try{await gDropConflictCopies();}catch(e){logErr('gDropConflictCopies',e);}}
   const {map,dups}=await gList(token);
   const openId=S.doc&&S.doc.id,blobsOn=gBlobOn();let changed=false,pulled=0,pushed=0,skipped=0;const failed=[],maxB=gMaxBytes();
   for(const d of S.docs){
@@ -8890,7 +8895,12 @@ async function gSyncRun(token,mode){
   }
   const localBlobs=new Set(await DB.keys('blobs').catch(()=>[]));
   const localKv=new Set(await DB.keys('kv').catch(()=>[]));
-  const all=new Set([...rids.keys(),...S.docs.map(d=>d.id),...Object.keys(SYNC.docs)]);
+  let all=new Set([...rids.keys(),...S.docs.map(d=>d.id),...Object.keys(SYNC.docs)]);
+  if(only)all=new Set([...all].filter(id=>only.has(id)));
+  const later=[];let defer=false;
+  if(opt.defer&&!only){let pend=0;for(const id of all){const R=rids.get(id);if(!R||!R.b)continue;const e=SYNC.docs[id]||{},has=localBlobs.has(id),d0=S.docs.find(x=>x.id===id);
+      if(!(R.b.ts>(e.b||0)||!has)||(R.t&&R.t.ts>=R.m?.ts))continue;if(maxB&&d0&&d0.type==='pdf'&&!d0.hwp&&R.b.size>maxB&&!has)continue;pend++;}
+    defer=pend>=3;}
   let n=0;
   for(const id of all){
     n++;try{const R=rids.get(id)||{};let d=S.docs.find(x=>x.id===id);const e=SYNC.docs[id]||(SYNC.docs[id]={});
@@ -8962,7 +8972,8 @@ async function gSyncRun(token,mode){
       if(has&&rb&&rb===lb&&e.bb==null)e.bb=lb;                      /* 양쪽이 같은 버전 = 맞춰진 상태 */
       /* 두 기기에서 모두 고쳤으면 더 최근에 저장한 쪽이 이긴다 (사본을 만들지 않는다) */
       if(rb&&(rb>lb||!has)){
-        if(maxB&&d.type==='pdf'&&!d.hwp&&R.b.size>maxB&&!has){skipped++;}   /* 큰 PDF는 열 때 받는다 */
+        if(!opt.force&&maxB&&d.type==='pdf'&&!d.hwp&&R.b.size>maxB&&!has){skipped++;}   /* 큰 PDF는 열 때 받는다 (고른 책만 동기화할 때는 받는다) */
+        else if(openId!==id&&defer){later.push({id,fid:R.b.id,ts:rb,title:d.title});}   /* 여럿이면 뒤에서 하나씩 */
         else if(openId!==id){gStatus('PDF 받는 중… '+d.title);const buf=await gGetBuf(token,R.b.id);await DB.putRaw('blobs',id,buf);localBlobs.add(id);e.b=rb;e.bb=rb;
           if(d.type==='pdf'){delete d.thumb;gThumbTried.delete(id);await DB.putRaw('docs',id,d);}   /* 새 내용이면 표지도 다시 만든다 */
           changed=true;pulled++;}}
@@ -8978,6 +8989,7 @@ async function gSyncRun(token,mode){
     if(d.type==='pdf'&&!d.thumb&&openId!==id&&!gThumbTried.has(id)&&localBlobs.has(id)){gThumbTried.add(id);const bb=await DB.get('blobs',id);if(bb&&await gMakeThumb(d,bb))changed=true;}
     }catch(err){if(gFatal(err))throw err;failed.push({id,msg:(err&&err.message)||'오류'});}   /* 한 항목의 실패가 나머지를 막지 않게 한다 */
   }
+  if(only){await DB.putRaw('kv','sync',SYNC).catch(()=>{});if(changed){try{if(!$('#shelf').hidden){renderCats();renderGrid();}}catch(e){logErr('gSyncRun',e);}}return{pulled,pushed,failed,skipped,later};}
   /* 분류: 항목별 3자 병합 (두 기기가 각각 만들거나 고친 분류를 서로 지우지 않고 합친다) */
   {const rc=map.get('nv_cats.json'),rt=rc?rc.ts:0,lt=SYNC.cats||0;
     const base=await DB.get('kv','catbase').catch(()=>null);
@@ -9029,7 +9041,7 @@ async function gSyncRun(token,mode){
   await DB.putRaw('kv','sync',SYNC).catch(()=>{});
   if(changed){try{if(!$('#shelf').hidden){if(!catById(S.catId))S.catId='all';renderCats();renderGrid();}}catch(e){logErr('gSyncRun',e);}}
   if(pulled)setTimeout(()=>{dupAuto().catch(()=>{}).then(()=>dupSoon());},800);
-  return{pulled,pushed,failed,skipped};
+  return{pulled,pushed,failed,skipped,later};
 }
 /* 동기화 초기화: mode 'pull' = 드라이브 기준으로 다시 맞추기, 'push' = 이 기기 기준으로 드라이브를 비우고 다시 올리기. 이 기기의 문서는 지우지 않는다 */
 async function gReset(mode){
@@ -9055,19 +9067,60 @@ async function gReset(mode){
   }catch(e){gStatus(gFriendly(e.message)||'초기화 중 오류가 발생했습니다','err');gLastErr=e.message||'오류';}
   finally{gBusy=false;gDlgUpdate();gBadge();}
 }
+/* 뒤에서 PDF 받기: 동기화는 먼저 끝났다고 알리고, 남은 PDF는 하나씩 내려받는다. 같은 책은 한 번만 줄을 선다 */
+const gBg={q:new Map(),run:false,done:0,total:0};
+function gBgAdd(list){if(!list||!list.length)return;for(const j of list){if(!gBg.q.has(j.id)){gBg.q.set(j.id,j);gBg.total++;}}gBgRun();}
+async function gBgRun(){
+  if(gBg.run)return;gBg.run=true;let ok=0,stopped=false,lastPaint=0;
+  try{
+    while(gBg.q.size){
+      const [id,j]=gBg.q.entries().next().value;gBg.q.delete(id);
+      const d=S.docs.find(x=>x.id===id);if(!d||(S.doc&&S.doc.id===id))continue;
+      if(!navigator.onLine){stopped=true;break;}
+      try{
+        const have=await DB.get('blobs',id).catch(()=>null);const e=SYNC.docs[id]||(SYNC.docs[id]={});
+        if(have&&(e.b||0)>=j.ts){gBg.done++;continue;}
+        gStatus('PDF 뒤에서 받는 중… '+(gBg.done+1)+'/'+gBg.total+' · '+d.title);
+        const token=await gGetToken(false);const buf=await gGetBuf(token,j.fid);await DB.putRaw('blobs',id,buf);e.b=j.ts;e.bb=j.ts;
+        if(d.type==='pdf'){delete d.thumb;gThumbTried.delete(id);await DB.putRaw('docs',id,d);gThumbTried.add(id);try{await gMakeThumb(d,buf);}catch(x){logErr('gBgRun',x);}}
+        syncSave();ok++;gBg.done++;
+        if(Date.now()-lastPaint>2500){lastPaint=Date.now();try{if(!$('#shelf').hidden)renderGrid();}catch(x){}}
+      }catch(err){if(gFatal(err)){stopped=true;break;}logErr('gBgRun',err);gBg.done++;}
+    }
+  }finally{gBg.run=false;}
+  if(!gBg.q.size){gBg.done=0;gBg.total=0;}
+  try{if(!$('#shelf').hidden)renderGrid();}catch(x){}
+  if(ok){gStatus(stopped?`PDF ${ok}권 받음 — 나머지는 다음 동기화 때 이어서 받습니다`:`PDF ${ok}권 뒤에서 내려받기 완료 ✓`,stopped?'':'ok');if(!stopped)toast(`PDF ${ok}권 내려받기를 마쳤습니다`);}
+}
+/* 서재에서 길게 눌러 고른 책만 동기화 */
+async function gSyncSel(){
+  const ids=[...S.sel].filter(id=>S.docs.some(d=>d.id===id));if(!ids.length)return;
+  if(!gOn()){toast('먼저 설정에서 구글 동기화를 켜 주세요');return;}
+  if(gBusyLocked()){toast('다른 동기화가 진행 중입니다. 끝난 뒤 다시 눌러 주세요');return;}
+  gBusy=true;gBusyAt=Date.now();gDlgUpdate();toast(ids.length===1?'이 책만 동기화합니다…':ids.length+'권만 동기화합니다…');
+  try{
+    gStatus('구글 로그인 확인 중…');const token=await gGetToken(true);
+    const r=await gSyncRun(token,undefined,{only:new Set(ids),force:true});
+    const t=ids.length===1?"'"+((S.docs.find(x=>x.id===ids[0])||{}).title||'')+"'":ids.length+'권';
+    if(r.failed.length){gStatus(`${t} 동기화 일부 실패 — 다음 동기화 때 다시 시도합니다`,'err');toast('동기화 일부 실패: '+t);}
+    else{gStatus(`${t} 동기화 완료 ✓ (받음 ${r.pulled} · 올림 ${r.pushed})`,'ok');toast(`${t} 동기화 완료 (받음 ${r.pulled} · 올림 ${r.pushed})`);}
+  }catch(e){gStatus(gFriendly(e.message)||'동기화 중 오류가 발생했습니다','err');toast(gFriendly(e.message)||'동기화 중 오류가 발생했습니다');gLastErr=e.message||'오류';}
+  finally{gBusy=false;gDlgUpdate();gBadge();selExit();}
+}
 /* 수동 동기화 (대화창의 버튼) */
 async function gSyncNow(){
   if(gBusyLocked())return;gBusy=true;gBusyAt=Date.now();gDlgUpdate();
   try{
     gStatus('구글 로그인 확인 중…');const token=await gGetToken(true);
-    const r=await gSyncRun(token);
+    const r=await gSyncRun(token,undefined,{defer:true});
     lsSet(GK.on,'1');
     if(r.failed.length){const t=r.failed.slice(0,2).map(x=>{const d=S.docs.find(y=>y.id===x.id);return "'"+((d&&d.title)||x.id)+"'";}).join(', ');
       gLastErr=r.failed.length+'개 항목 실패';gSilentUntil=Date.now()+3*60*1000;
       gStatus(`일부만 동기화됨 (받음 ${r.pulled} · 올림 ${r.pushed}) — 실패 ${r.failed.length}개: ${t}${r.failed.length>2?' 외':''}. 나머지는 정상 처리됐고, 실패한 항목은 다음 동기화 때 다시 시도합니다`,'err');
     }else{
       lsSet(GK.time,String(Date.now()));try{localStorage.removeItem(GK.dirty);}catch(e){}gLastErr='';gSilentUntil=0;
-      gStatus(`동기화 완료 ✓ (받음 ${r.pulled} · 올림 ${r.pushed})${r.skipped?` · 큰 PDF ${r.skipped}권은 열 때 내려받음`:''} 앞으로 자동으로 동기화됩니다`,'ok');bibleSyncKick();}
+      gStatus(`동기화 완료 ✓ (받음 ${r.pulled} · 올림 ${r.pushed})${r.skipped?` · 큰 PDF ${r.skipped}권은 열 때 내려받음`:''} ${r.later&&r.later.length?` · PDF ${r.later.length}권은 뒤에서 받는 중`:''} 앞으로 자동으로 동기화됩니다`,'ok');bibleSyncKick();}
+    gBgAdd(r.later);
   }catch(e){gStatus(gFriendly(e.message)||'동기화 중 오류가 발생했습니다','err');gLastErr=e.message||'오류';}
   finally{gBusy=false;gDlgUpdate();gBadge();}
 }
@@ -9077,9 +9130,10 @@ async function gAuto(){
   gBusy=true;gBusyAt=Date.now();gDlgUpdate();
   try{
     const token=await gGetToken(false);
-    const r=await gSyncRun(token);
+    const r=await gSyncRun(token,undefined,{defer:true});
     if(r.failed.length){gLastErr=r.failed.length+'개 항목 실패';gSilentUntil=Date.now()+3*60*1000;}
     else{lsSet(GK.time,String(Date.now()));try{localStorage.removeItem(GK.dirty);}catch(e){}gLastErr='';gSilentUntil=0;bibleSyncKick();}
+    gBgAdd(r.later);
   }catch(e){gLastErr=e.message||'오류';gSilentUntil=Date.now()+3*60*1000;}
   finally{gBusy=false;gDlgUpdate();gBadge();}
 }
