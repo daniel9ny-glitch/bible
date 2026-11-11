@@ -85,7 +85,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .bar i{display:block;height:100%;background:var(--accent)}
 .warn{padding:8px 10px;border-radius:8px;background:var(--surface2);color:var(--danger);font-size:12px}
 .main{flex:1;min-width:0;overflow:auto;padding:22px 26px 60px}
-.main-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.main-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:nowrap}
+.main-head>div:first-child{flex:1;min-width:0}
 .main-head h2{margin:0;font-family:var(--font-display);font-size:26px;letter-spacing:-.01em;line-height:1.25;text-wrap:balance}
 .main-head p{margin:2px 0 0;font-size:13px}
 .sort{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--fg2)}
@@ -94,7 +95,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .grid .daylbl{grid-column:1/-1;margin:6px 0 -8px;padding:0 2px 6px;font-size:14px;font-weight:700;color:var(--fg2);border-bottom:1px solid var(--line)}.grid .daylbl:first-child{margin-top:0}
 .main{touch-action:pan-x pan-y}
 .sizer{display:inline-flex;align-items:center;gap:2px;color:var(--fg2);font-size:13px;white-space:nowrap}
-.head-tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.head-tools{display:flex;align-items:center;gap:10px;flex:none;flex-wrap:nowrap}
 .sizer .icon-btn{width:30px;height:30px}
 .sizer>span{min-width:4.6em;text-align:center}
 #colHint{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);z-index:60;background:rgba(0,0,0,.72);color:#fff;font-weight:700;font-size:14px;padding:7px 16px;border-radius:99px;pointer-events:none;opacity:0;transition:opacity .18s}
@@ -156,7 +157,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .grid.capall.dense .card-meta .icon-btn,.grid.capall.dense .sub,.grid.capall.dense .rdinfo,.grid.capall.dense .flbl{display:none}
 .grid.capall.dense .name{font-size:11px;line-height:1.25;-webkit-line-clamp:3}
 .grid.topcrop .cover{aspect-ratio:4/3}
-.grid.topcrop .cover img{width:150%;max-width:none;height:auto;margin-left:-25%;object-fit:initial}
+.grid.topcrop .cover img{width:130%;max-width:none;height:auto;margin-left:-15%;object-fit:initial}
 .grid.list{display:flex;flex-direction:column;gap:0!important;container-type:inline-size}
 .grid.list .daylbl{margin:12px 0 2px}
 .lhead{display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-bottom:2px solid var(--line);font-size:12px;font-weight:700;color:var(--fg2);background:var(--bg);position:sticky;top:-22px;z-index:6}
@@ -175,11 +176,10 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .row .cover.nb{padding:0}
 .row .selck{left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);width:18px;height:18px;font-size:11px}
 .row .rname{flex:1 1 0;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rc{flex:none;font-size:12.5px;color:var(--fg2);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-.rc.rf{width:96px;text-align:left;overflow:hidden;text-overflow:ellipsis}
-.rc.rz{width:56px}.rc.rp{width:44px}.rc.rr{width:48px}.rc.rd{width:70px}
-.lhead .rc{text-align:right}.lhead .rc.rf{text-align:left}
-.row .fav{position:static;flex:none;width:28px;height:28px;background:none;color:var(--fg2)}
+.row .rfl{flex:0 1 auto;max-width:42%;min-width:0;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--fc,var(--fg2));white-space:nowrap}
+.row .rfl svg{width:13px;height:13px;flex:none}.row .rfl span{overflow:hidden;text-overflow:ellipsis}
+.row .favmk{position:absolute;right:0;top:0;width:13px;height:13px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+.row .favmk svg{width:9px;height:9px;fill:#fbbf24;stroke:#d97706}
 .row .icon-btn{flex:none;width:28px;height:28px}
 #shelf.selmode .row .icon-btn{visibility:hidden}
 .grid.list .fold .fold-art{flex:none;width:24px;height:24px;aspect-ratio:auto;background:none;border-radius:0}
@@ -190,11 +190,10 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .grid.list .fold .card-meta>div{display:flex;align-items:center;gap:10px;min-width:0}
 .grid.list .fold .name{font-size:14px;-webkit-line-clamp:1;display:block;white-space:nowrap;text-overflow:ellipsis}
 .grid.list .fold .sub{margin:0;flex:none;white-space:nowrap}
-@container (max-width:560px){.rc.rf,.rc.rz{display:none}}
-@container (max-width:430px){.rc.rr{display:none}}
-.shviewmenu{min-width:230px}
-.shviewmenu .sec{padding:6px 10px 2px;font-size:11.5px;color:var(--fg2)}
-.shviewmenu button[hidden]{display:none}
+.sortw .sortmenu.shviewmenu{min-width:200px}
+.shviewmenu hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.main-head{container-type:inline-size}
+@container (max-width:560px){.head-tools .sizer{display:none}}
 .empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:64px 16px;text-align:center}
 .empty h3{margin:0;font-family:var(--font-display);font-size:20px}
 .empty p{margin:0;max-width:34ch;color:var(--fg2)}
@@ -651,11 +650,6 @@ dialog.pdlg{width:min(660px,calc(100vw - 20px));max-height:calc(100dvh - 20px);o
   .top.sq>.search{display:flex;flex:1;max-width:none}
   .top.sq>#btnSearchClose{display:inline-grid}
   .top.sq>#btnSearch{display:none}
-}
-@media (max-width:520px){
-  .main-head{flex-wrap:wrap;gap:10px}
-  .main-head>div:first-child{flex:1 1 100%}
-  .head-tools{width:100%;justify-content:space-between}
 }
 #q::-webkit-search-cancel-button{display:none}
 .st-sec{display:flex;flex-direction:column;gap:8px}.st-lab{font-size:13px;font-weight:700}
@@ -1821,6 +1815,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="field"><label for="dCat">카테고리</label><select id="dCat"></select></div>
   <div class="field" id="dSubRow" hidden><label for="dSub">폴더</label><select id="dSub"></select></div>
   <div class="row-actions">
+    <button type="button" class="btn" id="dFav"><span data-i="star"></span><span id="dFavTxt">즐겨찾기</span></button>
     <button type="button" class="btn" id="dKeep" hidden><span data-i="folder"></span><span id="dKeepTxt">서재에 보관</span></button>
     <button type="button" class="btn" id="dHwp" hidden><span data-i="doc-edit"></span>한글로 편집</button>
     <button type="button" class="btn" id="dHwpDl" hidden title="이 문서 안에 들어 있는 한글(.hwp) 파일을 그대로 내려받습니다"><span data-i="download"></span>한글 원본 내려받기</button>
@@ -1936,7 +1931,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v219 · 11-11 16:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v224 · 11-11 22:29</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -2774,24 +2769,14 @@ function renderGrid(){try{renderShelfTabs();}catch(e){}
 let gridIO=null,gridFill=null;
 /* 서재 보기: mode 'thumb'(표지) | 'list'(파일명 목록), cap=제목 항상 표시, crop=표지 위쪽 확대 */
 const SV={mode:lsGet('neul-shelfmode')==='list'?'list':'thumb',cap:lsGet('neul-shelfcap')!=='0',crop:lsGet('neul-shelfcrop')==='1'};
-let shelfSortSet=null;
-const LCOLS=[['name','이름','rname',['name']],['rf','폴더','rc rf',null],['size','용량','rc rz',['size']],['pg','쪽','rc rp',['pages','pagesAsc']],['rd','읽음','rc rr',['read','unread']],['dt','최근 사용','rc rd',['recent']]];
-function listHead(){
-  const h=el('div','lhead');h.appendChild(el('span','lsp')).style.width='24px';
-  for(const[k,t,cls,m]of LCOLS){
-    const b=el(m?'button':'span',cls,{text:t});if(m){b.type='button';b.dataset.k=k;const i=m.indexOf(S.sort);if(i>=0){b.classList.add('on');b.textContent=t+(m[0]==='name'||i===1?' ▲':' ▼');}}h.appendChild(b);}
-  h.appendChild(el('span','lsp')).style.width='64px';
-  h.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b||!shelfSortSet)return;const m=LCOLS.find(x=>x[0]===b.dataset.k)[3];shelfSortSet(S.sort===m[0]&&m[1]?m[1]:m[0]);});
-  return h;
-}
 function shelfViewApply(){
   const g=$('#grid');g.classList.toggle('list',SV.mode==='list');g.classList.toggle('capall',SV.cap&&SV.mode!=='list');g.classList.toggle('topcrop',SV.crop&&SV.mode!=='list');
   const sz=document.querySelector('.sizer');if(sz)sz.hidden=SV.mode==='list';
-  const l=$('#shViewLbl');if(l)l.textContent=SV.mode==='list'?'파일명 목록':'표지';
+  const l=$('#shViewLbl');if(l)l.textContent=SV.mode==='list'?'파일명':'표지';
   try{shelfDensity();}catch(e){}
 }
 function renderGridImpl(){
-  const grid=$('#grid');grid.replaceChildren();shelfViewApply();if(SV.mode==='list')grid.appendChild(listHead());
+  const grid=$('#grid');grid.replaceChildren();shelfViewApply();
   {const eb=$('#btnEmptyTrash');if(eb)eb.hidden=!(S.catId==='trash'&&S.docs.some(d=>d.trash));}   /* 휴지통을 볼 때만, 정렬 옆에 '휴지통 비우기' */
   const q=S.q.toLowerCase();
   let list=(q&&S.catId!=='trash'?S.docs.filter(inLib):docsOf(S.catId)).filter(d=>!q||d.title.toLowerCase().includes(q));
@@ -2865,11 +2850,13 @@ function buildCard(d,lbl){
   const isList=SV.mode==='list';if(!isList)cover.appendChild(fav);
   const pct=progPct(d);if(d.pages>1&&pct>0){const pr=el('div','prog');pr.innerHTML=`<i style="width:${pct}%"></i>`;cover.appendChild(pr);}
   const menu=el('button','icon-btn',{type:'button'});menu.innerHTML=ico('more');menu.setAttribute('aria-label','문서 관리');
-  if(isList){   /* 파일명 목록: 한 줄에 이름 · 폴더 · 용량 · 쪽 · 읽음 · 날짜 (탐색기 '자세히' 방식) */
+  if(isList){   /* 파일명 목록: 한 줄에 이름과 폴더만. 즐겨찾기는 작은 표지 모서리의 별로 */
     c.classList.add('row');
     const nm=el('div','rname',{text:d.title});nm.title=d.title;
-    const cat=catById(d.catId),fn=subOf(d)?subName(d.catId,subOf(d)):(cat?cat.name:''),rc=(k,t)=>el('div','rc '+k,{text:t});
-    c.append(cover,nm,rc('rf',fn||''),rc('rz',d.size?fmtBytes(d.size):''),rc('rp',`${d.pages||1}쪽`),rc('rr',`${pct}%`),rc('rd',(d.opened||d.modified)?fmtDate(d.opened||d.modified):''),fav,menu);
+    const cat=catById(d.catId),sn=subOf(d)?subName(d.catId,subOf(d)):'',fnm=sn||(cat?cat.name:''),fl=el('div','rfl');
+    if(fnm){const fc=sn?subColor(d.catId,subOf(d)):'';if(fc)fl.style.setProperty('--fc',fc);fl.innerHTML=ico('folder')+'<span></span>';fl.lastChild.textContent=fnm;}
+    if(d.fav){const fm=el('span','favmk');fm.innerHTML=ico('star');cover.appendChild(fm);}
+    c.append(cover,nm,fl,menu);
   }else{
   const meta=el('div','card-meta');const info=el('div');
   const fl=lbl&&subOf(d)?el('div','flbl'):null;if(fl){const fc=subColor(d.catId,subOf(d));if(fc){fl.classList.add('colored');fl.style.setProperty('--fc',fc);}fl.innerHTML=ico('folder')+'<span></span>';fl.lastChild.textContent=subName(d.catId,subOf(d));}
@@ -2924,7 +2911,7 @@ function bindShelfZoom(){
   $('#shPlus').addEventListener('click',()=>{shelfApply(SH.cols-1,true);shelfHint();});
   new ResizeObserver(()=>shelfDensity()).observe($('#grid'));
 }
-/* 서재 '보기' 메뉴: 표지 보기 / 파일명 목록 보기, 제목 항상 표시, 표지 위쪽 확대 */
+/* 서재 '보기' 메뉴(버튼에는 현재 방식만 짧게): 표지 보기 / 파일명 목록 보기, 제목 항상 표시, 표지 위쪽 확대 */
 function bindShelfView(){
   const btn=$('#shViewBtn'),menu=$('#shViewMenu');if(!btn||!menu)return;
   const close=()=>{menu.hidden=true;btn.setAttribute('aria-expanded','false');};
@@ -2933,8 +2920,9 @@ function bindShelfView(){
     it('thumb','표지 보기',SV.mode==='thumb','menuitemradio');it('list','파일명 목록 보기',SV.mode==='list','menuitemradio');
     if(SV.mode==='thumb'){menu.appendChild(document.createElement('hr'));it('cap','제목 항상 표시',SV.cap,'menuitemcheckbox');it('crop','표지 위쪽 확대',SV.crop,'menuitemcheckbox');}
   };
-  btn.addEventListener('click',e=>{e.stopPropagation();if(menu.hidden){const sm=$('#sortMenu');if(sm){sm.hidden=true;$('#sortBtn').setAttribute('aria-expanded','false');}build();menu.hidden=false;btn.setAttribute('aria-expanded','true');}else close();});
-  menu.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b)return;const k=b.dataset.k;
+  const place=()=>{const r=btn.getBoundingClientRect(),m=$('.main').getBoundingClientRect(),w=menu.offsetWidth||230;const left=r.left+w<=m.right-6;menu.style.left=left?'0':'auto';menu.style.right=left?'auto':'0';};
+  btn.addEventListener('click',e=>{e.stopPropagation();if(menu.hidden){const sm=$('#sortMenu');if(sm){sm.hidden=true;$('#sortBtn').setAttribute('aria-expanded','false');}build();menu.hidden=false;place();btn.setAttribute('aria-expanded','true');}else close();});
+  menu.addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('button[data-k]');if(!b)return;const k=b.dataset.k;
     if(k==='thumb'||k==='list'){if(SV.mode!==k){SV.mode=k;lsSet('neul-shelfmode',k);renderGrid();}close();return;}
     if(k==='cap'){SV.cap=!SV.cap;lsSet('neul-shelfcap',SV.cap?'1':'0');}
     if(k==='crop'){SV.crop=!SV.crop;lsSet('neul-shelfcrop',SV.crop?'1':'0');}
@@ -3087,6 +3075,7 @@ $('#dCat').addEventListener('change',()=>dSubFill($('#dCat').value,''));
 function openDocDlg(d){
   managing=d;$('#dTitle').value=d.title;
   const sel=$('#dCat');sel.replaceChildren(new Option('분류 없음',''));for(const c of S.cats)sel.add(new Option(c.name,c.id));sel.value=d.catId||'';dSubFill(d.catId,subOf(d));
+  $('#dFav').hidden=!!d.trash;$('#dFavTxt').textContent=d.fav?'즐겨찾기 해제':'즐겨찾기';
   const b=$('#dDel');b.classList.remove('armed');$('#dDelTxt').textContent=d.trash?'영구 삭제':'휴지통으로';
   const k=$('#dKeep');k.hidden=!(d.tmp||d.trash);$('#dKeepTxt').textContent=d.trash?'복원':'서재에 보관';
   $('#dHwp').hidden=!(d.hwp&&!d.trash);$('#dHwpDl').hidden=!d.hwp;
@@ -3096,6 +3085,7 @@ $('#fDoc').addEventListener('submit',e=>{
   e.preventDefault();if(!managing)return;const t=$('#dTitle').value.trim();if(t)managing.title=t;managing.catId=$('#dCat').value;{const sv=$('#dSubRow').hidden?'':$('#dSub').value;if(sv)managing.sub=sv;else delete managing.sub;}
   saveMeta(managing);$('#dlgDoc').close();renderCats();renderGrid();toast('문서 정보를 저장했습니다');
 });
+$('#dFav').addEventListener('click',()=>{if(!managing)return;managing.fav=!managing.fav;if(managing.fav)delete managing.tmp;saveMeta(managing);$('#dlgDoc').close();renderCats();renderGrid();toast(managing.fav?'즐겨찾기에 추가했습니다':'즐겨찾기를 해제했습니다');});
 $('#dDel').addEventListener('click',async()=>{
   const b=$('#dDel');if(!managing)return;
   if(!managing.trash){trashDocs([managing]);$('#dlgDoc').close();return;}
@@ -8273,7 +8263,6 @@ function bindEvents(){
     build();
     btn.addEventListener('click',e=>{e.stopPropagation();if(menu.hidden){build();menu.hidden=false;btn.setAttribute('aria-expanded','true');}else close();});
     menu.addEventListener('click',e=>{const b=e.target.closest('button[data-v]');if(!b)return;S.sort=b.dataset.v;lsSet('neul-sort',S.sort);build();close();renderGrid();});
-    shelfSortSet=v=>{S.sort=v;lsSet('neul-sort',v);build();renderGrid();};
     document.addEventListener('click',e=>{if(!e.target.closest('.sortw'))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){close();btn.focus();}});
     addEventListener('resize',close);}
