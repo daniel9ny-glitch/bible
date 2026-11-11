@@ -1019,6 +1019,12 @@ kbd{display:inline-block;min-width:24px;padding:2px 7px;border-radius:6px;border
 .rs-list{max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:2px;margin:10px 0}.rs-row{display:flex;align-items:center;gap:10px;padding:8px 4px;border-radius:8px}.rs-row:hover{background:var(--surface2)}.rs-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rs-row small{color:var(--fg2)}
 .gs-link{display:block;margin:12px auto 2px;background:none;border:0;color:#c0392b;font-size:12.5px;text-decoration:underline;padding:6px}
 #btnSync.on{color:var(--accent,#3f5c4c)}#btnSync.warn{color:#c0392b}
+#btnSync{position:relative}.gpill{position:absolute;top:100%;right:0;margin-top:2px;padding:1px 7px;border-radius:9px;background:var(--accent,#3f5c4c);color:#fff;font-size:10.5px;line-height:16px;white-space:nowrap;pointer-events:none;z-index:5}.gpill[hidden]{display:none}
+#btnSync.busy>[data-i]{display:none}.gring{display:none}#btnSync.busy .gring{display:block}.gring[hidden]{display:none!important}
+.gring circle{fill:none;stroke-width:2.6}.gr-bg{stroke:currentColor;opacity:.18}.gr-fg{stroke:currentColor;stroke-linecap:round;stroke-dasharray:69.1;stroke-dashoffset:69.1;transition:stroke-dashoffset .35s}
+.gring text{font:700 8.4px/1 system-ui,sans-serif;fill:currentColor}.gr-arr{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transform-origin:14px 14px;animation:gspin 1.3s linear infinite}
+.gring[data-m="pct"] .gr-arr{display:none}.gring[data-m="spin"] .gr-bg,.gring[data-m="spin"] .gr-fg,.gring[data-m="spin"] text{display:none}
+@keyframes gspin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.gr-arr{animation:none}}
 html.ios{padding:0!important;background:#000}
 html.ios body{background:#000}
 html.ios #app{top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);background:var(--bg)}
@@ -1412,7 +1418,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
       <input id="photoInput" type="file" accept="image/*" hidden>
       <input id="camInput" type="file" accept="image/*" capture="environment" hidden>
       <input id="apInput" type="file" accept="image/*" multiple hidden>
-      <button class="icon-btn" id="btnSync" aria-label="구글 드라이브 동기화" title="구글 드라이브 동기화"><span data-i="cloud"></span></button>
+      <button class="icon-btn" id="btnSync" aria-label="구글 드라이브 동기화" title="구글 드라이브 동기화"><span data-i="cloud"></span><svg class="gring" id="gRing" viewBox="0 0 28 28" width="26" height="26" aria-hidden="true" hidden><circle class="gr-bg" cx="14" cy="14" r="11"/><circle class="gr-fg" id="gRingFg" cx="14" cy="14" r="11" transform="rotate(-90 14 14)"/><g class="gr-arr"><path d="M14 3.5a10.5 10.5 0 0 1 9.6 6.2" /><path d="M24.5 4.6v5.6h-5.6"/><path d="M14 24.5a10.5 10.5 0 0 1-9.6-6.2"/><path d="M3.5 23.4v-5.6h5.6"/></g><text id="gRingTx" x="14" y="17.2" text-anchor="middle"></text></svg><span class="gpill" id="gPill" hidden></span></button>
       <button class="icon-btn" id="btnSettings" type="button" aria-label="설정" title="설정"><span data-i="settings"></span></button>
     </header>
     <div class="shelf-body">
@@ -1882,7 +1888,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v216 · 11-11 11:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v218 · 11-11 13:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -1956,6 +1962,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
     </div>
     <div class="gs-grp"><div class="gs-gh">동기화 범위</div>
       <label class="gs-row"><span class="gs-rt"><b>PDF 원본도 동기화</b><small>끄면 목록·필기·북마크만 맞춥니다. PDF는 용량이 커서 처음엔 오래 걸리고 통신량도 듭니다.</small></span><input type="checkbox" id="gsBlob" class="gs-sw" role="switch" checked></label>
+      <label class="gs-row"><span class="gs-rt"><b>자동 동기화는 Wi-Fi에서만</b><small id="gsNetNote">켜면 모바일 데이터로는 자동 동기화와 PDF 뒤에서 받기를 쉬고, Wi-Fi가 잡히면 이어서 합니다. 「지금 동기화」와 고른 책 동기화는 언제나 됩니다.</small></span><input type="checkbox" id="gsWifi" class="gs-sw" role="switch"></label>
       <label class="gs-row"><span class="gs-rt"><b>PDF 자동 내려받기 최대 크기</b><small>이보다 큰 PDF(스캔본·두꺼운 주석서 등)는 다른 기기에서 표지·북마크·필기만 먼저 맞추고, PDF는 그 문서를 열 때 드라이브에서 받습니다. 올리기는 크기와 상관없이 모든 PDF가 대상입니다. 한글 문서·노트는 제한하지 않습니다.</small></span><select id="gsMax"><option value="30">30MB</option><option value="50">50MB</option><option value="100">100MB</option><option value="200">200MB</option><option value="0">제한 없음</option></select></label>
     </div>
     <div class="gs-grp"><div class="gs-gh">도움말</div>
@@ -8490,8 +8497,20 @@ async function gPutBlob(token,name,buf,ts,ex,label){
 const gGetJson=async(token,id)=>(await gFetch(token,G_API+'/'+id+'?alt=media')).json();
 const gGetBuf=async(token,id)=>(await gFetch(token,G_API+'/'+id+'?alt=media')).arrayBuffer();
 const gDel=(token,id)=>gFetch(token,G_API+'/'+id,{method:'DELETE'}).catch(()=>{});
+/* 연결 종류: 안드로이드 크롬만 navigator.connection.type(wifi/cellular…)을 알려 준다. 모르면 제한하지 않는다 */
+function gNetKind(){const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;if(!c||!c.type)return '';return c.type==='cellular'?'data':c.type==='none'?'none':'ok';}
+const gNetOk=()=>lsGet('neul-gnet')!=='wifi'||gNetKind()!=='data';   /* 자동 동기화·뒤에서 받기만 이 규칙을 따른다. 「지금 동기화」와 고른 책 동기화는 늘 된다 */
 const gBusyLocked=()=>{if(!gBusy)return false;if(Date.now()-gBusyAt>180000){gBusy=false;return false;}return true;};
-function gStatus(msg,kind){gBusyAt=Date.now();if(gStatusEl){gStatusEl.textContent=msg;gStatusEl.dataset.k=kind||'';}}
+function gStatus(msg,kind){gBusyAt=Date.now();if(gStatusEl){gStatusEl.textContent=msg;gStatusEl.dataset.k=kind||'';}gPill(msg);}
+/* 서재 클라우드 버튼: 동기화·뒤에서 받기가 도는 동안 돌아가고, 옆에 진행 상황이 뜬다 (동기화 창을 닫아도 계속 보인다) */
+function gPill(msg){const b=$('#btnSync'),p=$('#gPill'),rg=$('#gRing');if(!b||!p)return;const bg=gBg.run,busy=gBusyLocked()||bg;b.classList.toggle('busy',busy);
+  if(!busy){p.hidden=true;if(rg)rg.setAttribute('hidden','');b.title='구글 드라이브 동기화';return;}
+  const m=/(\d+)\/(\d+)/.exec(msg||'');const txt=bg?('PDF '+(m?m[1]+'/'+m[2]:(gBg.done+1)+'/'+gBg.total)):('동기화'+(m?' '+m[1]+'/'+m[2]:' 중'));
+  p.textContent=txt;p.hidden=false;b.title=bg&&!gBusyLocked()?'PDF를 뒤에서 내려받는 중 — 눌러서 자세히':'동기화 중 — 눌러서 자세히';
+  /* 진행률: 책 n/m번째를 하는 중이면 (n-1)/m, 뒤에서 받기는 끝난 권수/전체. 모르면 빙글빙글 도는 화살표 */
+  let pct=-1;if(bg&&!gBusyLocked()&&gBg.total)pct=Math.round(gBg.done/gBg.total*100);else if(m&&+m[2]>0)pct=Math.max(0,Math.min(99,Math.round((+m[1]-1)/+m[2]*100)));
+  if(rg){rg.removeAttribute('hidden');rg.dataset.m=pct<0?'spin':'pct';if(pct>=0){$('#gRingFg').style.strokeDashoffset=(69.1*(1-pct/100)).toFixed(1);$('#gRingTx').textContent=pct+'%';}}
+  if(pct>=0)b.title+=' ('+pct+'%)';}
 
 /* 워드(DOCX) → PDF: 구글 드라이브에 임시로 올려 구글 문서로 바꾼 뒤 PDF로 내보내고, 임시 파일은 바로 지운다 (drive.file 권한: 앱이 올린 파일만 접근) */
 let gcClient=null,gcTok=null,gcWait=null;
@@ -9069,11 +9088,12 @@ async function gReset(mode){
 }
 /* 뒤에서 PDF 받기: 동기화는 먼저 끝났다고 알리고, 남은 PDF는 하나씩 내려받는다. 같은 책은 한 번만 줄을 선다 */
 const gBg={q:new Map(),run:false,done:0,total:0};
-function gBgAdd(list){if(!list||!list.length)return;for(const j of list){if(!gBg.q.has(j.id)){gBg.q.set(j.id,j);gBg.total++;}}gBgRun();}
+function gBgAdd(list){if(!list||!list.length)return;gBg.run||gPill('');for(const j of list){if(!gBg.q.has(j.id)){gBg.q.set(j.id,j);gBg.total++;}}gBgRun();}
 async function gBgRun(){
   if(gBg.run)return;gBg.run=true;let ok=0,stopped=false,lastPaint=0;
   try{
     while(gBg.q.size){
+      if(!gNetOk()){stopped=true;break;}   /* Wi-Fi에서만: 모바일 데이터면 멈추고, Wi-Fi가 잡히면 이어서 받는다 */
       const [id,j]=gBg.q.entries().next().value;gBg.q.delete(id);
       const d=S.docs.find(x=>x.id===id);if(!d||(S.doc&&S.doc.id===id))continue;
       if(!navigator.onLine){stopped=true;break;}
@@ -9087,17 +9107,17 @@ async function gBgRun(){
         if(Date.now()-lastPaint>2500){lastPaint=Date.now();try{if(!$('#shelf').hidden)renderGrid();}catch(x){}}
       }catch(err){if(gFatal(err)){stopped=true;break;}logErr('gBgRun',err);gBg.done++;}
     }
-  }finally{gBg.run=false;}
+  }finally{gBg.run=false;gBadge();}
   if(!gBg.q.size){gBg.done=0;gBg.total=0;}
   try{if(!$('#shelf').hidden)renderGrid();}catch(x){}
-  if(ok){gStatus(stopped?`PDF ${ok}권 받음 — 나머지는 다음 동기화 때 이어서 받습니다`:`PDF ${ok}권 뒤에서 내려받기 완료 ✓`,stopped?'':'ok');if(!stopped)toast(`PDF ${ok}권 내려받기를 마쳤습니다`);}
+  if(ok){gStatus(stopped?`PDF ${ok}권 받음 — 나머지는 ${gNetOk()?'다음 동기화':'Wi-Fi에 연결되면'} 이어서 받습니다`:`PDF ${ok}권 뒤에서 내려받기 완료 ✓`,stopped?'':'ok');if(!stopped)toast(`PDF ${ok}권 내려받기를 마쳤습니다`);}
 }
 /* 서재에서 길게 눌러 고른 책만 동기화 */
 async function gSyncSel(){
   const ids=[...S.sel].filter(id=>S.docs.some(d=>d.id===id));if(!ids.length)return;
   if(!gOn()){toast('먼저 설정에서 구글 동기화를 켜 주세요');return;}
   if(gBusyLocked()){toast('다른 동기화가 진행 중입니다. 끝난 뒤 다시 눌러 주세요');return;}
-  gBusy=true;gBusyAt=Date.now();gDlgUpdate();toast(ids.length===1?'이 책만 동기화합니다…':ids.length+'권만 동기화합니다…');
+  gBusy=true;gBusyAt=Date.now();gDlgUpdate();gPill('동기화');toast(ids.length===1?'이 책만 동기화합니다…':ids.length+'권만 동기화합니다…');
   try{
     gStatus('구글 로그인 확인 중…');const token=await gGetToken(true);
     const r=await gSyncRun(token,undefined,{only:new Set(ids),force:true});
@@ -9126,8 +9146,8 @@ async function gSyncNow(){
 }
 /* 자동 동기화: 로그인 창을 띄우지 않는다. 토큰이 살아 있거나 조용한 갱신이 되면 진행하고, 아니면 건너뛴다 */
 async function gAuto(){
-  if(EMBED||!gOn()||gBusyLocked()||Date.now()<gSilentUntil||!navigator.onLine)return;
-  gBusy=true;gBusyAt=Date.now();gDlgUpdate();
+  if(EMBED||!gOn()||gBusyLocked()||Date.now()<gSilentUntil||!navigator.onLine||!gNetOk())return;
+  gBusy=true;gBusyAt=Date.now();gDlgUpdate();gPill('동기화');
   try{
     const token=await gGetToken(false);
     const r=await gSyncRun(token,undefined,{defer:true});
@@ -9225,7 +9245,7 @@ function gRelogin(){
     document.body.appendChild(b);}
   b.hidden=false;
 }
-function gBadge(){const b=$('#btnSync');if(!b)return;b.classList.toggle('on',gOn());b.classList.toggle('warn',gOn()&&!!gLastErr);gRelogin();}
+function gBadge(){const b=$('#btnSync');if(!b)return;b.classList.toggle('on',gOn());b.classList.toggle('warn',gOn()&&!!gLastErr);gPill('');gRelogin();}
 function gFriendly(m){
   m=String(m||'');
   if(/Failed to fetch|NetworkError|Load failed|network/i.test(m))return '구글 드라이브에 연결하지 못했습니다. 인터넷 연결을 확인한 뒤 「지금 동기화」를 눌러 다시 시도해 주세요.';
@@ -9248,7 +9268,9 @@ function gDlgUpdate(){
   $('#gsCard').dataset.s=st;
   $('#gsState').textContent=busy?'동기화하는 중…':!on?'연결되지 않음':err?'확인이 필요합니다':'연결됨';
   $('#gsLast').textContent=!on?'구글 계정으로 로그인하면 이 기기의 서재가 드라이브에 보관되고, 다른 기기와 자동으로 맞춰집니다.'
-    :(t?'마지막 동기화: '+gAgo(t):'아직 동기화한 적이 없습니다')+(on&&!busy&&!err&&!gSignedIn()?' · 다음 동기화 때 다시 로그인이 필요할 수 있습니다':'');
+    :(t?'마지막 동기화: '+gAgo(t):'아직 동기화한 적이 없습니다')+(on&&!busy&&!err&&!gSignedIn()?' · 다음 동기화 때 다시 로그인이 필요할 수 있습니다':'')+(on&&!gNetOk()?' · 지금은 모바일 데이터라 자동 동기화를 쉬는 중입니다':'');
+  $('#gsWifi').checked=lsGet('neul-gnet')==='wifi';
+  {const k=gNetKind(),n=$('#gsNetNote');if(n)n.dataset.k=k;n.textContent='켜면 모바일 데이터로는 자동 동기화와 PDF 뒤에서 받기를 쉬고, Wi-Fi가 잡히면 이어서 합니다. 「지금 동기화」와 고른 책 동기화는 언제나 됩니다. 현재 연결: '+(k==='data'?'모바일 데이터':k==='ok'?'Wi-Fi 등 데이터 요금 없는 연결':k==='none'?'연결 없음':'알 수 없음 (이 브라우저는 연결 종류를 알려 주지 않아, 켜 두어도 제한하지 못합니다)');}
   $('#gsBlob').checked=gBlobOn();{const m=$('#gsMax');if(m){const v=lsGet('neul-gmax');m.value=v===null?'30':v;}}
   const f=$('#dlgSync .gs-fix');if(f)f.hidden=!on;
   const nb=$('#gsNow');nb.disabled=busy;nb.textContent=busy?'동기화하는 중…':on?'지금 동기화':'구글 로그인하고 시작';
@@ -9262,6 +9284,7 @@ function bindGSync(){
   $$('#dlgSync .gs-tab').forEach(b=>b.addEventListener('click',()=>gTab(b.dataset.t)));
   $('#gsNow').addEventListener('click',()=>{$('#gsMsg').dataset.k='';gSyncNow();});
   $('#gsBlob').addEventListener('change',e=>{lsSet(GK.blob,e.target.checked?'1':'0');});
+  $('#gsWifi').addEventListener('change',e=>{lsSet('neul-gnet',e.target.checked?'wifi':'all');gDlgUpdate();if(gNetOk())gSchedule();});
   $('#gsMax').addEventListener('change',e=>{lsSet('neul-gmax',e.target.value);gSchedule();});
   $('#gsRestore').addEventListener('click',()=>{$('#dlgSync').close();bakRestore();});
   $('#gsBak').addEventListener('click',()=>{bakStatus('');bakAll(true);});
@@ -9279,6 +9302,7 @@ function bindGSync(){
     else if(Date.now()-(+lsGet(GK.time)||0)>5*60*1000)setTimeout(gAuto,800);
   });
   addEventListener('online',()=>{if(gOn())setTimeout(gAuto,1500);});
+  try{const c=navigator.connection;if(c&&c.addEventListener)c.addEventListener('change',()=>{if(gOn()&&gNetOk()){setTimeout(gAuto,1500);gBgRun();}gDlgUpdate();});}catch(e){}
   if(gOn())setTimeout(gAuto,2500);
 }
 
