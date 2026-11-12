@@ -1931,7 +1931,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v227 · 11-11 23:42</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v228 · 11-13 00:26</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -8261,7 +8261,7 @@ function bindEvents(){
         const b=el('button','',{type:'button'});b.dataset.v=x[0];b.setAttribute('role','option');const on=x[0]===S.sort;b.classList.toggle('on',on);b.setAttribute('aria-selected',String(on));
         b.innerHTML='<span></span>'+(on?'<span class="ck">✓</span>':'');b.firstChild.textContent=x[1];menu.appendChild(b);}};
     build();
-    btn.addEventListener('click',e=>{e.stopPropagation();if(menu.hidden){build();menu.hidden=false;btn.setAttribute('aria-expanded','true');}else close();});
+    btn.addEventListener('click',e=>{e.stopPropagation();if(menu.hidden){const vm=$('#shViewMenu');if(vm){vm.hidden=true;$('#shViewBtn').setAttribute('aria-expanded','false');}build();menu.hidden=false;btn.setAttribute('aria-expanded','true');}else close();});
     menu.addEventListener('click',e=>{const b=e.target.closest('button[data-v]');if(!b)return;S.sort=b.dataset.v;lsSet('neul-sort',S.sort);build();close();renderGrid();});
     document.addEventListener('click',e=>{if(!e.target.closest('.sortw'))close();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){close();btn.focus();}});
