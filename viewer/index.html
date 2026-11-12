@@ -1931,7 +1931,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v228 · 11-13 00:26</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v230 · 11-13 00:48</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -2400,10 +2400,11 @@ function docsOf(id){
   const L=S.docs.filter(inLib);
   if(id==='all')return L;
   if(id==='fav')return L.filter(d=>d.fav);
-  if(id==='recent')return S.docs.filter(d=>!d.trash&&d.opened>0).sort((a,b)=>b.opened-a.opened).slice(0,100);
+  if(id==='recent')return S.docs.filter(d=>!d.trash).sort((a,b)=>lastUse(b)-lastUse(a)).slice(0,100);   /* 카테고리·임시·미분류 가리지 않고, 연 날 또는 서재에 넣은 날 중 늦은 쪽 기준 */
   if(id==='unsorted')return L.filter(d=>!d.catId);
   return L.filter(d=>d.catId===id);
 }
+const lastUse=d=>Math.max(d.opened||0,d.created||0);
 const countFor=id=>docsOf(id).length;
 /* 성능: 카테고리별 문서 수를 한 번 훑어서 센다 (카테고리마다 전체 문서를 다시 거르지 않는다) */
 function countsAll(){
@@ -2411,7 +2412,7 @@ function countsAll(){
   for(const d of S.docs){
     if(d.trash){m.trash++;continue;}
     if(d.tmp)m.temp++;
-    if(d.opened>0)m.recent++;
+    m.recent++;
     if(!d.tmp){m.all++;if(d.fav)m.fav++;if(!d.catId)m.unsorted++;else m[d.catId]=(m[d.catId]||0)+1;}
   }
   m.recent=Math.min(100,m.recent);return m;   /* 목록(최대 100개)과 같은 상한 */
@@ -2800,7 +2801,7 @@ function renderGridImpl(){
     pages:(a,b)=>(b.pages||0)-(a.pages||0)||key(b)-key(a),
     pagesAsc:(a,b)=>(a.pages||0)-(b.pages||0)||key(b)-key(a),
     size:(a,b)=>(b.size||0)-(a.size||0)||key(b)-key(a)};
-  if(S.catId==='recent'&&!q&&S.sort==='recent')list.sort((a,b)=>b.opened-a.opened);else list.sort(SORTS[S.sort]||SORTS.recent);   /* 최근 읽은 문서도 고른 정렬을 따른다 (기본 '최근 사용순'일 때만 연 시각순 + 날짜 칸) */
+  if(S.catId==='recent'&&!q&&S.sort==='recent')list.sort((a,b)=>lastUse(b)-lastUse(a));else list.sort(SORTS[S.sort]||SORTS.recent);   /* 최근 읽은 문서도 고른 정렬을 따른다 (기본 '최근 사용순'일 때만 연 시각순 + 날짜 칸) */
   const empty=$('#empty');empty.hidden=list.length>0||folders.length>0;
   if(!list.length&&!folders.length){
     const searching=!!q;
@@ -2813,7 +2814,7 @@ function renderGridImpl(){
   /* 한 번에 다 그리지 않고, 보이는 만큼만 먼저 그린 뒤 스크롤하면 이어서 그린다 */
   {const CH=Math.max(36,(SH&&SH.cols||6)*6);let shown=0;const sent=el('div','gridmore');
     if(gridIO)gridIO.disconnect();
-    const byAdd=S.sort==='added'&&!q,byDay=byAdd||(S.catId==='recent'&&!q&&S.sort==='recent'),dayT=d=>byAdd?(d.created||0):(d.opened||0);let lastL='';   /* 최근 추가순이면 추가한 날, 최근 읽은 문서의 최근 사용순이면 연 날 기준으로 칸을 나눈다 */
+    const byAdd=S.sort==='added'&&!q,byDay=byAdd||(S.catId==='recent'&&!q&&S.sort==='recent'),dayT=d=>byAdd?(d.created||0):lastUse(d);let lastL='';   /* 최근 추가순이면 추가한 날, 최근 읽은 문서의 최근 사용순이면 연 날 기준으로 칸을 나눈다 */
     const t0=new Date();t0.setHours(0,0,0,0);
     const dayLbl=t=>{const o=new Date(t);o.setHours(0,0,0,0);const n=Math.round((t0-o)/864e5);return n<=0?'오늘':n<=3?n+'일 전':(o.getFullYear()!==t0.getFullYear()?o.getFullYear()+'년 ':'')+(o.getMonth()+1)+'월 '+o.getDate()+'일 ('+'일월화수목금토'[o.getDay()]+')';};   /* 3일 전까지는 '오늘·N일 전', 그 뒤는 날짜와 요일 */   /* 최근 읽은 문서: 언제 연 책인지 칸을 나눈다 */
     const fill=()=>{const end=Math.min(list.length,shown+CH);for(;shown<end;shown++){const d=list[shown];
@@ -9709,6 +9710,7 @@ init().catch(e=>{console.error(e);toast('초기화 중 오류가 발생했습니
       for(const k of keys){const r=await c.match(k);if(!r)continue;const b=await r.blob();const nm=decodeURIComponent(r.headers.get('x-name')||'공유된 파일.pdf');files.push(new File([b],nm,{type:b.type||'application/pdf'}));await c.delete(k);}
       history.replaceState(null,'',location.pathname);
       if(files.length)setTimeout(()=>importFiles(files,{os:true}),600);
+      else setTimeout(()=>toast('공유로 받은 파일이 없습니다. 이 형식은 공유로 받지 못했을 수 있어요. 파일을 저장한 뒤 불러오기로 넣어 주세요','err'),900);   /* 형식이 맞지 않으면 안드로이드가 파일을 빼고 앱만 열어 준다 */
     }
     if('launchQueue' in window)launchQueue.setConsumer(async lp=>{const fs=[];for(const h of (lp.files||[])){try{fs.push(await h.getFile());}catch(e){}}if(fs.length)importFiles(fs,{os:true,tab:true});});
   }catch(e){console.warn('share',e);}

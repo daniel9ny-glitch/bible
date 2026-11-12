@@ -49,7 +49,27 @@
           "accept": [
             "application/pdf",
             ".pdf",
-            "image/*"
+            "image/*",
+            ".hwp",
+            ".hwpx",
+            "application/x-hwp",
+            "application/haansofthwp",
+            "application/vnd.hancom.hwp",
+            "application/vnd.hancom.hwpx",
+            "application/hwp+zip",
+            ".docx",
+            ".doc",
+            ".pptx",
+            ".ppt",
+            ".xlsx",
+            ".xls",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/octet-stream"
           ]
         }
       ]
@@ -61,6 +81,15 @@
       "accept": {
         "application/pdf": [
           ".pdf"
+        ],
+        "application/x-hwp": [
+          ".hwp"
+        ],
+        "application/haansofthwp": [
+          ".hwp"
+        ],
+        "application/vnd.hancom.hwpx": [
+          ".hwpx"
         ]
       }
     }
