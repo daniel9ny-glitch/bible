@@ -72,7 +72,10 @@
             "application/octet-stream"
           ]
         }
-      ]
+      ],
+      "title": "title",
+      "text": "text",
+      "url": "url"
     }
   },
   "file_handlers": [

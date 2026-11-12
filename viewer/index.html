@@ -1931,7 +1931,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v230 · 11-13 00:48</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v231 · 11-13 00:59</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -9710,7 +9710,8 @@ init().catch(e=>{console.error(e);toast('초기화 중 오류가 발생했습니
       for(const k of keys){const r=await c.match(k);if(!r)continue;const b=await r.blob();const nm=decodeURIComponent(r.headers.get('x-name')||'공유된 파일.pdf');files.push(new File([b],nm,{type:b.type||'application/pdf'}));await c.delete(k);}
       history.replaceState(null,'',location.pathname);
       if(files.length)setTimeout(()=>importFiles(files,{os:true}),600);
-      else setTimeout(()=>toast('공유로 받은 파일이 없습니다. 이 형식은 공유로 받지 못했을 수 있어요. 파일을 저장한 뒤 불러오기로 넣어 주세요','err'),900);   /* 형식이 맞지 않으면 안드로이드가 파일을 빼고 앱만 열어 준다 */
+      else{let inf='';try{const ic=await caches.open('shareinfo'),r=await ic.match('./info');if(r){inf=await r.text();await ic.delete('./info');}}catch(e){}
+        setTimeout(()=>toast('공유로 받은 파일이 없습니다'+(inf?' (받은 내용: '+inf+')':'')+'. 파일을 저장한 뒤 불러오기로 넣어 주세요','err'),900);}   /* 형식이 맞지 않으면 안드로이드가 파일을 빼고 앱만 열어 준다 */
     }
     if('launchQueue' in window)launchQueue.setConsumer(async lp=>{const fs=[];for(const h of (lp.files||[])){try{fs.push(await h.getFile());}catch(e){}}if(fs.length)importFiles(fs,{os:true,tab:true});});
   }catch(e){console.warn('share',e);}

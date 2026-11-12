@@ -27,8 +27,11 @@ self.addEventListener('fetch', (e) => {
         const fd = await req.formData();
         const cache = await caches.open('neul-share');
         let n = 0;
-        for (const f of fd.getAll('pdfs')) {
-          if (!f || !f.name) continue;
+        const info = [];
+        for (const [k, v] of fd.entries()) info.push(k + ':' + (v && typeof v === 'object' && 'size' in v ? (v.name || '이름없음') + '/' + (v.type || '?') + '/' + v.size : String(v).slice(0, 60)));
+        await (await caches.open('shareinfo')).put('./info', new Response(info.join(' | ') || '빈 요청'));
+        for (const [, f] of fd.entries()) {
+          if (!f || typeof f !== 'object' || !f.name) continue;
           await cache.put('./shared/' + (n++) + '-' + Date.now(), new Response(f, { headers: { 'x-name': encodeURIComponent(f.name), 'content-type': f.type || 'application/pdf' } }));
         }
       } catch (_) {}
