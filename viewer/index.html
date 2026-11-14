@@ -1931,7 +1931,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v231 · 11-13 00:59</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v232 · 11-14 12:00</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7831,7 +7831,7 @@ function wrapLines(ctx,text,maxW){
 /* layer: 없음=모두 / 'norm'=사진·글상자·메모(원래 색 그대로 덮는 것) / 'mult'=도형·손필기(형광펜처럼 아래 글자가 비쳐야 하는 것) — 내보내기에서 두 장으로 나눠 겹친다 */
 function paintAnnotations(ctx,a,k,layer){
   for(const it of a.i||[]){
-    if(layer==='norm'&&it.k==='shape')continue;if(layer==='mult'&&it.k!=='shape')continue;
+    if(layer==='mult')continue;   /* 도형도 화면처럼 보통 방식으로, 넣은 순서대로 (흰 도형이 아래 원본 글자를 덮고 그 위 글상자가 얹힌다) */
     const op=itOp(it);
     if(it.k==='img'){if(it._im&&it._im.naturalWidth){ctx.save();ctx.globalAlpha=op;const c=it.cr,nw=it._im.naturalWidth,nh=it._im.naturalHeight;
       if(c)ctx.drawImage(it._im,c.l*nw,c.t*nh,(1-c.l-c.r)*nw,(1-c.t-c.b)*nh,it.x*k,it.y*k,it.w*k,it.h*k);else ctx.drawImage(it._im,it.x*k,it.y*k,it.w*k,it.h*k);ctx.restore();}continue;}
@@ -7867,9 +7867,9 @@ async function buildPdf(sel,withAnn=true,d0,ann0){
         await prepAnn(a);
         const rot=((pg.getRotation().angle%360)+360)%360,cb=pg.getCropBox(),W=cb.width,H=cb.height,vw=rot%180?H:W,vh=rot%180?W:H;
         const k=Math.min(2.6,Math.sqrt(12e6/(vw*vh))),bm=PDFLib.BlendMode&&PDFLib.BlendMode.Multiply,deg=PDFLib.degrees;
-        /* 사진·글상자·메모는 보통 방식(원래 색 그대로)으로, 도형·손필기는 곱하기 방식(아래 글자가 비침)으로 따로 얹는다.
+        /* 사진·도형·글상자·메모는 보통 방식(원래 색 그대로)으로, 손필기만 곱하기 방식(아래 글자가 비침)으로 따로 얹는다.
            한 장으로 곱하면 덮어 붙인 사진의 색이 페이지 바탕색과 곱해져 화면·인쇄에서 어둡게 달라진다 */
-        const hasN=(a.i||[]).some(x=>x.k!=='shape'),hasM=!!(a.s&&a.s.length)||(a.i||[]).some(x=>x.k==='shape');
+        const hasN=!!(a.i&&a.i.length),hasM=!!(a.s&&a.s.length);
         for(const [layer,blend,has] of [['norm',null,hasN],['mult',bm,hasM]]){
           if(!has)continue;
           const cv=document.createElement('canvas');cv.width=Math.round(vw*k);cv.height=Math.round(vh*k);
