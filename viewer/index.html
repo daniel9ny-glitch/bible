@@ -1931,7 +1931,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v232 · 11-14 12:00</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v233 · 11-15 10:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -6479,7 +6479,7 @@ function ttsOff(){
 
 /* ================= 음성 따라가기 (스크롤 자동 이동) =================
    귀 버튼 = 스크롤 준비 상태. 원고의 구절을 터치하면 그곳부터 스크롤 시작.
-   기본 속도(분당 320자)로 글자 수 기준 일정하게 이동하고, 음성 인식은 지금 읽는 문단의 앞뒤 한 문단 범위 안에서만 위치를 맞춘다(범위 밖 음성은 무시). */
+   기본 속도(분당 220자)로 글자 수 기준 일정하게 이동하고, 음성 인식은 지금 읽는 문단의 앞뒤 한 문단 범위 안에서만 위치를 맞춘다(범위 밖 음성은 무시). */
 const VF={geo:new Map(),pdf:null,on:false,rec:null,pos:null,armed:false,abs:0,rate:320/60,ra:null,
   Tc:null,lastSet:null,userAt:-1e9,ft:0,raf:0,down:false,hlP:null,tap:null,lpDone:0,
   lastObs:0,lastHeard:0,lastScore:0,msg:'',msgT:0,stT:0,t0:0,sm:[],wr:[],vr:[],dis:new Set(),we:0,adj:0,org:null,anchor:.3,adopt:false,jump:null,hold:null,far:null,cand:null,edit:false,lost:false,brk:null,brkKey:'',rateT:0,
@@ -6707,9 +6707,9 @@ function vfUI(){
   $('#vfSpd').textContent=Math.round(VF.rate*60)+'자';
   }
 /* ---- 시작/이동 ---- */
-/* 속도: 기본은 20초에 110자(분당 330자) + 손으로 맞춘 만큼. 음성으로 속도를 바꾸지 않는다 */
-const VF_BASE=110/20;
-function vfEval(now){   /* 속도는 기본(분당 330자) + 손으로 맞춘 만큼. 음성으로 속도를 바꾸지 않는다 */
+/* 속도: 기본은 분당 220자 + 손으로 맞춘 만큼. 음성으로 속도를 바꾸지 않는다 */
+const VF_BASE=220/60;
+function vfEval(now){   /* 속도는 기본(분당 220자) + 손으로 맞춘 만큼. 음성으로 속도를 바꾸지 않는다 */
   const rate=clamp(VF_BASE+VF.adj,2.5,12);
   if(Math.abs(rate-VF.rate)>.01){VF.rate=rate;vfUI();}
 }
