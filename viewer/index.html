@@ -1739,7 +1739,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
       </div>
       </div>
       <section class="dpane" id="dictPane" hidden aria-label="받아쓰기"><div class="dpgrip" id="dpGrip" role="separator" aria-label="메모 창 크기 조절" title="끌어서 크기 조절 (두 번 누르면 처음 크기)"></div>
-        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcMore" aria-label="메뉴" aria-haspopup="true" aria-expanded="false" title="메뉴">⋯</button><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn dsic" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button>
+        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn dsic" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button><button type="button" class="btn dsic" id="dcMore" aria-label="메뉴" aria-haspopup="true" aria-expanded="false" title="메뉴">⋯</button>
           <div class="dpmenu" id="dpMenu" role="menu" hidden><button type="button" class="dpmi" id="dcCopy" role="menuitem">복사 <small>서식 포함</small></button><button type="button" class="dpmi" id="dcTxt" role="menuitem">TXT 파일로 내보내기</button><button type="button" class="dpmi" id="dcSet" role="menuitem">받아쓰기 설정 <small>고감도·소리 증폭</small></button><button type="button" class="dpmi" id="dcSide" role="menuitem">왼쪽/오른쪽으로 옮기기</button><hr><button type="button" class="dpmi dng" id="dcClr" role="menuitem">전체 지우기</button></div></div>
         <div class="dcbox" id="dcBox"><div class="etx" id="dcBody" contenteditable="true" role="textbox" aria-multiline="true" aria-label="메모" data-ph="메모 작성…  (아래 [시작]을 누르면 들리는 말이 여기에 글자로 쌓입니다)" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></div></div>
         <div class="dslist" id="dsList" hidden></div>
@@ -1981,7 +1981,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v235 · 11-17 20:30</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v237 · 11-17 21:10</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7681,7 +7681,7 @@ function dictSettings(){
     dlg=document.createElement('dialog');dlg.id='dlgDict';
     dlg.innerHTML=`<form method="dialog" class="dlg"><h3>받아쓰기 설정</h3>
       <div class="field"><span class="lab">받아쓰기 방식</span><div class="st-seg" id="dsEng" role="radiogroup"><button type="button" role="radio" data-e="">기본</button><button type="button" role="radio" data-e="gemini">고감도 (Gemini)</button></div><small class="hint">고감도는 멀리서 들리는 설교·강연용입니다. 말이 잠깐 멈출 때마다 글로 바뀌어 기본보다 느리고, 인터넷과 Gemini API 키가 필요합니다.</small></div>
-      <div class="field"><label for="dsKey">Gemini API 키</label><input id="dsKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…"><small class="hint" id="dsKeyH"></small></div>
+      <div class="field"><label for="dsKey">Gemini API 키</label><input id="dsKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…"><small class="hint" id="dsKeyH"></small><a class="btn" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" style="margin-top:6px;display:inline-block;text-decoration:none">API 키 발급받기 바로가기 ↗</a></div>
       <div class="field"><span class="lab">소리 증폭 <small>(기본 방식)</small></span><div class="st-seg" id="dsBst" role="radiogroup"><button type="button" role="radio" data-b="0">끔</button><button type="button" role="radio" data-b="1">중</button><button type="button" role="radio" data-b="2">강</button></div><small class="hint" id="dsBstH"></small></div>
       <div class="actions"><span class="grow"></span><button class="btn primary">닫기</button></div></form>`;
     document.body.appendChild(dlg);
