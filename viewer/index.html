@@ -23,6 +23,22 @@
 #dictPane .dsr .dsmain small{font-size:12.5px;margin-top:3px}
 #dictPane .dsr button.dsi{width:38px;height:38px}
 #dictPane .dsr button.dsi:hover{background:color-mix(in srgb,var(--fg) 10%,transparent)}
+/* 받아쓰기 하단: [받아쓰기][녹음] 선택 + 시작/멈춤 한 버튼 */
+#dictPane .dctools{gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));align-items:center;flex-wrap:nowrap}
+#dictPane .dct{flex:none;height:42px;padding:0 14px;border-radius:21px;flex-direction:row;gap:7px;font-size:13.5px;font-weight:600;background:none}
+#dictPane .dct b{display:inline;font-weight:600}
+#dictPane .dct svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#dictPane .dct.tg{border:1.5px solid var(--line);color:var(--fg2)}
+#dictPane .dct.tg.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+#dictPane .dct.tg.lk{opacity:.55}
+#dictPane .dct.go{margin-left:auto;padding:0 20px 0 16px;background:var(--accent);color:var(--accent-fg);height:44px;border-radius:22px;font-size:14.5px;font-weight:700}
+#dictPane .dct.go:hover{filter:brightness(1.06)}
+#dictPane .dct.go .gdot{width:12px;height:12px;border-radius:50%;background:currentColor;flex:none}
+#dictPane .dct.go[data-run="1"]{background:#e5484d;color:#fff}
+#dictPane .dct.go[data-run="1"] .gdot{border-radius:3px;animation:vfp 1.4s infinite}
+#dictPane .dct.go[data-run="1"][data-l=bad]{background:#b8860b}
+#dictPane .dau .dsi.dtr{color:var(--accent)}#dictPane .dau .dsi.dtr svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;width:18px;height:18px}
+#dictPane .dau .dsi.dtr.busy{width:auto;min-width:44px;padding:0 8px;font-size:12px;font-weight:700;border-radius:15px;background:color-mix(in srgb,var(--accent) 14%,transparent)}
 </style>
 <title>늘뷰어</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500&display=swap">
@@ -1790,9 +1806,9 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
           <button type="button" data-f="clr" title="서식 지우기 (Ctrl+\)" data-i="clr"></button>
         </div>
         <div class="dctools" role="toolbar" aria-label="받아쓰기 도구">
-          <button type="button" class="dct" id="dcRec" data-l="off" aria-label="녹음 상태"><i class="rdot"></i><b>시작</b></button>
-          <button type="button" class="dct" id="dcAud" aria-label="녹음" aria-pressed="false" title="소리를 파일로 녹음"><span data-i="mic"></span><b>녹음</b></button>
-          <button type="button" class="dct" id="dcStop" aria-label="멈춤" title="받아쓰기 멈춤"><span data-i="stop"></span><b>멈춤</b></button>
+          <button type="button" class="dct tg" id="dcTx" aria-pressed="true" title="받아쓰기: 들리는 말을 글로 적습니다"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h9"/></svg><b>받아쓰기</b></button>
+          <button type="button" class="dct tg" id="dcSv" aria-pressed="false" title="녹음: 소리를 파일로 저장합니다"><span data-i="mic"></span><b>녹음</b></button>
+          <button type="button" class="dct go" id="dcGo" data-l="off" data-run="0" aria-label="시작"><i class="gdot"></i><b>시작</b></button>
         </div>
       </section>
     </div>
@@ -2009,7 +2025,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v242 · 11-17 23:10</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v246 · 11-17 20:55</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7204,12 +7220,28 @@ function dictRender(){
 /* 녹음 표시등: VF와 같은 방식 — 녹색(방금 받아 적음) · 주황(듣는 중, 글이 잠시 없음) · 빨강(한참 소리가 없음) · 회색(꺼짐) */
 function dictLevel(){if(!DICT.on)return'off';const d=(Date.now()-(DICT.lastRes||0))/1000;return d<6?'ok':d<20?'mid':'bad';}
 function dictLevelUI(){
-  const b=$('#dcRec');if(!b)return;const L=dictLevel();b.dataset.l=L;{const fd=$('#dcFoldDot');if(fd)fd.dataset.l=L;}
-  b.lastChild.textContent=({off:'시작',ok:'녹음 중',mid:'듣는 중',bad:'소리 없음'})[L];
-  b.title=({off:'눌러서 받아쓰기 시작',ok:'소리를 받아 적는 중',mid:'듣고 있습니다 — 글이 잠시 없습니다',bad:'한참 소리가 없습니다 · 마이크 확인'})[L];
-  $('#dcStop').disabled=!DICT.on;
+  const L=dictLevel();{const fd=$('#dcFoldDot');if(fd)fd.dataset.l=DICT.on?L:(DR.on?'ok':'off');}
+  goUI();
 }
-setInterval(()=>{if(DICT.on)dictLevelUI();},1000);
+/* 시작/멈춤 한 버튼 + 받아쓰기·녹음 선택. 멈춤 글자에는 지난 시간을, 소리가 한참 없으면 안내를 붙인다 */
+function goUI(){
+  const b=$('#dcGo');if(!b)return;const run=DICT.on||DR.on,L=dictLevel();
+  b.dataset.run=run?'1':'0';b.dataset.l=DICT.on?L:'ok';
+  const t0=DR.on?DR.t0:(DICT.t0||Date.now()),bad=run&&DICT.on&&L==='bad';
+  b.querySelector('b').textContent=run?('멈춤 '+drFmt((Date.now()-t0)/1000)+(bad?' · 소리 없음':'')):'시작';
+  b.title=run?(bad?'한참 소리가 없습니다 · 마이크 확인 · 누르면 멈춤':'눌러서 멈춤'):'눌러서 시작';b.setAttribute('aria-label',run?'멈춤':'시작');
+  for(const [id,on] of [['dcTx',goTx()],['dcSv',goSv()]]){const t=$('#'+id);if(t){t.classList.toggle('on',on);t.setAttribute('aria-pressed',String(on));t.classList.toggle('lk',run);}}
+}
+function goStart(){
+  const tx=goTx(),sv=goSv();
+  if(!tx&&!sv){toast('받아쓰기나 녹음 중 하나는 켜 주세요');return;}
+  if(tx&&sv){
+    if(dwEngine())drStart('share');   /* 고감도: 녹음하면서 동시에 글로 */
+    else{toast('기본 방식은 녹음 중에 글이 나오지 않습니다 · 끝난 뒤 녹음 옆 [글로 옮기기]를 누르세요');drStart('own');}
+  }else if(tx)dictStart();else drStart('own');
+}
+function goStop(){if(DR.on)drStop();if(DICT.on)dictStop();}
+setInterval(()=>{if(DICT.on)dictLevelUI();else if(DR.on)goUI();},1000);
 /* ---- 메모 줄별 서식(옛 기록 변환용): 번호·크기·정렬·글자 일부 서식 ---- */
 const HG='가나다라마바사아자차카타파하',NUMS=['1.','가.','1)','가)','(1)','(가)','①','㉮'];
 function numLabel(o,n){const g=HG[(n-1)%14];
@@ -7545,7 +7577,9 @@ function dictFeed(e){   /* 인식 결과를 받아 적는다 (받아쓰기 전�
 /* ---- 고감도 받아쓰기(Gemini)·소리 증폭·음성 녹음: 늘메모와 같은 방식 ----
    고감도: 소리를 키워 짧게 끊어 Gemini 음성인식으로 보낸다(API 키 필요, 설정에서 켠 경우만). 기본 방식은 브라우저 음성인식.
    키는 이 기기에만 저장한다(동기화 안 함). 같은 주소(github.io)의 늘메모에 저장된 키가 있으면 그것도 읽어 쓴다. */
-const DWK={eng:'neul-dengine',key:'neul-gkey',bst:'neul-dboost',mdl:'neul-gmodel'};
+const DWK={eng:'neul-dengine',key:'neul-gkey',bst:'neul-dboost',mdl:'neul-gmodel',int:'neul-dint',tx:'neul-dtx',sv:'neul-dsv'};
+const dwInt=()=>{const v=+lsGet(DWK.int);return v===60?60:30;};   /* 글로 바뀌는 간격(초): 30·60, 기본 30 */
+const goTx=()=>lsGet(DWK.tx)!=='0',goSv=()=>lsGet(DWK.sv)==='1';   /* 시작 버튼이 하는 일: 받아쓰기(기본 켬)·녹음(기본 끔) */
 const dwKey=()=>((lsGet(DWK.key)||'').trim()||(lsGet('nm-gkey')||'').trim());
 const dwEngine=()=>lsGet(DWK.eng)==='gemini'&&!!dwKey();
 const boostLv=()=>{const v=+lsGet(DWK.bst);return v>=0&&v<=2?v:0;};   /* 기본 끔: 켜면 폰에 따라 인식이 오히려 안 될 수 있음 */
@@ -7594,6 +7628,7 @@ async function dwStart(){
 }
 function dwSeg(){
   if(!DW.on)return;
+  {const T=dwInt()*1000;DW.min=Math.round(T*.8);DW.max=Math.round(T*1.25);}   /* 선택한 간격을 목표로, 그 뒤 첫 말 멈춤에서 자름 */
   const mt=dwMime();let rec;
   try{rec=mt?new MediaRecorder(DW.dest.stream,{mimeType:mt,audioBitsPerSecond:48000}):new MediaRecorder(DW.dest.stream);}catch(e){toast('이 기기에서는 고감도 받아쓰기를 쓸 수 없습니다','err');dictStop();return;}
   const chunks=[],buf=new Float32Array(DW.an.fftSize);let t0=Date.now(),quiet=0,peak=0;
@@ -7615,7 +7650,7 @@ async function dwPump(){
   if(DW.busy)return;DW.busy=true;
   while(DW.q.length){
     const it=DW.q[0],r=await dwSend(it);
-    if(r==='retry'){it.n++;if(it.n>3){DW.q.shift();toast('인터넷이 불안정해 한 구간을 건너뜁니다','err');}else await dwSleep(1500*it.n);continue;}
+    if(r==='retry'){it.n++;if(it.n>3){DW.q.shift();if(DW.quota)DW.q.length=0;else toast('인터넷이 불안정해 한 구간을 건너뜁니다','err');}else await dwSleep(1500*it.n);continue;}
     DW.q.shift();if(r==='fatal'){DW.q.length=0;break;}
   }
   DW.busy=false;if(!DW.on)dwRelease();
@@ -7626,10 +7661,20 @@ async function gGen(key,body){
   const saved=lsGet(DWK.mdl)||lsGet('nm-gmodel'),list=saved?[saved,...GMODELS.filter(m=>m!==saved)]:GMODELS;let res=null;
   for(const m of list){
     res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body)});
-    if(res.status===404)continue;
+    if(res.status===404||res.status===429)continue;   /* 모델마다 한도가 따로라서 한도 초과(429)도 다음 모델로 넘어가 본다 */
     if(res.ok)lsSet(DWK.mdl,m);return res;}
   return res;
 }
+async function dwPcm(blob){   /* 녹음 파일을 16kHz 모노 PCM으로 */
+  const AC=window.AudioContext||window.webkitAudioContext,c=new AC();let buf;
+  try{buf=await c.decodeAudioData(await blob.arrayBuffer());}finally{try{c.close();}catch(e){}}
+  const n=Math.max(1,Math.ceil(buf.duration*16000)),oc=new OfflineAudioContext(1,n,16000),s=oc.createBufferSource();s.buffer=buf;s.connect(oc.destination);s.start();
+  return (await oc.startRendering()).getChannelData(0);
+}
+function dwWavOf(pcm){const o=new DataView(new ArrayBuffer(44+pcm.length*2)),w=(p,t)=>{for(let i=0;i<t.length;i++)o.setUint8(p+i,t.charCodeAt(i));};
+  w(0,'RIFF');o.setUint32(4,36+pcm.length*2,true);w(8,'WAVEfmt ');o.setUint32(16,16,true);o.setUint16(20,1,true);o.setUint16(22,1,true);o.setUint32(24,16000,true);o.setUint32(28,32000,true);o.setUint16(32,2,true);o.setUint16(34,16,true);w(36,'data');o.setUint32(40,pcm.length*2,true);
+  for(let i=0;i<pcm.length;i++){const v=Math.max(-1,Math.min(1,pcm[i]));o.setInt16(44+i*2,v<0?v*0x8000:v*0x7fff,true);}
+  return new Uint8Array(o.buffer);}
 async function dwWav(blob){   /* 녹음 조각을 16kHz 모노 WAV로 바꿔 Gemini가 확실히 읽는 형식으로 보낸다 */
   const AC=window.AudioContext||window.webkitAudioContext,c=new AC();let buf;
   try{buf=await c.decodeAudioData(await blob.arrayBuffer());}finally{try{c.close();}catch(e){}}
@@ -7641,14 +7686,14 @@ async function dwWav(blob){   /* 녹음 조각을 16kHz 모노 WAV로 바꿔 Gem
 }
 const dwB64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
 async function dwSend(it){
-  let b64;try{b64=dwB64(await dwWav(it.blob));}catch(e){toast('녹음 조각을 변환하지 못해 건너뜁니다','err');return 'skip';}
+  let b64;try{b64=dwB64(it.wav||await dwWav(it.blob));}catch(e){toast('녹음 조각을 변환하지 못해 건너뜁니다','err');return 'skip';}
   const hint='기독교 예배 설교 음성입니다. 성경 구절과 하나님, 예수님, 성령님, 은혜, 복음, 아멘 같은 말이 나옵니다.';
   const body={contents:[{parts:[{text:hint+' 이 오디오를 한국어 문장 그대로 받아적으세요. 설명·요약·번역 없이 들린 말만 쓰고, 말이 없거나 알아들을 수 없으면 아무것도 쓰지 마세요.'+(DW.prev?' 직전 내용(참고만, 다시 쓰지 말 것): '+DW.prev.slice(-200):'')},{inline_data:{mime_type:'audio/wav',data:b64}}]}],generationConfig:{temperature:0}};
   let res;try{res=await gGen(dwKey(),body);}catch(e){return 'retry';}
   if(res.status===400||res.status===401||res.status===403){let m='';try{m=((await res.json()).error||{}).message||'';}catch(e){}
     if(res.status===400&&!/API key/i.test(m)){toast('고감도 받아쓰기 오류 (400)','err');return 'skip';}
     toast('Gemini API 키가 올바르지 않거나 권한이 없습니다','err');setTimeout(()=>{if(DICT.on)dictStop();},0);return 'fatal';}
-  if(res.status===429){if(it.n>=3)toast('무료 사용 한도를 넘었습니다. 잠시 뒤 다시 시도하거나 기본 방식을 쓰세요','err');return 'retry';}
+  if(res.status===429){if(it.n>=3){DW.quota=1;toast('Gemini 무료 사용 한도를 넘었습니다. 하루 한도라면 내일 다시 쓸 수 있어요 · 간격을 늘리거나 기본 방식을 쓰세요','err');}return 'retry';}
   if(res.status>=500)return 'retry';
   if(!res.ok){toast('고감도 받아쓰기 오류 ('+res.status+')','err');return 'skip';}
   let j;try{j=await res.json();}catch(e){return 'skip';}
@@ -7657,9 +7702,9 @@ async function dwSend(it){
   return 'ok';
 }
 function dwStop(){DW.on=false;try{if(DW.rec&&DW.rec.state!=='inactive')DW.rec.stop();else dwRelease();}catch(e){dwRelease();}}
-function dwRelease(){if(DW.on||DW.busy||DW.q.length)return;try{DW.stream&&DW.stream.getTracks().forEach(t=>t.stop());}catch(e){}try{DW.ctx&&DW.ctx.close();}catch(e){}DW.stream=DW.ctx=DW.an=DW.dest=DW.rec=null;}
+function dwRelease(){if(DW.on||DW.busy||DW.q.length)return;try{if(DR.on&&DR.stream===DW.stream)DR.own=true;else DW.stream&&DW.stream.getTracks().forEach(t=>t.stop());}catch(e){}try{DW.ctx&&DW.ctx.close();}catch(e){}DW.stream=DW.ctx=DW.an=DW.dest=DW.rec=null;}
 /* ---- 음성 녹음: 소리를 파일로 저장해 받아쓰기 목록의 그 건에 붙인다 (이 기기에만 저장, 동기화 안 함) ---- */
-const DR={on:false,rec:null,stream:null,chunks:[],t0:0,tick:0,mime:'',sid:''};
+const DR={on:false,own:true,rec:null,stream:null,chunks:[],t0:0,tick:0,mime:'',sid:''};
 const drFmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
 function dsEnsure(){
   let s=dsGet(DICT.sid);
@@ -7667,33 +7712,39 @@ function dsEnsure(){
   return s;
 }
 function drUI(){
-  const b=$('#dcAud');if(!b)return;b.classList.toggle('on',DR.on);
-  b.querySelector('b').textContent=DR.on?drFmt((Date.now()-DR.t0)/1000):'녹음';
-  b.title=DR.on?'녹음 끝내기':'소리를 파일로 녹음';b.setAttribute('aria-pressed',String(DR.on));
+  goUI();
 }
-async function drStart(){
+async function drStart(mode){   /* mode 'share': 고감도 받아쓰기와 마이크 하나를 나눠 씀(동시) · 그 밖: 녹음만 */
   if(DR.on||!window.MediaRecorder){if(!window.MediaRecorder)toast('이 브라우저는 녹음을 지원하지 않습니다','err');return;}
-  if(DICT.on)dictStop();
-  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){toast(e&&e.name==='NotAllowedError'?'마이크가 허용되어 있지 않습니다. 주소창의 자물쇠에서 허용해 주세요':'마이크를 열 수 없습니다','err');return;}
+  let st,own=true;const share=mode==='share'&&dwEngine();
+  if(share){
+    if(!DICT.on)dictStart();
+    for(let i=0;i<120&&DICT.on&&!(DW.on&&DW.stream);i++)await new Promise(r=>setTimeout(r,50));
+    if(!(DICT.on&&DW.on&&DW.stream))return;
+    st=DW.stream;own=false;
+  }else{
+    if(DICT.on)dictStop();
+    try{st=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){toast(e&&e.name==='NotAllowedError'?'마이크가 허용되어 있지 않습니다. 주소창의 자물쇠에서 허용해 주세요':'마이크를 열 수 없습니다','err');return;}
+  }
   const mt=dwMime();let rec;
-  try{rec=mt?new MediaRecorder(st,{mimeType:mt,audioBitsPerSecond:32000}):new MediaRecorder(st);}catch(e){st.getTracks().forEach(t=>t.stop());toast('녹음을 시작하지 못했습니다','err');return;}
+  try{rec=mt?new MediaRecorder(st,{mimeType:mt,audioBitsPerSecond:32000}):new MediaRecorder(st);}catch(e){if(own)st.getTracks().forEach(t=>t.stop());toast('녹음을 시작하지 못했습니다','err');return;}
   if(DICT.view==='list')dsView(false);if(!DICT.sid)DICT.startAt=Date.now();
-  const s=dsEnsure();Object.assign(DR,{on:true,rec,stream:st,chunks:[],t0:Date.now(),mime:rec.mimeType||mt||'audio/webm',sid:s.id});
+  const s=dsEnsure();Object.assign(DR,{on:true,own,tx:share,rec,stream:st,chunks:[],t0:Date.now(),mime:rec.mimeType||mt||'audio/webm',sid:s.id});
   rec.ondataavailable=e=>{if(e.data&&e.data.size)DR.chunks.push(e.data);};rec.start(1000);
   clearInterval(DR.tick);DR.tick=setInterval(drUI,500);drUI();
 }
 async function drStop(){
   if(!DR.on)return;DR.on=false;clearInterval(DR.tick);
-  const rec=DR.rec,st=DR.stream,sid=DR.sid,dur=(Date.now()-DR.t0)/1000,mime=DR.mime;
+  const rec=DR.rec,st=DR.stream,sid=DR.sid,dur=(Date.now()-DR.t0)/1000,mime=DR.mime,wasTx=DR.tx;
   if(rec&&rec.state!=='inactive')await new Promise(res=>{rec.onstop=res;try{rec.stop();}catch(e){res();}});
-  try{st&&st.getTracks().forEach(t=>t.stop());}catch(e){}DR.rec=DR.stream=null;
+  try{if(DR.own)st&&st.getTracks().forEach(t=>t.stop());}catch(e){}DR.rec=DR.stream=null;
   const chunks=DR.chunks;DR.chunks=[];drUI();
   if(!chunks.length||dur<1)return;
   try{
     const ab=await new Blob(chunks,{type:mime}).arrayBuffer(),aid=uid();
     await DB.putRaw('kv','aud:'+aid,{m:mime,b:ab});
     const s=dsGet(sid);if(!s){await DB.delRaw('kv','aud:'+aid);return;}
-    (s.auds=s.auds||[]).push({id:aid,dur:Math.round(dur),m:mime,c:Date.now()});s.mod=Date.now();dsPersist();
+    (s.auds=s.auds||[]).push({id:aid,dur:Math.round(dur),m:mime,c:Date.now(),tx:wasTx?1:undefined});s.mod=Date.now();dsPersist();
     drRender();toast('녹음을 저장했습니다');
   }catch(e){logErr('drStop',e);toast('녹음을 저장하지 못했습니다 (저장 공간 확인)','err');}
 }
@@ -7714,7 +7765,46 @@ function drRender(){
       const ext=/mp4/.test(r.m)?'m4a':/ogg/.test(r.m)?'ogg':'webm';download(new Blob([r.b],{type:r.m}),safeName((s&&s.t)||'녹음')+' '+drFmt(x.dur).replace(':','분')+'초.'+ext);});
     const tr=el('button','dsi',{type:'button',title:'녹음 지우기'});tr.setAttribute('aria-label','녹음 지우기');tr.innerHTML=ico('trash');
     tr.addEventListener('click',async()=>{if(!confirm('이 녹음을 지울까요?'))return;const q=dsGet(DICT.sid);if(q){q.auds=(q.auds||[]).filter(y=>y.id!==x.id);q.mod=Date.now();dsPersist();}await DB.delRaw('kv','aud:'+x.id).catch(()=>{});drRender();});
-    row.append(pl,dl,tr);box.appendChild(row);}
+    const gt=el('button','dsi dtr',{type:'button',title:'이 녹음을 글로 옮기기'});gt.setAttribute('aria-label','글로 옮기기');
+    gt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h9"/></svg>';gt.hidden=!!x.tx;
+    gt.addEventListener('click',()=>drTranscribe(x,gt));
+    row.append(pl,gt,dl,tr);box.appendChild(row);}
+}
+/* 녹음 파일을 글로 옮기기: 파일을 간격(20·30·60초) 길이로 나눠 Gemini에 차례로 보내 받아쓴 글을 그 받아쓰기에 이어 붙인다 (기본 방식에서 녹음한 뒤 쓰는 용도) */
+const TR={on:false,stop:false};
+async function drTranscribe(x,btn){
+  if(TR.on){TR.stop=true;return;}
+  if(!dwKey()){toast('Gemini API 키가 필요합니다 · ⋯ 메뉴 → 받아쓰기 설정에서 넣어 주세요','err');return;}
+  if(DICT.on||DR.on){toast('멈춘 뒤에 글로 옮길 수 있습니다');return;}
+  if(x.dur>1800){toast('30분이 넘는 녹음은 한 번에 옮기지 못합니다','err');return;}
+  const sid=DICT.sid,s=dsGet(sid);if(!s)return;
+  const r=await DB.get('kv','aud:'+x.id).catch(()=>null);if(!r){toast('이 기기에는 녹음 파일이 없습니다 (다른 기기에서 만든 녹음)');return;}
+  TR.on=true;TR.stop=false;const old=btn.innerHTML;btn.classList.add('busy');btn.title='누르면 취소';
+  const prog=t=>{btn.dataset.p=t;btn.title=t+' · 누르면 취소';};
+  let done=0,fatal=false;
+  try{
+    prog('준비 중');let pcm;
+    try{pcm=await dwPcm(new Blob([r.b],{type:r.m||'audio/webm'}));}catch(e){toast('녹음 파일을 읽지 못했습니다','err');return;}
+    const T=300*16000,W=1600;   /* 조각 길이 5분(요청 수를 줄여 무료 한도를 아낌, 16kHz WAV 5분≈9.6MB<20MB), 자를 곳을 찾는 0.1초 창 */
+    const cuts=[];let at=0;
+    while(at<pcm.length){let end=Math.min(pcm.length,at+T);
+      if(end<pcm.length){let best=end,bv=1e9;for(let c=end-3*16000;c<=end+16000&&c+W<=pcm.length;c+=W){if(c<=at+8000)continue;let e=0;for(let i=c;i<c+W;i+=8)e+=pcm[i]*pcm[i];if(e<bv){bv=e;best=c+W/2;}}end=Math.round(best);}   /* 조각 끝 근처에서 가장 조용한 곳에서 자른다 */
+      cuts.push([at,end]);at=end;}
+    DW.prev='';DW.quota=0;
+    for(let k=0;k<cuts.length&&!TR.stop&&!DW.quota;k++){
+      prog('글로 옮기는 중 '+(k+1)+'/'+cuts.length);btn.textContent=(k+1)+'/'+cuts.length;
+      const seg=pcm.subarray(cuts[k][0],cuts[k][1]);let pk=0;for(let i=0;i<seg.length;i+=16)pk=Math.max(pk,Math.abs(seg[i]));
+      if(pk<DW.skip*2)continue;
+      const it={wav:dwWavOf(seg),sid,n:0};let res;
+      for(let n=0;n<4;n++){it.n=n;res=await dwSend(it);if(res!=='retry')break;await dwSleep(1500*(n+1));}
+      if(res==='fatal'){fatal=true;break;}
+      if(res==='ok')done++;
+    }
+    if(fatal){return;}
+    const q=dsGet(sid);const a=q&&(q.auds||[]).find(y=>y.id===x.id);
+    if(!TR.stop){if(a){a.tx=1;q.mod=Date.now();dsPersist();}toast(done?'글로 옮겼습니다':'옮길 말이 없었습니다');}
+    else toast('글로 옮기기를 멈췄습니다 ('+done+'개 조각까지 옮김)');
+  }finally{TR.on=false;TR.stop=false;btn.classList.remove('busy');btn.innerHTML=old;btn.title='이 녹음을 글로 옮기기';delete btn.dataset.p;try{drRender();}catch(e){}}
 }
 function drPurge(s){for(const x of (s&&s.auds)||[])DB.delRaw('kv','aud:'+x.id).catch(()=>{});}
 /* ---- 받아쓰기 설정 창: 방식(기본/고감도)·Gemini API 키·소리 증폭 ---- */
@@ -7726,6 +7816,8 @@ function dictSettings(){
       <header><h3>받아쓰기 설정</h3><button type="submit" class="dsx" aria-label="닫기">✕</button></header>
       <section><div class="dsh"><b>받아쓰기 방식</b><small>고감도는 멀리서 들리는 설교·강연용입니다. 말이 멈출 때마다 글로 바뀌어 기본보다 느리고, 인터넷과 API 키가 필요합니다.</small></div>
         <div class="st-seg" id="dsEng" role="radiogroup"><button type="button" role="radio" data-e="">기본</button><button type="button" role="radio" data-e="gemini">고감도 (Gemini)</button></div></section>
+      <section><div class="dsh"><b>글로 바뀌는 간격</b><small>한 번에 변환하는 길이입니다. 짧으면 글이 빨리 나오지만 요청이 많아 무료 한도를 빨리 씁니다. 길면 요청이 적지만 글이 늦게 나옵니다. 1시간 기준 요청 수: 30초 120회 · 1분 60회. 하루 무료 한도는 키와 모델에 따라 달라서(Google이 수시로 바꿈) 앱에서 알 수 없습니다. 녹음을 끝낸 뒤 [글로 옮기기]는 5분씩 묶어 보내 한도를 거의 쓰지 않습니다.</small></div>
+        <div class="st-seg" id="dsInt" role="radiogroup"><button type="button" role="radio" data-n="30">30초</button><button type="button" role="radio" data-n="60">1분</button></div></section>
       <section id="dsKeySec"><div class="dsh"><b>Gemini API 키</b><small id="dsKeyH"></small></div>
         <input id="dsKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…">
         <a class="dslink" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">API 키 발급받기 <span aria-hidden="true">↗</span></a></section>
@@ -7735,13 +7827,14 @@ function dictSettings(){
     dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
     const ui=()=>{
       const eg=lsGet(DWK.eng)==='gemini';$$('#dsEng button',dlg).forEach(b=>b.setAttribute('aria-checked',String((b.dataset.e==='gemini')===eg)));
-      const bl=String(boostLv());$$('#dsBst button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.b===bl)));
+      const il=String(dwInt());$$('#dsInt button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.n===il)));const bl=String(boostLv());$$('#dsBst button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.b===bl)));
       const own=(lsGet(DWK.key)||'').trim(),nm=(lsGet('nm-gkey')||'').trim();
       $('#dsKeyH',dlg).textContent=own?'이 기기에 저장된 키를 씁니다.':nm?'늘메모에 저장된 키를 읽어 쓰는 중입니다. 따로 넣으면 그 키를 씁니다.':'키가 없습니다. 비워 두면 고감도를 켜도 기본 방식으로 받아씁니다.';
       $('#dsBstH',dlg).textContent=boostOk()?'마이크 소리를 먼저 키워 인식기에 넘깁니다. 폰에 따라 오히려 인식이 안 되면 끄세요.':'이 브라우저는 소리 증폭을 지원하지 않습니다 (최신 크롬에서만). 고감도 방식은 증폭을 자체로 씁니다.';
     };
     dlg._ui=ui;
     $('#dsEng',dlg).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lsSet(DWK.eng,b.dataset.e);ui();if(b.dataset.e==='gemini'&&!dwKey())toast('Gemini API 키를 아래에 넣어 주세요');});
+    $('#dsInt',dlg).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lsSet(DWK.int,b.dataset.n);ui();});
     $('#dsBst',dlg).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lsSet(DWK.bst,b.dataset.b);ui();});
     $('#dsKey',dlg).addEventListener('change',e=>{lsSet(DWK.key,e.target.value.trim());ui();});
   }
@@ -7764,7 +7857,7 @@ function dictListen(){
 function dictStart(){
   const hi=dwEngine();
   if(!SRec&&!hi){toast('이 브라우저는 음성 인식을 지원하지 않습니다 (크롬·엣지에서 사용하세요)','err');return;}
-  if(TT.on)ttsOff();if(DR.on)drStop();
+  if(TT.on)ttsOff();if(DR.on&&!hi)drStop();DICT.t0=Date.now();
   if(DICT.view==='list')dsView(false);if(!DICT.sid)DICT.startAt=Date.now();
   DICT.on=true;DICT.int='';DICT.lastRes=Date.now();DICT.docId=(S.bible||S.hwp)?'':(S.doc?S.doc.id:'');DICT.track=null;dictRender();
   if(hi){if(VF.on)toast('음성 따라가기와 고감도 받아쓰기는 기기에 따라 함께 안 될 수 있습니다');dwStart();return;}
@@ -7927,9 +8020,13 @@ function bindVf(){
   $('#dcClose').addEventListener('click',()=>{dictStop();dictPaneShow(false);});
   $('#dcFold').addEventListener('click',()=>dictFold(!DICT.fold));
   if(window.ResizeObserver)new ResizeObserver(()=>{try{fabPlaceAll();}catch(e){}}).observe($('#dictPane'));
-  $('#dcRec').addEventListener('click',()=>{if(!DICT.on)dictStart();});
-  $('#dcStop').addEventListener('click',()=>{if(DICT.on)dictStop();});
-  $('#dcAud').addEventListener('click',()=>{DR.on?drStop():drStart();});
+  $('#dcGo').addEventListener('click',()=>{(DICT.on||DR.on)?goStop():goStart();});
+  for(const [id,k,def] of [['dcTx',DWK.tx,true],['dcSv',DWK.sv,false]])$('#'+id).addEventListener('click',()=>{
+    if(DICT.on||DR.on){toast('멈춘 뒤에 바꿀 수 있습니다');return;}
+    const cur=k===DWK.tx?goTx():goSv(),other=k===DWK.tx?goSv():goTx();
+    if(cur&&!other){toast('받아쓰기나 녹음 중 하나는 켜져 있어야 합니다');return;}
+    lsSet(k,cur?'0':'1');goUI();});
+  goUI();
   $('#dcSet').addEventListener('click',dictSettings);
   {const pane=$('#dictPane'),g=$('#dpGrip'),KEY='neul-dictsz';let sz={};try{sz=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
    const side=()=>pane.classList.toggle('dR',sz.side==='R');const apply=()=>{side();if(sz.w)pane.style.setProperty('--dpw',sz.w+'px');else pane.style.removeProperty('--dpw');if(sz.h)pane.style.setProperty('--dph',sz.h+'px');else pane.style.removeProperty('--dph');};apply();
