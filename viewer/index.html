@@ -11,7 +11,19 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}</style>
+<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}/* 저장된 받아쓰기 목록: 한 덩어리 둥근 카드 */
+#dictPane .dslist{display:flex;flex-direction:column;padding:4px 12px 14px}
+#dictPane .dsnew{height:40px;margin:2px 0 12px;border:0;border-radius:20px;padding:0 20px;background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent);font-weight:700;font-size:14px;width:auto;align-self:flex-start}
+#dictPane .dsr{border-bottom:0;padding:0 4px 0 16px;min-height:60px;background:color-mix(in srgb,var(--fg) 7%,transparent);margin:0}
+#dictPane .dsr+.dsr{border-top:1px solid color-mix(in srgb,var(--fg) 9%,transparent)}
+#dictPane .dsr:first-of-type{border-radius:16px 16px 0 0}#dictPane .dsr:last-child{border-radius:0 0 16px 16px}#dictPane .dsr:first-of-type:last-child{border-radius:16px}
+#dictPane .dsr:hover,#dictPane .dsr.cur{background:color-mix(in srgb,var(--fg) 11%,transparent)}
+#dictPane .dsr .dsmain{padding:10px 4px}
+#dictPane .dsr .dsmain b{font-size:15px;font-weight:600}
+#dictPane .dsr .dsmain small{font-size:12.5px;margin-top:3px}
+#dictPane .dsr button.dsi{width:38px;height:38px}
+#dictPane .dsr button.dsi:hover{background:color-mix(in srgb,var(--fg) 10%,transparent)}
+</style>
 <title>늘뷰어</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500&display=swap">
 <style>
@@ -741,6 +753,22 @@ dialog.pdlg{width:min(660px,calc(100vw - 20px));max-height:calc(100dvh - 20px);o
 .dg>span{flex:1;min-width:0}
 .dg .st-seg{flex:none;width:156px}
 .dg .st-seg button{height:28px;font-size:12px}
+#dlgDict{border:0;padding:0;background:transparent;width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:auto;overflow:visible}
+#dlgDict::backdrop{background:rgba(0,0,0,.5)}
+.dsd{background:var(--surface);color:var(--fg);border-radius:20px;padding:6px 22px 8px;box-shadow:0 18px 50px rgba(0,0,0,.45);max-height:calc(100dvh - 32px);overflow:auto}
+.dsd header{display:flex;align-items:center;justify-content:space-between;height:56px}
+.dsd h3{margin:0;font-size:17px;font-weight:700}
+.dsd .dsx{width:34px;height:34px;min-width:0;padding:0;border:0;box-shadow:none;background:none;border-radius:50%;display:grid;place-items:center;color:var(--fg2);font-size:15px;cursor:pointer}
+.dsd .dsx:hover,.dsd .dsx:focus-visible{background:var(--surface2);outline:none}
+.dsd section{display:flex;flex-direction:column;gap:10px;padding:16px 0;border-top:1px solid var(--line)}
+.dsd .dsh{display:flex;flex-direction:column;gap:3px}
+.dsd .dsh b{font-size:14px;font-weight:700}
+.dsd .dsh small{font-size:12.5px;line-height:1.5;color:var(--fg2)}
+.dsd input{height:42px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);padding:0 14px;width:100%;box-sizing:border-box;font-size:14px;color:var(--fg)}
+.dsd input:focus{outline:2px solid var(--accent,currentColor);outline-offset:-1px}
+.dsd .dslink{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;height:28px;font-size:13px;font-weight:600;color:var(--accent,var(--fg));text-decoration:none}
+.dsd .dslink:hover{text-decoration:underline}
+.dsd .st-seg button{height:38px}
 .st-seg{display:flex;background:var(--surface2);border-radius:12px;padding:3px;gap:3px}
 .st-seg button{flex:1;height:36px;border-radius:9px;font-size:13.5px;color:var(--fg2);font-weight:500}
 .st-seg button[aria-checked=true]{background:var(--surface);color:var(--fg);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.22)}
@@ -1981,7 +2009,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v237 · 11-17 21:10</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v241 · 11-17 22:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7306,7 +7334,7 @@ function edFollow(n){   /* 받는 줄이 보이도록 (직접 글을 쓰는 중�
 function mfSel(){const ed=edEl();if(!ed)return null;const g=getSelection();if(g&&g.rangeCount&&ed.contains(g.anchorNode)){MF.sel=g.getRangeAt(0).cloneRange();mfSync();}}
 document.addEventListener('selectionchange',mfSel);
 function mfRestore(){const ed=edEl();if(!ed)return null;ed.focus();if(MF.sel){const g=getSelection();g.removeAllRanges();g.addRange(MF.sel);}return ed;}
-function mfDone(ed){ed.dispatchEvent(new Event('input',{bubbles:true}));mfSync();}
+function mfDone(ed){ed.dispatchEvent(new Event('input',{bubbles:true}));mfSel();mfSync();}   /* 적용 직후 선택 범위를 다시 저장 (줄이 바뀌어도 다음 서식이 제자리에 먹도록) */
 const MCSS=['foreColor','hiliteColor','backColor','fontName','justifyLeft','justifyCenter','justifyRight','justifyFull'];
 function mfExec(cmd,val){
   const ed=mfRestore();if(!ed)return;
@@ -7679,11 +7707,15 @@ function dictSettings(){
   let dlg=$('#dlgDict');
   if(!dlg){
     dlg=document.createElement('dialog');dlg.id='dlgDict';
-    dlg.innerHTML=`<form method="dialog" class="dlg"><h3>받아쓰기 설정</h3>
-      <div class="field"><span class="lab">받아쓰기 방식</span><div class="st-seg" id="dsEng" role="radiogroup"><button type="button" role="radio" data-e="">기본</button><button type="button" role="radio" data-e="gemini">고감도 (Gemini)</button></div><small class="hint">고감도는 멀리서 들리는 설교·강연용입니다. 말이 잠깐 멈출 때마다 글로 바뀌어 기본보다 느리고, 인터넷과 Gemini API 키가 필요합니다.</small></div>
-      <div class="field"><label for="dsKey">Gemini API 키</label><input id="dsKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…"><small class="hint" id="dsKeyH"></small><a class="btn" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" style="margin-top:6px;display:inline-block;text-decoration:none">API 키 발급받기 바로가기 ↗</a></div>
-      <div class="field"><span class="lab">소리 증폭 <small>(기본 방식)</small></span><div class="st-seg" id="dsBst" role="radiogroup"><button type="button" role="radio" data-b="0">끔</button><button type="button" role="radio" data-b="1">중</button><button type="button" role="radio" data-b="2">강</button></div><small class="hint" id="dsBstH"></small></div>
-      <div class="actions"><span class="grow"></span><button class="btn primary">닫기</button></div></form>`;
+    dlg.innerHTML=`<form method="dialog" class="dsd">
+      <header><h3>받아쓰기 설정</h3><button type="submit" class="dsx" aria-label="닫기">✕</button></header>
+      <section><div class="dsh"><b>받아쓰기 방식</b><small>고감도는 멀리서 들리는 설교·강연용입니다. 말이 멈출 때마다 글로 바뀌어 기본보다 느리고, 인터넷과 API 키가 필요합니다.</small></div>
+        <div class="st-seg" id="dsEng" role="radiogroup"><button type="button" role="radio" data-e="">기본</button><button type="button" role="radio" data-e="gemini">고감도 (Gemini)</button></div></section>
+      <section id="dsKeySec"><div class="dsh"><b>Gemini API 키</b><small id="dsKeyH"></small></div>
+        <input id="dsKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…">
+        <a class="dslink" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">API 키 발급받기 <span aria-hidden="true">↗</span></a></section>
+      <section><div class="dsh"><b>소리 증폭</b><small id="dsBstH"></small></div>
+        <div class="st-seg" id="dsBst" role="radiogroup"><button type="button" role="radio" data-b="0">끔</button><button type="button" role="radio" data-b="1">중</button><button type="button" role="radio" data-b="2">강</button></div></section></form>`;
     document.body.appendChild(dlg);
     dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
     const ui=()=>{
@@ -7698,7 +7730,7 @@ function dictSettings(){
     $('#dsBst',dlg).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lsSet(DWK.bst,b.dataset.b);ui();});
     $('#dsKey',dlg).addEventListener('change',e=>{lsSet(DWK.key,e.target.value.trim());ui();});
   }
-  $('#dsKey',dlg).value=lsGet(DWK.key)||'';dlg._ui();dlg.showModal();
+  $('#dsKey',dlg).value=lsGet(DWK.key)||'';dlg._ui();dlg.showModal();try{document.activeElement.blur();}catch(e){}
 }
 function dictAbortRec(){DICT.tok++;clearTimeout(DICT.tmr);const r=DICT.rec;DICT.rec=null;if(r){r.onend=r.onerror=r.onresult=null;try{r.abort();}catch(e){}}}
 function dictListen(){
