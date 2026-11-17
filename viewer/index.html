@@ -918,7 +918,7 @@ kbd{display:inline-block;min-width:24px;padding:2px 7px;border-radius:6px;border
 #ttsBar.vfmin #ttsDot{width:26px!important;height:26px!important}
 #ttsBar.vfmin #ttsDot svg{width:18px;height:18px}
 #ttsBar.vfmin.blink #ttsDot{animation:ttsBlink 1.05s ease-in-out infinite}
-#rTts.on,#rTone.on,#rVf.on,#rDict.on{color:var(--accent);background:var(--accent-soft)}
+#rTts.on,#rTone.on,#rVf.on,#rDict.on,#rAi.on{color:var(--accent);background:var(--accent-soft)}
 .vfl{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
 .vfl i{position:absolute;background:rgba(150,230,150,.24);border-radius:3px}
 .vfl.vfp i{background:rgba(249,115,22,.34)}
@@ -1512,7 +1512,7 @@ body.spoid,body.spoid *{cursor:crosshair!important}
 html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
 #reader.bible .rbody,#reader.bible .barTab{display:none!important}
 #reader.bible .palette,#reader.bible .paldet,#reader.bible .palshow,#reader.bible .fab,#reader.bible .fbar,#reader.bible .vftools,#reader.bible .ttsbar{display:none!important}   /* 늘성경 탭에는 필기 도구가 필요 없다 */
-#reader.bible .rbar>*:not(#rBack):not(#rBackX):not(#rTabs):not(.rtitle):not(.grow):not(#rFold):not(#rDict):not(#rMore):not(#moreMenu):not(#hwpTools):not(#cmpTools){display:none!important}
+#reader.bible .rbar>*:not(#rBack):not(#rBackX):not(#rTabs):not(.rtitle):not(.grow):not(#rFold):not(#rDict):not(#rAi):not(#rMore):not(#moreMenu):not(#hwpTools):not(#cmpTools){display:none!important}
 #reader.bible #rFold{display:grid!important}
 #reader.bible.bfold .rbar{display:none!important}
 #reader.bible.bfold .barTab{display:grid!important}   /* 늘성경 탭의 상단바 접기 */
@@ -1524,6 +1524,52 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
 dialog.biov{position:fixed;inset:0;width:100vw;height:100vh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:#000;opacity:0;transition:opacity 1.5s ease;cursor:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;z-index:2147483647}
 dialog.biov::backdrop{background:transparent}
 dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
+
+.aibox{display:none;flex:1;min-height:0;flex-direction:column}
+.dpane.aim .aibox{display:flex}
+.dpane.aim .dcbox,.dpane.aim .dctools,.dpane.aim .mfbar,.dpane.aim .mfpop,.dpane.aim .dcauds,.dpane.aim .dslist,.dpane.aim #dcList,.dpane.aim #dcCopy,.dpane.aim #dcClr,.dpane.aim #dcTxt,.dpane.aim #dcSet,.dpane.aim #dcFoldDot{display:none!important}
+.dpane:not(.aim) #aiClr,.dpane:not(.aim) #aiSet{display:none}
+#reader #dictPane.dfold .aibox{display:none}
+.ainote{flex:none;padding:8px 14px;font-size:12.5px;color:var(--fg2);border-bottom:1px solid var(--line);line-height:1.5}
+.ailog{flex:1;min-height:0;overflow:auto;padding:14px 12px;display:flex;flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch}
+.ailog .aiu{align-self:flex-end;max-width:90%;background:color-mix(in srgb,var(--accent) 16%,transparent);padding:8px 13px;border-radius:16px 16px 4px 16px;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+.ailog .aia{align-self:stretch;font-size:14.5px;line-height:1.7;word-break:break-word;user-select:text;-webkit-user-select:text}
+.ailog .aia p{margin:0 0 .45em}.ailog .aia ul{margin:.2em 0 .55em;padding-left:1.25em}.ailog .aia li{margin:.15em 0}.ailog .aisp{height:.35em}
+.ailog .aia.err{color:var(--fg2)}
+.ailog .aimeta{display:flex;gap:10px;align-items:center;margin-top:4px;font-size:12px;color:var(--fg2)}
+.ailog .aimeta button{border:0;background:none;color:var(--accent);font-size:12px;font-weight:600;padding:2px 0}
+.ailog .aiw{align-self:flex-start;color:var(--fg2);font-size:13.5px}
+.ailog .aiw::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:aidots 1.2s steps(4,end) infinite}
+@keyframes aidots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.ailog .aih{margin:auto;text-align:center;color:var(--fg2);font-size:13.5px;line-height:1.7;padding:24px 18px}
+.aipg{display:inline;border:0;border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font:inherit;font-size:.88em;font-weight:700;padding:0 7px;margin:0 1px;cursor:pointer}
+.aibar{flex:none;border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.aichips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.aichips::-webkit-scrollbar{display:none}
+.aichips button{flex:none;height:32px;padding:0 13px;border:1.5px solid var(--line);border-radius:16px;font-size:13px;font-weight:600;color:var(--fg2);background:none;white-space:nowrap}
+.aichips button:hover{color:var(--accent);border-color:var(--accent)}
+.aisc{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--fg2)}
+.aisc span{margin-right:2px}
+.aisc button{height:28px;padding:0 11px;border:1.5px solid var(--line);border-radius:14px;font-size:12.5px;font-weight:600;color:var(--fg2);background:none}
+.aisc button[aria-checked=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.aiq{display:flex;gap:8px;align-items:flex-end}
+.aiq textarea{flex:1;min-width:0;min-height:42px;max-height:120px;resize:none;border:1.5px solid var(--line);border-radius:21px;padding:10px 15px;font:inherit;font-size:14.5px;line-height:1.4;background:var(--bg);color:var(--fg);outline:0}
+.aiq textarea:focus{border-color:var(--accent)}
+.aiq button{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center}
+.aiq button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.aiq button.stop svg{fill:currentColor;stroke:none}
+@media (max-width:700px){.dpane.aim{height:var(--dph,56%)}}
+.aibox.hs .aichips{display:none}
+#dictPane .dctools{position:relative;flex-wrap:wrap;row-gap:6px}
+#dictPane .dct.tg{padding:0 12px}
+.trpop{position:absolute;left:10px;bottom:calc(100% - 2px);z-index:5;width:min(280px,calc(100% - 20px));max-height:min(70vh,440px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:6px}
+.trpop[hidden]{display:none}
+.trpop .th{padding:6px 10px 4px;font-size:12px;color:var(--fg2);line-height:1.5}
+.trpop .tg2{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.trpop button{height:40px;border:1.5px solid transparent;border-radius:10px;background:none;color:var(--fg);font-size:14px;font-weight:600;text-align:center}
+.trpop button:hover{background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.trpop button[aria-checked=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.trpop button.off{grid-column:1/-1;color:var(--fg2);order:-1}
+@media (max-width:700px){#dictPane .dctools{gap:5px;padding-left:8px;padding-right:8px}#dictPane .dct{padding:0 9px;gap:5px;font-size:13px}#dictPane .dct.tg{padding:0 9px}#dictPane .dct.go{padding:0 14px 0 12px;font-size:14px}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -1632,7 +1678,8 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
       <button class="icon-btn" id="rMode" aria-label="보기 방식 전환"><span id="modeIco"></span></button>
       <button class="icon-btn" id="rTts" title="소리 내어 읽기 (TTS)" aria-label="소리 내어 읽기" aria-pressed="false"><span data-i="volume"></span></button>
       <button class="icon-btn" id="rVf" title="음성 따라가기 (말씀을 듣고 원고 위치 표시)" aria-label="음성 따라가기" aria-pressed="false"><span data-i="ear"></span></button>
-      <button class="icon-btn" id="rDict" title="메모 · 받아쓰기" aria-label="메모 · 받아쓰기" aria-pressed="false"><span data-i="doc-edit"></span></button>
+      <button class="icon-btn" id="rDict" title="메모 및 번역 (받아쓰기)" aria-label="메모 및 번역" aria-pressed="false"><span data-i="doc-edit"></span></button>
+      <button class="icon-btn" id="rAi" title="AI 도우미 (요약 · 질문)" aria-label="AI 도우미" aria-pressed="false"><span data-i="sparkle"></span></button>
       <button class="icon-btn" id="rFind" aria-label="본문 검색" title="본문 검색 (Ctrl+F)"><span data-i="search"></span></button>
       <button class="icon-btn" id="rMark" aria-label="이 쪽 북마크" title="이 쪽 북마크"><span data-i="bookmark"></span></button>
       <button class="icon-btn" id="rFold" aria-label="상단바 접기" title="상단바 접기"><span class="fi-on" data-i="chev-up"></span><span class="fi-off" data-i="chev-up-off"></span></button>
@@ -1785,12 +1832,16 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
         </div>
       </div>
       </div>
-      <section class="dpane" id="dictPane" hidden aria-label="받아쓰기"><div class="dpgrip" id="dpGrip" role="separator" aria-label="메모 창 크기 조절" title="끌어서 크기 조절 (두 번 누르면 처음 크기)"></div>
-        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">받아쓰기</b><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn dsic" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button><button type="button" class="btn dsic" id="dcMore" aria-label="메뉴" aria-haspopup="true" aria-expanded="false" title="메뉴">⋯</button>
-          <div class="dpmenu" id="dpMenu" role="menu" hidden><button type="button" class="dpmi" id="dcCopy" role="menuitem">복사 <small>서식 포함</small></button><button type="button" class="dpmi" id="dcTxt" role="menuitem">TXT 파일로 내보내기</button><button type="button" class="dpmi" id="dcSet" role="menuitem">받아쓰기 설정 <small>고감도·소리 증폭</small></button><button type="button" class="dpmi" id="dcSide" role="menuitem">왼쪽/오른쪽으로 옮기기</button><hr><button type="button" class="dpmi dng" id="dcClr" role="menuitem">전체 지우기</button></div></div>
+      <section class="dpane" id="dictPane" hidden aria-label="메모 및 번역"><div class="dpgrip" id="dpGrip" role="separator" aria-label="메모 창 크기 조절" title="끌어서 크기 조절 (두 번 누르면 처음 크기)"></div>
+        <div class="dphead"><button type="button" class="btn dsic" id="dcList" aria-label="저장된 받아쓰기 목록" title="저장된 받아쓰기 목록"><span data-i="list-ul"></span></button><b id="dcTitle" title="눌러서 제목 바꾸기">메모 및 번역</b><i class="rdot dfd" id="dcFoldDot" data-l="off" aria-hidden="true"></i><button type="button" class="btn dsic" id="dcFold" aria-label="받아쓰기 창 접기" title="창 접기 (받아쓰기는 계속됩니다)"><span data-i="fold-l"></span></button><button type="button" class="btn dsic" id="dcClose" aria-label="받아쓰기 닫기" title="닫기 (받아쓰기도 멈춥니다)">✕</button><button type="button" class="btn dsic" id="dcMore" aria-label="메뉴" aria-haspopup="true" aria-expanded="false" title="메뉴">⋯</button>
+          <div class="dpmenu" id="dpMenu" role="menu" hidden><button type="button" class="dpmi" id="dcCopy" role="menuitem">복사 <small>서식 포함</small></button><button type="button" class="dpmi" id="dcTxt" role="menuitem">TXT 파일로 내보내기</button><button type="button" class="dpmi" id="dcSet" role="menuitem">받아쓰기 설정 <small>고감도·소리 증폭</small></button><button type="button" class="dpmi" id="dcSide" role="menuitem">왼쪽/오른쪽으로 옮기기</button><button type="button" class="dpmi" id="aiSet" role="menuitem">API 키 설정 <small>받아쓰기와 같은 키</small></button><hr><button type="button" class="dpmi dng" id="aiClr" role="menuitem">대화 지우기</button><button type="button" class="dpmi dng" id="dcClr" role="menuitem">전체 지우기</button></div></div>
         <div class="dcbox" id="dcBox"><div class="etx" id="dcBody" contenteditable="true" role="textbox" aria-multiline="true" aria-label="메모" data-ph="메모 작성…  (아래 [시작]을 누르면 들리는 말이 여기에 글자로 쌓입니다)" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></div></div>
         <div class="dslist" id="dsList" hidden></div>
         <div class="dcauds" id="dcAuds" hidden></div>
+        <div class="aibox" id="aiBox"><div class="ainote" id="aiNote"></div><div class="ailog" id="aiLog" aria-live="polite"></div>
+          <div class="aibar"><div class="aichips" id="aiChips"></div>
+            <div class="aisc" id="aiSc" role="radiogroup" aria-label="보낼 범위"><span>범위</span><button type="button" role="radio" data-s="cur">이 쪽</button><button type="button" role="radio" data-s="near">앞뒤 5쪽</button><button type="button" role="radio" data-s="all">문서 전체</button></div>
+            <div class="aiq"><textarea id="aiIn" rows="1" placeholder="이 문서에 대해 질문하기" aria-label="질문"></textarea><button type="button" id="aiSend" aria-label="보내기" title="보내기"></button></div></div></div>
         <div class="mfpop" id="mfPop" hidden></div>
         <div class="mfbar" id="dcFbar" role="toolbar" aria-label="글 서식">
           <button type="button" data-f="undo" title="실행취소 (Ctrl+Z)" data-i="undo"></button><button type="button" data-f="redo" title="다시실행 (Ctrl+Y)" data-i="redo"></button>
@@ -1811,6 +1862,8 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
         <div class="dctools" role="toolbar" aria-label="받아쓰기 도구">
           <button type="button" class="dct tg" id="dcTx" aria-pressed="true" title="받아쓰기: 들리는 말을 글로 적습니다"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h9"/></svg><b>받아쓰기</b></button>
           <button type="button" class="dct tg" id="dcSv" aria-pressed="false" title="녹음: 소리를 파일로 저장합니다"><span data-i="mic"></span><b>녹음</b></button>
+          <button type="button" class="dct tg" id="dcTr" aria-pressed="false" aria-haspopup="true" title="번역: 고르는 언어로 번역해서 받아적습니다 (고감도에서만)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg><b>번역</b></button>
+          <div class="trpop" id="trPop" role="menu" hidden></div>
           <button type="button" class="dct go" id="dcGo" data-l="off" data-run="0" aria-label="시작"><i class="gdot"></i><b>시작</b></button>
         </div>
       </section>
@@ -2028,7 +2081,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v247 · 11-17 22:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v249 · 11-18 07:10</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -2281,6 +2334,7 @@ const ICONS={
  'pointer':'<path d="M4 4l7.07 17 2.51-7.39L21 11.07z"/>',
  'fold-l':'<path d="M4 4v16"/><path d="M20 12H9"/><path d="m13 8-4 4 4 4"/>',
  'fold-r':'<path d="M4 4v16"/><path d="M9 12h11"/><path d="m16 8 4 4-4 4"/>',
+ 'sparkle':'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>',
  'doc-edit':'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9.5 17 4.8-4.8 1.7 1.7-4.8 4.8H9.5z"/>',
  'save':'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>',
  'pen':'<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
@@ -5961,7 +6015,7 @@ function updateUndoUI(){if(S.undo.length>UNDO_MAX)S.undo.splice(0,S.undo.length-
 /* ----- 도구 팔레트 ----- */
 const WCFG={pen:{min:.5,max:10,step:.5},hl:{min:6,max:32,step:1},eraser:{min:6,max:48,step:1},tape:{min:8,max:52,step:1}};
 /* ----- 상단바 편집 / 접기 ----- */
-const BAR_DEF=[['side','썸네일·목차·검색','#rSide'],['title','문서 제목','.rtitle'],['grow','공백 (뒤쪽을 오른쪽으로 밀기)',null],['pager','쪽 번호 이동','.pager'],['zoom','확대·축소','.zoomg'],['lock','이동 고정','#bLock'],['tools','필기 도구 열기/닫기','#rTools'],['tts','소리 내어 읽기 (TTS)','#rTts'],['vf','음성 따라가기 (귀)','#rVf'],['dict','메모 · 받아쓰기','#rDict'],['tone','화면 조정 (진하기·밝기)','#rTone'],['mode','보기 방식 (스크롤 → 페이지 → 2장)','#rMode'],['find','본문 검색','#rFind'],['mark','북마크','#rMark'],['fold','상단바 접기','#rFold']];
+const BAR_DEF=[['side','썸네일·목차·검색','#rSide'],['title','문서 제목','.rtitle'],['grow','공백 (뒤쪽을 오른쪽으로 밀기)',null],['pager','쪽 번호 이동','.pager'],['zoom','확대·축소','.zoomg'],['lock','이동 고정','#bLock'],['tools','필기 도구 열기/닫기','#rTools'],['tts','소리 내어 읽기 (TTS)','#rTts'],['vf','음성 따라가기 (귀)','#rVf'],['dict','메모 및 번역 (받아쓰기)','#rDict'],['ai','AI 도우미 (요약 · 질문)','#rAi'],['tone','화면 조정 (진하기·밝기)','#rTone'],['mode','보기 방식 (스크롤 → 페이지 → 2장)','#rMode'],['find','본문 검색','#rFind'],['mark','북마크','#rMark'],['fold','상단바 접기','#rFold']];
 let BAR=null,PAL=null;
 const PAL_DEF=[['pan','보기·글 선택','.tb[data-tool=pan]'],['pen','펜','.tb[data-tool=pen]'],['hl','형광펜','.tb[data-tool=hl]'],['eraser','지우개','.tb[data-tool=eraser]'],['text','글상자','.tb[data-tool=text]'],['note','메모지','.tb[data-tool=note]'],['tape','테이프','.tb[data-tool=tape]'],['finger','손가락 필기 켜기/끄기','#pFinger'],['undo','실행 취소·다시 실행','#palUndo'],['addpage','쪽 추가','#pAdd'],['camera','카메라 촬영 (현재 쪽)','#pCamera'],['photo','사진 넣기 (현재 쪽)','#pPhoto'],['shape','도형 넣기','#pShape'],['paste','붙여넣기 (복사한 개체)','#pPaste'],['jpg','JPG로 내보내기','#pJpg']];
 function palDefault(){return{order:PAL_DEF.map(x=>x[0]),hidden:['text','note','addpage','camera','photo','jpg']};}
@@ -6031,7 +6085,7 @@ function openPalPop(){
 }
 function palSave(){lsSet('neul-pal-v3',JSON.stringify(PAL));palApply();}
 function barDefault(){const narrow=innerWidth<560;return{order:BAR_DEF.map(x=>x[0]),hidden:narrow?['mark','zoom','title','fold']:['fold']};}
-function barLoad(){try{const j=JSON.parse(lsGet('neul-bar')||'null');if(j&&Array.isArray(j.order)){const keys=BAR_DEF.map(x=>x[0]);const order=j.order.filter(k=>keys.includes(k));const hid=(j.hidden||[]).filter(k=>keys.includes(k));for(const k of keys)if(!order.includes(k)){if(k==='tone'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='vf'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='tts'&&order.includes('tools'))order.splice(order.indexOf('tools')+1,0,k);else if(k==='dict'&&order.includes('vf'))order.splice(order.indexOf('vf')+1,0,k);else order.push(k);if(k==='fold')hid.push(k);}BAR={order,hidden:hid};return;}}catch(e){}BAR=barDefault();}
+function barLoad(){try{const j=JSON.parse(lsGet('neul-bar')||'null');if(j&&Array.isArray(j.order)){const keys=BAR_DEF.map(x=>x[0]);const order=j.order.filter(k=>keys.includes(k));const hid=(j.hidden||[]).filter(k=>keys.includes(k));for(const k of keys)if(!order.includes(k)){if(k==='tone'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='vf'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='tts'&&order.includes('tools'))order.splice(order.indexOf('tools')+1,0,k);else if(k==='dict'&&order.includes('vf'))order.splice(order.indexOf('vf')+1,0,k);else if(k==='ai'&&order.includes('dict'))order.splice(order.indexOf('dict')+1,0,k);else order.push(k);if(k==='fold')hid.push(k);}BAR={order,hidden:hid};return;}}catch(e){}BAR=barDefault();}
 function barEl(k){return k==='grow'?$('.rbar>.grow'):$(BAR_DEF.find(x=>x[0]===k)[2]);}
 function barApply(){
   if(!BAR)barLoad();const bar=$('.rbar');
@@ -6041,7 +6095,7 @@ function barApply(){
 }
 function barSave(){lsSet('neul-bar',JSON.stringify(BAR));barApply();}
 let barWhich='top';
-const ROW_ICO={top:{vf:'ear',dict:'doc-edit',tone:'sliders',side:'panel-left',title:'file',grow:'arrows-h',pager:'book',zoom:'plus',lock:'lock',finger:'hand',tools:'pen',mode:'page1',full:'expand',find:'search',mark:'bookmark',fold:'chev-up'},
+const ROW_ICO={top:{vf:'ear',dict:'doc-edit',ai:'sparkle',tone:'sliders',side:'panel-left',title:'file',grow:'arrows-h',pager:'book',zoom:'plus',lock:'lock',finger:'hand',tools:'pen',mode:'page1',full:'expand',find:'search',mark:'bookmark',fold:'chev-up'},
  more:{},
  pal:{pan:'pointer',pen:'pen',hl:'highlighter',eraser:'eraser',text:'type',note:'note',tape:'tape',finger:'hand',undo:'undo',addpage:'file-plus',camera:'camera',photo:'photo',shape:'shape',paste:'paste',jpg:'photo-out'}};
 function barRender(){
@@ -7213,7 +7267,7 @@ function dsRenderList(){
     const dl=el('button','dsi',{type:'button',title:'지우기'});dl.setAttribute('aria-label','지우기');dl.innerHTML=ico('trash');dl.addEventListener('click',()=>dsDelete(s.id));
     row.append(m,rn,dl);box.appendChild(row);}
 }
-function dictTitleUI(){const b=$('#dcTitle');if(!b)return;const s=dsGet(DICT.sid);b.textContent=DICT.view==='list'?'저장된 받아쓰기':(s?s.t:'받아쓰기');b.title=DICT.view==='list'||!s?'':'눌러서 제목 바꾸기';}
+function dictTitleUI(){const b=$('#dcTitle');if(!b)return;if(AI.on){b.textContent='AI 도우미';b.title='';return;}const s=dsGet(DICT.sid);b.textContent=DICT.view==='list'?'저장된 받아쓰기':(s?s.t:'메모 및 번역');b.title=DICT.view==='list'||!s?'':'눌러서 제목 바꾸기';}
 function dictRender(){
   dictTitleUI();if(DICT.view==='list')dsRenderList();
   edSyncLive();
@@ -7233,6 +7287,7 @@ function goUI(){
   const t0=DR.on?DR.t0:(DICT.t0||Date.now()),bad=run&&DICT.on&&L==='bad';
   b.querySelector('b').textContent=run?('멈춤 '+drFmt((Date.now()-t0)/1000)+(bad?' · 소리 없음':'')):'시작';
   b.title=run?(bad?'한참 소리가 없습니다 · 마이크 확인 · 누르면 멈춤':'눌러서 멈춤'):'눌러서 시작';b.setAttribute('aria-label',run?'멈춤':'시작');
+  {const t=$('#dcTr');if(t){const L=trLang(),hi=dwEngine(),on=!!L&&hi;t.classList.toggle('on',on);t.classList.toggle('lk',!!L&&!hi);t.setAttribute('aria-pressed',String(on));t.querySelector('b').textContent=L?trName(L).replace(/\(.*\)/,''):'번역';t.title=L?(hi?'번역해서 받아쓰는 중: '+trName(L)+' · 눌러서 바꾸기':'번역은 고감도(Gemini)에서만 됩니다 · 설정에서 고감도를 켜세요'):'번역: 고르는 언어로 번역해서 받아적습니다 (고감도에서만)';}}
   for(const [id,on] of [['dcTx',goTx()],['dcSv',goSv()]]){const t=$('#'+id);if(t){t.classList.toggle('on',on);t.setAttribute('aria-pressed',String(on));t.classList.toggle('lk',run);}}
 }
 function goStart(){
@@ -7502,7 +7557,7 @@ function dictExportTxt(){
   download(new Blob(['\ufeff'+t.replace(/\n/g,'\r\n')+'\r\n'],{type:'text/plain;charset=utf-8'}),safeName(dsGet(DICT.sid)?`${dsGet(DICT.sid).t} 받아쓰기`:`받아쓰기${S.doc?' '+S.doc.title:''} ${ts}`)+'.txt');
   toast('TXT 파일로 내보냈습니다');
 }
-function dictPaneShow(on){const p=$('#dictPane'),r=$('#reader');if(!p)return;if(!on)edSave(true);p.hidden=!on;DICT.fold=false;p.classList.remove('dfold');try{dictFoldUI();}catch(e){}r.classList.toggle('dictpane',on);if(!on){drStop();dictCommit();DICT.sid='';DICT.fin=[];DICT.fm={};DICT.live='';DICT.lastFin=null;edClear();}if(DICT.view)dsView(false);dictRender();try{fabPlaceAll();}catch(e){}setTimeout(()=>{try{fabPlaceAll();}catch(e){}},260);}
+function dictPaneShow(on){const p=$('#dictPane'),r=$('#reader');if(!p)return;if(!on){aiSetMode(false);edSave(true);}p.hidden=!on;DICT.fold=false;p.classList.remove('dfold');try{dictFoldUI();}catch(e){}r.classList.toggle('dictpane',on);if(!on){drStop();dictCommit();DICT.sid='';DICT.fin=[];DICT.fm={};DICT.live='';DICT.lastFin=null;edClear();}if(DICT.view)dsView(false);dictRender();try{fabPlaceAll();}catch(e){}setTimeout(()=>{try{fabPlaceAll();}catch(e){}},260);}
 function dictFoldUI(){const b=$('#dcFold');if(!b)return;const f=!!DICT.fold;b.innerHTML=ico(f?'fold-r':'fold-l');b.setAttribute('aria-label',f?'받아쓰기 창 펼치기':'받아쓰기 창 접기');b.title=f?'창 펼치기':'창 접기 (받아쓰기는 계속됩니다)';}
 function dictFold(f){const p=$('#dictPane'),r=$('#reader');if(!p||p.hidden)return;DICT.fold=f;p.classList.toggle('dfold',f);r.classList.toggle('dictpane',!f);dictFoldUI();try{fabPlaceAll();}catch(e){}setTimeout(()=>{try{fabPlaceAll();}catch(e){}},260);}
 function dictCommit(){clearTimeout(DICT.cmt);if(DICT.live){DICT.live=dictFix(DICT.live);const t=DICT.live;DICT.fin.push(t);DICT.nodes.push(edAppendLine(t));DICT.lastFin={t,at:Date.now()};DICT.live='';DICT.liveFinal=false;if(DICT.liveNode){DICT.liveNode.remove();DICT.liveNode=null;}edSave(true);}}
@@ -7583,8 +7638,10 @@ function dictFeed(e){   /* 인식 결과를 받아 적는다 (받아쓰기 전�
 /* ---- 고감도 받아쓰기(Gemini)·소리 증폭·음성 녹음: 늘메모와 같은 방식 ----
    고감도: 소리를 키워 짧게 끊어 Gemini 음성인식으로 보낸다(API 키 필요, 설정에서 켠 경우만). 기본 방식은 브라우저 음성인식.
    키는 이 기기에만 저장한다(동기화 안 함). 같은 주소(github.io)의 늘메모에 저장된 키가 있으면 그것도 읽어 쓴다. */
-const DWK={eng:'neul-dengine',key:'neul-gkey',bst:'neul-dboost',mdl:'neul-gmodel',int:'neul-dint',tx:'neul-dtx',sv:'neul-dsv',mode:'neul-dmode',bi:'neul-dbi'};
+const DWK={eng:'neul-dengine',key:'neul-gkey',bst:'neul-dboost',mdl:'neul-gmodel',int:'neul-dint',tx:'neul-dtx',sv:'neul-dsv',mode:'neul-dmode',bi:'neul-dbi',tr:'neul-dtr'};
 const dwInt=()=>{const v=+lsGet(DWK.int);return v===60?60:30;};   /* 글로 바뀌는 간격(초): 30·60, 기본 30 */
+const TRL=[['en','영어'],['zh','중국어(간체)'],['ja','일본어'],['vi','베트남어'],['es','스페인어'],['fr','프랑스어'],['de','독일어'],['ru','러시아어'],['id','인도네시아어'],['th','태국어'],['tl','필리핀어'],['ar','아랍어'],['ko','한국어']];   /* 번역해서 받아적을 언어 (듣는 말의 언어는 자동 인식) */
+const trLang=()=>{const v=lsGet(DWK.tr);return TRL.some(x=>x[0]===v)?v:'';},trName=c=>(TRL.find(x=>x[0]===c)||[0,''])[1];
 const dmode=()=>lsGet(DWK.mode)==='after'?'after':'live';   /* 기본 방식 동작: live 실시간(녹음 안 됨) · after 녹음 후 전사 */
 const biMin=()=>{const v=+lsGet(DWK.bi);return [1,3,5,10,30].includes(v)?v:0;};
 const goTx=()=>lsGet(DWK.tx)!=='0',goSv=()=>lsGet(DWK.sv)==='1';   /* 시작 버튼이 하는 일: 받아쓰기(기본 켬)·녹음(기본 끔) */
@@ -7665,10 +7722,12 @@ async function dwPump(){
 }
 /* Gemini 호출: 모델 이름이 없어지거나(404) 새 키에 열려 있지 않으면 다음 모델로 자동 전환하고, 되는 모델을 기억한다 */
 const GMODELS=['gemini-3.1-flash-lite','gemini-3.5-flash-lite','gemini-3.6-flash','gemini-3.8-flash','gemini-2.5-flash'];
-async function gGen(key,body){
+async function gGen(key,body,sig){
   const saved=lsGet(DWK.mdl)||lsGet('nm-gmodel'),list=saved?[saved,...GMODELS.filter(m=>m!==saved)]:GMODELS;let res=null;
   for(const m of list){
+    if(sig&&sig.aborted)throw new DOMException('abort','AbortError');
     const js=JSON.stringify(body),ac=new AbortController(),tm=setTimeout(()=>ac.abort(),js.length>2e6?150000:45000);   /* 응답이 없으면 끊고 다시 시도 (큐가 멈추는 것 방지) */
+    if(sig)sig.addEventListener('abort',()=>ac.abort(),{once:true});
     try{res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json','x-goog-api-key':key},body:js});}finally{clearTimeout(tm);}
     if(res.status===404||res.status===429)continue;   /* 모델마다 한도가 따로라서 한도 초과(429)도 다음 모델로 넘어가 본다 */
     if(res.ok)lsSet(DWK.mdl,m);return res;}
@@ -7697,7 +7756,7 @@ const dwB64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode
 async function dwSend(it){
   let b64;try{b64=dwB64(it.wav||await dwWav(it.blob));}catch(e){toast('녹음 조각을 변환하지 못해 건너뜁니다','err');return 'skip';}
   const hint='기독교 예배 설교 음성입니다. 성경 구절과 하나님, 예수님, 성령님, 은혜, 복음, 아멘 같은 말이 나옵니다.';
-  const body={contents:[{parts:[{text:hint+' 이 오디오를 한국어 문장 그대로 받아적으세요. 설명·요약·번역 없이 들린 말만 쓰고, 말이 없거나 알아들을 수 없으면 아무것도 쓰지 마세요.'+(DW.prev?' 직전 내용(참고만, 다시 쓰지 말 것): '+DW.prev.slice(-200):'')},{inline_data:{mime_type:'audio/wav',data:b64}}]}],generationConfig:{temperature:0}};
+  const body={contents:[{parts:[{text:hint+(trLang()?' 이 오디오의 말을 듣고 '+trName(trLang())+'로 번역해서 쓰세요(말하는 언어는 자동으로 알아들으세요). 번역문만 쓰고 원문·설명·요약은 쓰지 마세요. 말이 없거나 알아들을 수 없으면 아무것도 쓰지 마세요.':' 이 오디오를 한국어 문장 그대로 받아적으세요. 설명·요약·번역 없이 들린 말만 쓰고, 말이 없거나 알아들을 수 없으면 아무것도 쓰지 마세요.')+(DW.prev?' 직전 내용(참고만, 다시 쓰지 말 것): '+DW.prev.slice(-200):'')},{inline_data:{mime_type:'audio/wav',data:b64}}]}],generationConfig:{temperature:0}};
   let res;try{res=await gGen(dwKey(),body);}catch(e){return 'retry';}
   if(res.status===400||res.status===401||res.status===403){let m='';try{m=((await res.json()).error||{}).message||'';}catch(e){}
     if(res.status===400&&!/API key/i.test(m)){toast('고감도 받아쓰기 오류 (400)','err');return 'skip';}
@@ -7854,6 +7913,114 @@ function biWatch(){
   else if(!run&&BI.act){BI.act=false;clearTimeout(BI.t);clearTimeout(BI.t2);biHide();for(const k of ['pointerdown','keydown','wheel','touchstart'])document.removeEventListener(k,biAct,true);try{if(RWL.l)RWL.l.release();}catch(e){}RWL.l=null;}
 }
 setInterval(biWatch,1000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')rwlGet();});
+
+/* ================= AI 도우미: 보고 있는 문서를 요약하고 질문하기 (Gemini · 받아쓰기와 같은 API 키) ================= */
+const AI={on:false,busy:false,ctrl:null,key:'',loaded:false,h:[],MAXC:150000,scope:['cur','near','all'].includes(lsGet('neul-aiscope'))?lsGet('neul-aiscope'):'cur'};
+const AI_CHIPS=[{l:'이 쪽 요약',s:'cur',q:'이 범위를 5줄 이내로 요약해 주세요.'},{l:'문서 전체 요약',s:'all',q:'이 문서 전체를 요약해 주세요. 먼저 한 문장으로 전체 요지를 쓰고, 이어서 주요 내용을 쪽 표시와 함께 정리해 주세요.'},{l:'핵심 5가지',q:'이 범위의 핵심을 5가지로 정리해 주세요.'},{l:'쉬운 설명',q:'이 범위를 초등학생도 이해하도록 쉬운 말로 설명해 주세요.'}];
+const aiDocKey=()=>(S.pdf&&S.doc&&!S.bible&&!S.hwp)?S.doc.id:'_';
+async function aiLoad(){const k=aiDocKey();if(AI.loaded&&AI.key===k)return;AI.key=k;AI.loaded=true;let r=null;try{r=await DB.get('kv','ai:'+k);}catch(e){}if(AI.key!==k)return;AI.h=(r&&Array.isArray(r.h))?r.h:[];aiRender();}
+function aiSave(){try{DB.putRaw('kv','ai:'+AI.key,{h:AI.h.slice(-40)}).catch(()=>{});}catch(e){}}
+function aiRange(){
+  if(!(S.pdf&&S.doc)||S.bible||S.hwp)return null;
+  const n=S.pdf.numPages,c=S.cur;let a=c,b=c;
+  if(AI.scope==='near'){a=Math.max(0,c-2);b=Math.min(n-1,c+2);}else if(AI.scope==='all'){a=0;b=n-1;}
+  return{a,b,n};
+}
+async function aiGather(){
+  const r=aiRange();if(!r)return null;let out='',chars=0,last=r.a,trunc=false;
+  for(let i=r.a;i<=r.b;i++){
+    let t='';try{t=(await pageText(i)).full.replace(/\s+/g,' ').trim();}catch(e){}
+    if(chars+t.length>AI.MAXC&&i>r.a){trunc=true;break;}
+    out+='['+(i+1)+'쪽]\n'+t+'\n\n';chars+=t.length;last=i;
+  }
+  return{text:out,chars,from:r.a+1,to:last+1,trunc,n:r.n};
+}
+function aiFmt(t){
+  const esc=x=>x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inl=x=>x.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/(\d{1,4})((?:\s*[~\-–]\s*\d{1,4})?)\s*쪽/g,'<button type="button" class="aipg" data-p="$1">$1$2쪽</button>');
+  let h='',ul=false;
+  for(let L of esc(String(t||'')).split('\n')){
+    L=L.replace(/^\s*#{1,4}\s*/,'');const m=/^\s*(?:[-*•]|\d+[.)])\s+(.*)$/.exec(L);
+    if(m){if(!ul){h+='<ul>';ul=true;}h+='<li>'+inl(m[1])+'</li>';}
+    else{if(ul){h+='</ul>';ul=false;}h+=L.trim()?'<p>'+inl(L)+'</p>':'<div class="aisp"></div>';}
+  }
+  return h+(ul?'</ul>':'');
+}
+function aiRender(){
+  const box=$('#aiLog');if(!box)return;box.replaceChildren();$('#aiBox').classList.toggle('hs',AI.h.length>0);
+  if(!AI.h.length&&!AI.busy){const d=el('div','aih');d.innerHTML=(aiRange()?'지금 보는 문서를 요약하거나<br>궁금한 점을 물어보세요.<br>답에 붙는 <b>쪽</b> 표시를 누르면 그 쪽으로 이동합니다.':'이 화면의 글은 읽어올 수 없어<br>문서 없이 일반 질문에만 답합니다.<br>(PDF 문서를 열면 그 문서로 답합니다)');box.appendChild(d);}
+  for(const m of AI.h){
+    if(m.r==='u'){box.appendChild(el('div','aiu',{text:m.t}));continue;}
+    const d=el('div','aia'+(m.err?' err':''));d.innerHTML=aiFmt(m.t);
+    if(!m.err){const mt=el('div','aimeta');if(m.m)mt.append(m.m);const cp=el('button','',{type:'button',text:'복사'});cp.addEventListener('click',()=>{try{navigator.clipboard.writeText(m.t).then(()=>toast('복사했습니다'));}catch(e){}});mt.append(cp);d.appendChild(mt);}
+    box.appendChild(d);}
+  if(AI.busy)box.appendChild(el('div','aiw',{text:AI.st||'생각하는 중'}));
+  box.scrollTop=box.scrollHeight;
+}
+function aiUI(){
+  const nt=$('#aiNote');if(!nt)return;const r=aiRange();
+  if(r){const t=(S.doc&&(S.doc.title||S.doc.name))||'문서',a=r.a+1,b=r.b+1;nt.textContent=t+' · 총 '+r.n+'쪽 · 보낼 범위 '+(a===b?a+'쪽':a+'~'+b+'쪽')+(AI.scope==='all'&&r.n>60?' (길면 앞부분만 보냅니다)':'');}
+  else nt.textContent='이 화면은 글을 읽어올 수 없습니다 (늘성경·늘한글 편집 화면)';
+  $('#aiSc').hidden=!r;$$('#aiSc button').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.s===AI.scope)));
+  const sb=$('#aiSend');if(sb){sb.classList.toggle('stop',AI.busy);sb.innerHTML=AI.busy?'<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>':'<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';sb.title=AI.busy?'멈추기':'보내기';sb.setAttribute('aria-label',sb.title);}
+  const rb=$('#rAi'),p=$('#dictPane');if(rb){const on=!!(AI.on&&p&&!p.hidden);rb.classList.toggle('on',on);rb.setAttribute('aria-pressed',String(on));}
+}
+function aiSetMode(on){
+  const p=$('#dictPane');if(!p)return;if(!on&&!AI.on){aiUI();return;}
+  AI.on=!!on;p.classList.toggle('aim',AI.on);
+  if(AI.on){aiLoad();aiRender();}else if(AI.busy&&AI.ctrl)AI.ctrl.abort();
+  dictTitleUI();aiUI();
+}
+async function aiAsk(q){
+  q=(q||'').trim();if(!q||AI.busy)return;
+  if(!dwKey()){AI.h.push({r:'a',t:'Gemini API 키가 필요합니다. 오른쪽 위 ⋯ → API 키 설정에서 넣어 주세요. (받아쓰기 고감도와 같은 키를 씁니다)',err:1});aiRender();return;}
+  await aiLoad();
+  const hist=AI.h.slice(-6).filter(m=>!m.err).map(m=>(m.r==='u'?'사용자: ':'도우미: ')+m.t.slice(0,600)).join('\n');
+  AI.h.push({r:'u',t:q});AI.busy=true;AI.st='문서를 읽는 중';aiRender();aiUI();
+  const ac=new AbortController();AI.ctrl=ac;const key=AI.key;
+  const push=m=>{if(AI.key===key)AI.h.push(m);};
+  try{
+    const g=await aiGather();let img=null;
+    if(g&&g.chars<20){
+      const pg=(typeof P!=='undefined'&&P[S.cur])?P[S.cur]:null;
+      if(AI.scope==='cur'&&pg&&pg.cv){try{const cv=pg.cv,sc=Math.min(1,1600/Math.max(cv.width,cv.height)),o=document.createElement('canvas');o.width=Math.round(cv.width*sc);o.height=Math.round(cv.height*sc);o.getContext('2d').drawImage(cv,0,0,o.width,o.height);img=o.toDataURL('image/jpeg',.85).split(',')[1];}catch(e){}}
+      if(!img){push({r:'a',t:'이 범위에는 읽을 수 있는 글자가 없습니다. 스캔본이나 그림 문서일 수 있습니다. 범위를 "이 쪽"으로 바꾸고 그 쪽이 화면에 보이는 상태에서 다시 물어보면 그림으로 읽어 봅니다.',err:1});return;}
+    }
+    AI.st='생각하는 중';aiRender();
+    const sys=g?'당신은 문서 읽기를 돕는 도우미입니다. 아래 [문서 내용]'+(img?'(글자가 없어 쪽 그림으로 대신 보냄)':'')+'만 근거로 한국어로 간결하게 답하세요. 근거로 삼은 쪽은 문장 끝에 (12쪽)처럼 적으세요. 문서에 없는 내용은 없다고 말하고 추측하지 마세요. 목록은 "- "로 쓰고 불필요한 인사말은 생략하세요.':'당신은 한국어 도우미입니다. 지금 사용자가 보는 화면의 글은 읽어올 수 없습니다. 일반 지식으로 간결하게 답하되, 확실하지 않으면 모른다고 말하세요.';
+    const doc=g?'\n\n[문서: '+((S.doc&&(S.doc.title||S.doc.name))||'문서')+' · 보낸 범위: '+(g.from===g.to?g.from+'쪽':g.from+'~'+g.to+'쪽')+' / 총 '+g.n+'쪽]\n'+(img?'['+g.from+'쪽 그림]':g.text):'';
+    const parts=[{text:sys+doc+(hist?'\n\n[이전 대화]\n'+hist:'')+'\n\n[질문]\n'+q}];
+    if(img)parts.push({inline_data:{mime_type:'image/jpeg',data:img}});
+    const res=await gGen(dwKey(),{contents:[{parts}],generationConfig:{temperature:.3}},ac.signal);
+    if(!res||!res.ok){const c=res?res.status:0;
+      push({r:'a',t:c===429?'Gemini 무료 사용 한도를 넘었습니다. 잠시 뒤 다시 하거나, 범위를 줄여 보세요. 하루 한도라면 내일 다시 쓸 수 있습니다.':c===400?'질문을 처리하지 못했습니다. 범위가 너무 길 수 있으니 "이 쪽"이나 "앞뒤 5쪽"으로 줄여 보세요.':(c===401||c===403)?'Gemini API 키가 올바르지 않거나 권한이 없습니다.':'AI 응답을 받지 못했습니다 ('+(c||'연결 실패')+'). 잠시 뒤 다시 시도해 주세요.',err:1});return;}
+    const j=await res.json();const t=((((j.candidates||[])[0]||{}).content||{}).parts||[]).map(x=>x.text||'').join('').trim();
+    if(!t){push({r:'a',t:'답을 만들지 못했습니다. 질문을 바꾸거나 범위를 줄여 다시 해 보세요.',err:1});return;}
+    push({r:'a',t,m:g?(g.from===g.to?g.from+'쪽':g.from+'~'+g.to+'쪽')+' 기준'+(g.trunc?' · 길어서 여기까지만 봄':''):'문서 없이 답함'});
+    if(AI.key===key)aiSave();
+  }catch(e){
+    if(e&&e.name==='AbortError')push({r:'a',t:'멈췄습니다.',err:1});
+    else{logErr('aiAsk',e);push({r:'a',t:'AI 응답을 받지 못했습니다. 인터넷을 확인하고 다시 시도해 주세요.',err:1});}
+  }finally{AI.busy=false;AI.ctrl=null;aiRender();aiUI();}
+}
+function aiWire(){
+  const chips=$('#aiChips');for(const c of AI_CHIPS){const b=el('button','',{type:'button',text:c.l});b.addEventListener('click',()=>{if(c.s&&aiRange()){AI.scope=c.s;lsSet('neul-aiscope',c.s);}aiUI();aiAsk(c.q);});chips.appendChild(b);}
+  $('#aiSc').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;AI.scope=b.dataset.s;lsSet('neul-aiscope',AI.scope);aiUI();});
+  const inp=$('#aiIn'),send=()=>{const v=inp.value;if(AI.busy)return;inp.value='';inp.style.height='';aiAsk(v);};
+  $('#aiSend').addEventListener('click',()=>{if(AI.busy){if(AI.ctrl)AI.ctrl.abort();return;}send();});
+  inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(120,inp.scrollHeight)+'px';});
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&!matchMedia('(pointer:coarse)').matches){e.preventDefault();send();}});
+  $('#aiLog').addEventListener('click',e=>{const b=e.target.closest('.aipg');if(!b||!S.pdf)return;const i=Math.max(0,Math.min(S.pdf.numPages-1,(+b.dataset.p||1)-1));try{goTo(i,true);}catch(x){}});
+  $('#rAi').addEventListener('click',()=>{
+    const pane=$('#dictPane');$('#moreMenu').hidden=true;
+    if(!pane.hidden&&AI.on){dictStop();dictPaneShow(false);return;}
+    if(!pane.hidden){aiSetMode(true);dictRender();return;}
+    dictPaneShow(true);aiSetMode(true);dictRender();if(!matchMedia('(pointer:coarse)').matches)inp.focus();});
+  $('#aiSet').addEventListener('click',dictSettings);
+  $('#aiClr').addEventListener('click',()=>{if(!AI.h.length)return;if(!confirm('이 문서의 AI 대화를 모두 지울까요?'))return;AI.h=[];aiSave();aiRender();});
+  setInterval(()=>{const p=$('#dictPane');if(!AI.on||!p||p.hidden)return;if(AI.key!==aiDocKey()){AI.loaded=false;aiLoad();}aiUI();},1500);
+  aiUI();
+}
 function dictSettings(){
   let dlg=$('#dlgDict');
   if(!dlg){
@@ -7876,6 +8043,7 @@ function dictSettings(){
     document.body.appendChild(dlg);
     dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
     const ui=()=>{
+      try{goUI();}catch(e){}
       const eg=lsGet(DWK.eng)==='gemini';$$('#dsEng button',dlg).forEach(b=>b.setAttribute('aria-checked',String((b.dataset.e==='gemini')===eg)));
       $$('#dsMode button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.m===dmode())));$('#dsModeSec',dlg).hidden=eg;$('#dsInt',dlg).closest('section').hidden=!eg;
       $$('#dsBi button',dlg).forEach(b=>b.setAttribute('aria-checked',String(+b.dataset.v===biMin())));
@@ -8069,9 +8237,11 @@ function bindVf(){
   vfCfgInit();bindSideInset();
   $('#rDict').addEventListener('click',()=>{
     const pane=$('#dictPane');$('#moreMenu').hidden=true;
+    if(!pane.hidden&&AI.on){aiSetMode(false);dictRender();return;}   /* AI 도우미 화면이면 메모로 바꾼다 */
     if(!pane.hidden){dictStop();dictPaneShow(false);return;}
-    dictPaneShow(true);dictRender();if(!DICT.on){const ed=edEl();if(ed&&!matchMedia('(pointer:coarse)').matches)ed.focus();}});   /* 열면 받아 적지 않고 메모 칸부터 */
+    aiSetMode(false);dictPaneShow(true);dictRender();if(!DICT.on){const ed=edEl();if(ed&&!matchMedia('(pointer:coarse)').matches)ed.focus();}});   /* 열면 받아 적지 않고 메모 칸부터 */
   $('#dcClose').addEventListener('click',()=>{dictStop();dictPaneShow(false);});
+  aiWire();
   $('#dcFold').addEventListener('click',()=>dictFold(!DICT.fold));
   if(window.ResizeObserver)new ResizeObserver(()=>{try{fabPlaceAll();}catch(e){}}).observe($('#dictPane'));
   $('#dcGo').addEventListener('click',()=>{(DICT.on||DR.on)?goStop():goStart();});
@@ -8080,6 +8250,16 @@ function bindVf(){
     const cur=k===DWK.tx?goTx():goSv(),other=k===DWK.tx?goSv():goTx();
     if(cur&&!other){toast('받아쓰기나 녹음 중 하나는 켜져 있어야 합니다');return;}
     lsSet(k,cur?'0':'1');goUI();});
+  {const pop=$('#trPop'),btn=$('#dcTr');
+   const build=()=>{const cur=trLang();pop.replaceChildren();
+    const h=el('div','th');h.textContent=dwEngine()?'듣는 말을 고른 언어로 번역해서 받아씁니다. 말하는 언어는 자동으로 알아듣습니다.':'번역은 고감도(Gemini) 받아쓰기에서만 됩니다. 설정에서 고감도를 켜고 API 키를 넣어 주세요.';pop.appendChild(h);
+    const g=el('div','tg2');for(const [c,n] of TRL){const b=el('button','',{type:'button',text:n});b.dataset.c=c;b.setAttribute('role','menuitemradio');b.setAttribute('aria-checked',String(c===cur));g.appendChild(b);}
+    const o=el('button','off',{type:'button',text:'번역 안 함'});o.dataset.c='';o.setAttribute('role','menuitemradio');o.setAttribute('aria-checked',String(!cur));g.appendChild(o);pop.appendChild(g);};
+   btn.addEventListener('click',e=>{e.stopPropagation();if(!pop.hidden){pop.hidden=true;return;}build();pop.hidden=false;});
+   pop.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lsSet(DWK.tr,b.dataset.c);pop.hidden=true;goUI();
+    if(b.dataset.c&&!dwEngine())toast('번역은 고감도(Gemini)에서만 됩니다 · 설정에서 고감도를 켜 주세요');
+    else if(b.dataset.c&&(DICT.on||DR.on))toast(trName(b.dataset.c)+'로 번역해서 받아씁니다 (다음 구간부터)');});
+   document.addEventListener('pointerdown',e=>{if(!pop.hidden&&!e.target.closest('#trPop,#dcTr'))pop.hidden=true;},true);}
   goUI();
   $('#dcSet').addEventListener('click',dictSettings);
   {const pane=$('#dictPane'),g=$('#dpGrip'),KEY='neul-dictsz';let sz={};try{sz=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
@@ -8102,7 +8282,7 @@ function bindVf(){
    $('#dictPane').addEventListener('keydown',e=>{if(e.key==='Escape'&&pairs.some(([b,m])=>!m.hidden)){e.stopPropagation();closeM();}},true);}
   $('#dcClr').addEventListener('click',()=>{if(!edText().trim())return;if(!confirm('이 받아쓰기의 내용을 모두 지울까요? (목록에서도 사라집니다)'))return;const id=DICT.sid;DICT.fin=[];DICT.fm={};DICT.int='';DICT.live='';DICT.lastFin=null;clearTimeout(DICT.cmt);edClear();if(id){drPurge(dsGet(id));DSESS=DSESS.filter(x=>x.id!==id);dsTomb(id);dsPersist();DICT.sid='';}DICT.startAt=Date.now();dictRender();});
   $('#dcList').addEventListener('click',()=>dsView(DICT.view!=='list'));
-  $('#dcTitle').addEventListener('click',()=>{if(DICT.view!=='list'&&DICT.sid)dsRename(DICT.sid);else if(DICT.view!=='list')toast('받아 적은 글이 생기면 제목을 바꿀 수 있습니다');});
+  $('#dcTitle').addEventListener('click',()=>{if(AI.on)return;if(DICT.view!=='list'&&DICT.sid)dsRename(DICT.sid);else if(DICT.view!=='list')toast('받아 적은 글이 생기면 제목을 바꿀 수 있습니다');});
   $('#dcCopy').addEventListener('click',async()=>{
     const t=dictText();if(!t){toast('복사할 내용이 없습니다');return;}
     const html=dictHtml();let ok=false;
