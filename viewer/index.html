@@ -294,8 +294,8 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dsempty{padding:24px 8px;text-align:center;color:var(--fg2);font-size:13px}
 .dpane .dcbox{flex:1;min-height:0}
 /* 메모 글상자·서식 막대 (늘메모와 같은 모양) */
-.dcbox{display:flex;flex-direction:column}
-.dcbox .etx{flex:1;min-height:120px;outline:0;border:0;background:none;padding:6px 4px 12px;font-size:15px;line-height:1.6;color:var(--fg);white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
+.dcbox{display:flex;flex-direction:column}.dcbox::after{content:'';display:block;height:var(--dcsp,40%);flex:none}
+.dcbox .etx{flex:1 0 auto;min-height:120px;outline:0;border:0;background:none;padding:6px 4px 12px;font-size:15px;line-height:1.6;color:var(--fg);white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text}
 .etx:empty::before{content:attr(data-ph);color:var(--fg2);pointer-events:none}
 .etx h2{font-size:21px;margin:.3em 0}.etx h3{font-size:17px;margin:.3em 0}.etx h4{font-size:15px;font-weight:700;margin:.3em 0}
 .etx ul,.etx ol{margin:.2em 0;padding-left:1.9em}
@@ -2009,7 +2009,7 @@ html.embed #rTabs,html.embed #rBack,html.embed #rHwpEdit{display:none!important}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v241 · 11-17 22:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v242 · 11-17 23:10</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7314,6 +7314,7 @@ function edAppendLine(t){   /* 받아쓴 한 줄을 글상자 맨 뒤에 더한�
   const ed=edEl();if(!ed)return null;
   const d=document.createElement('div');d.textContent=t;
   if(DICT.liveNode&&DICT.liveNode.isConnected)ed.insertBefore(d,DICT.liveNode);else ed.appendChild(d);
+  edFollow(d);
   return d;
 }
 function edSyncLive(){   /* 아직 확정되지 않은(받는 중인) 줄은 옅게 맨 뒤에만 보여 준다 */
@@ -7325,11 +7326,22 @@ function edSyncLive(){   /* 아직 확정되지 않은(받는 중인) 줄은 옅
     edFollow(n);
   }else if(DICT.liveNode){DICT.liveNode.remove();DICT.liveNode=null;}
 }
-function edFollow(n){   /* 받는 줄이 보이도록 (직접 글을 쓰는 중이면 건드리지 않는다) */
-  const box=$('#dcBox');if(!box||(document.activeElement===edEl()&&!DICT.on))return;
-  const r=n.getBoundingClientRect(),b=box.getBoundingClientRect();
-  if(r.bottom>b.bottom-8||r.top<b.top)box.scrollTop+=r.bottom-b.bottom+Math.min(80,b.height/3);
+/* 커서(받는 줄)가 늘 글상자 가운데 오도록 스크롤 — 늘메모와 같은 방식. 아래쪽 여백(--dcsp)은 글상자 높이의 45%로 한정되어 끝없이 늘지 않는다 */
+function edCenter(el){
+  const box=$('#dcBox');if(!box||box.offsetParent===null)return;let y=null;
+  if(el&&el.getBoundingClientRect){const rc=el.getBoundingClientRect();y=rc.bottom-14;}
+  else{const g=getSelection(),ed=edEl();if(g&&g.rangeCount&&ed&&ed.contains(g.anchorNode)){const r=g.getRangeAt(0).cloneRange();r.collapse(false);const rs=r.getClientRects();let rc=rs.length?rs[rs.length-1]:null;
+      if(!rc){const nd=g.anchorNode.nodeType===1?g.anchorNode:g.anchorNode.parentElement;rc=nd&&nd.getBoundingClientRect();}
+      if(rc&&(rc.height||rc.width||rc.top))y=rc.top+rc.height/2;}}
+  if(y==null)return;
+  const b=box.getBoundingClientRect(),mid=b.top+b.height/2,d=y-mid;
+  if(d>2||y<b.top+24)box.scrollTop=Math.max(0,box.scrollTop+d);   /* 아래로 벗어나면 끌어올리고, 위로 벗어나면 끌어내려 가운데로 */
 }
+function edFollow(n){   /* 받는 줄이 가운데 오도록 (직접 글을 쓰는 중이면 건드리지 않는다) */
+  if(document.activeElement===edEl()&&!DICT.on)return;
+  edCenter(n);
+}
+function edSpacer(){const box=$('#dcBox');if(!box)return;box.style.setProperty('--dcsp',Math.round(box.clientHeight*.45)+'px');}
 /* ---- 서식 막대 (늘메모와 같은 동작: 선택한 글자에 적용, 커서만 있으면 이어 쓰는 글자에 적용) ---- */
 function mfSel(){const ed=edEl();if(!ed)return null;const g=getSelection();if(g&&g.rangeCount&&ed.contains(g.anchorNode)){MF.sel=g.getRangeAt(0).cloneRange();mfSync();}}
 document.addEventListener('selectionchange',mfSel);
@@ -7420,7 +7432,10 @@ function edBind(){
   ed.addEventListener('input',()=>{
     if(!(ed.textContent||'').replace(/​/g,'').trim()&&!ed.querySelector('h2,h3,h4,li,blockquote,.dci'))ed.innerHTML='';
     edSave(false);
+    requestAnimationFrame(()=>{if(document.activeElement===ed)edCenter();});
   });
+  ed.addEventListener('keyup',e=>{if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End'].includes(e.key))edCenter();});
+  edSpacer();if(window.ResizeObserver)new ResizeObserver(()=>{edSpacer();if(document.activeElement===ed)edCenter();}).observe($('#dcBox'));
   ed.addEventListener('keydown',mfKeys);
   ed.addEventListener('keydown',e=>{   /* 목록 줄에서 Tab = 한 단계 들여쓰기, Shift+Tab = 내어쓰기 */
     if(e.key!=='Tab'||e.ctrlKey||e.metaKey||e.altKey||e.isComposing)return;
