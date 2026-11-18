@@ -918,17 +918,20 @@ kbd{display:inline-block;min-width:24px;padding:2px 7px;border-radius:6px;border
 #ttsBar.vfmin #ttsDot{width:26px!important;height:26px!important}
 #ttsBar.vfmin #ttsDot svg{width:18px;height:18px}
 #ttsBar.vfmin.blink #ttsDot{animation:ttsBlink 1.05s ease-in-out infinite}
-#rTts.on,#rTone.on,#rVf.on,#rDict.on{color:var(--accent);background:var(--accent-soft)}
-#rAi{display:none!important}   /* AI 도우미는 떠 있는 단추(#aiFab)로 연다. 이 단추는 내부 상태 표시용으로만 남김 */
-#aiFab{position:fixed;left:0;top:0;z-index:25;width:50px;height:50px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);box-shadow:0 6px 18px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.14) inset;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:opacity .7s ease,box-shadow .2s;opacity:1}
-#aiFab svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
-#aiFab.idle{opacity:.1;box-shadow:none}#aiFab.drag{cursor:grabbing;transition:none}#aiFab[hidden]{display:none}
-@media print{#aiFab{display:none!important}}
-#dlgAiShelf{width:min(560px,calc(100vw - 20px));height:min(78vh,680px);max-height:calc(100dvh - 20px);padding:0;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--fg);overflow:hidden}
-#dlgAiShelf[open]{display:flex;flex-direction:column}#dlgAiShelf::backdrop{background:rgba(0,0,0,.4)}
-#dlgAiShelf .ash{flex:none;display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}#dlgAiShelf .ash b{flex:1;font-size:15px}
-#dlgAiShelf .ash button{border:0;background:none;color:var(--fg2);font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;cursor:pointer}#dlgAiShelf .ash button:hover{background:var(--surface2)}
-.dpane.aishelf{flex:1;width:100%;min-width:0;height:auto!important;border:0;min-height:0}
+#rTts.on,#rTone.on,#rVf.on,#rDict.on,#rAi.on,#shAi.on{color:var(--accent);background:var(--accent-soft)}
+#aiSD{position:fixed;z-index:60;display:flex;flex-direction:column;background:var(--surface);color:var(--fg);box-shadow:0 0 28px rgba(0,0,0,.18);min-width:0;min-height:0}#aiSD[hidden]{display:none}
+#aiSD[data-side=right]{top:0;right:0;bottom:0;width:var(--asw,380px);border-left:1px solid var(--line)}
+#aiSD[data-side=left]{top:0;left:0;bottom:0;width:var(--asw,380px);border-right:1px solid var(--line)}
+#aiSD[data-side=bottom]{left:0;right:0;bottom:0;height:var(--ash,46vh);border-top:1px solid var(--line);border-radius:14px 14px 0 0}
+#aiSD .asg{position:absolute;z-index:3;touch-action:none}
+#aiSD[data-side=right] .asg{left:-8px;top:0;bottom:0;width:16px;cursor:col-resize}#aiSD[data-side=left] .asg{right:-8px;top:0;bottom:0;width:16px;cursor:col-resize}#aiSD[data-side=bottom] .asg{left:0;right:0;top:-10px;height:20px;cursor:row-resize}
+#aiSD .asg::after{content:'';position:absolute;border-radius:3px;background:var(--line);transition:background .15s}
+#aiSD[data-side=right] .asg::after,#aiSD[data-side=left] .asg::after{top:50%;left:6px;width:4px;height:46px;margin-top:-23px}#aiSD[data-side=bottom] .asg::after{left:50%;top:8px;width:46px;height:4px;margin-left:-23px}
+#aiSD .asg:hover::after,#aiSD .asg.drag::after{background:var(--accent)}
+#aiSD .ash{order:-1;flex:none;display:flex;align-items:center;gap:2px;padding:7px 8px 7px 14px;border-bottom:1px solid var(--line)}#aiSD .ash b{flex:1;font-size:14.5px}
+#aiSD .ash button{border:0;background:none;color:var(--fg2);font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;cursor:pointer;height:32px}#aiSD .ash button:hover{background:var(--surface2)}
+#aiSD .ash button svg{width:18px;height:18px}
+.dpane.aishelf{order:0;flex:1;width:auto!important;min-width:0;height:auto!important;border:0;min-height:0;box-shadow:none}
 .vfl{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
 .vfl i{position:absolute;background:rgba(150,230,150,.24);border-radius:3px}
 .vfl.vfp i{background:rgba(249,115,22,.34)}
@@ -1617,6 +1620,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
       <input id="camInput" type="file" accept="image/*" capture="environment" hidden>
       <input id="apInput" type="file" accept="image/*" multiple hidden>
       <button class="icon-btn" id="btnSync" aria-label="구글 드라이브 동기화" title="구글 드라이브 동기화"><span data-i="cloud"></span><svg class="gring" id="gRing" viewBox="0 0 28 28" width="26" height="26" aria-hidden="true" hidden><circle class="gr-bg" cx="14" cy="14" r="11"/><circle class="gr-fg" id="gRingFg" cx="14" cy="14" r="11" transform="rotate(-90 14 14)"/><g class="gr-arr"><path d="M14 3.5a10.5 10.5 0 0 1 9.6 6.2" /><path d="M24.5 4.6v5.6h-5.6"/><path d="M14 24.5a10.5 10.5 0 0 1-9.6-6.2"/><path d="M3.5 23.4v-5.6h5.6"/></g><text id="gRingTx" x="14" y="17.2" text-anchor="middle"></text></svg><span class="gpill" id="gPill" hidden></span></button>
+      <button class="icon-btn" id="shAi" type="button" title="AI 도우미 (질문 · 글쓰기)" aria-label="AI 도우미" aria-pressed="false"><span data-i="sparkle"></span></button>
       <button class="icon-btn" id="btnSettings" type="button" aria-label="설정" title="설정"><span data-i="settings"></span></button>
     </header>
     <div class="shelf-body">
@@ -2102,7 +2106,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v260 · 11-18 19:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v265 · 11-18 22:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -6040,7 +6044,7 @@ function updateUndoUI(){if(S.undo.length>UNDO_MAX)S.undo.splice(0,S.undo.length-
 /* ----- 도구 팔레트 ----- */
 const WCFG={pen:{min:.5,max:10,step:.5},hl:{min:6,max:32,step:1},eraser:{min:6,max:48,step:1},tape:{min:8,max:52,step:1}};
 /* ----- 상단바 편집 / 접기 ----- */
-const BAR_DEF=[['side','썸네일·목차·검색','#rSide'],['title','문서 제목','.rtitle'],['grow','공백 (뒤쪽을 오른쪽으로 밀기)',null],['pager','쪽 번호 이동','.pager'],['zoom','확대·축소','.zoomg'],['lock','이동 고정','#bLock'],['tools','필기 도구 열기/닫기','#rTools'],['tts','소리 내어 읽기 (TTS)','#rTts'],['vf','음성 따라가기 (귀)','#rVf'],['dict','메모 및 번역 (받아쓰기)','#rDict'],['tone','화면 조정 (진하기·밝기)','#rTone'],['mode','보기 방식 (스크롤 → 페이지 → 2장)','#rMode'],['find','본문 검색','#rFind'],['mark','북마크','#rMark'],['fold','상단바 접기','#rFold']];
+const BAR_DEF=[['side','썸네일·목차·검색','#rSide'],['title','문서 제목','.rtitle'],['grow','공백 (뒤쪽을 오른쪽으로 밀기)',null],['pager','쪽 번호 이동','.pager'],['zoom','확대·축소','.zoomg'],['lock','이동 고정','#bLock'],['tools','필기 도구 열기/닫기','#rTools'],['tts','소리 내어 읽기 (TTS)','#rTts'],['vf','음성 따라가기 (귀)','#rVf'],['dict','메모 및 번역 (받아쓰기)','#rDict'],['ai','AI 도우미 (요약 · 질문)','#rAi'],['tone','화면 조정 (진하기·밝기)','#rTone'],['mode','보기 방식 (스크롤 → 페이지 → 2장)','#rMode'],['find','본문 검색','#rFind'],['mark','북마크','#rMark'],['fold','상단바 접기','#rFold']];
 let BAR=null,PAL=null;
 const PAL_DEF=[['pan','보기·글 선택','.tb[data-tool=pan]'],['pen','펜','.tb[data-tool=pen]'],['hl','형광펜','.tb[data-tool=hl]'],['eraser','지우개','.tb[data-tool=eraser]'],['text','글상자','.tb[data-tool=text]'],['note','메모지','.tb[data-tool=note]'],['tape','테이프','.tb[data-tool=tape]'],['finger','손가락 필기 켜기/끄기','#pFinger'],['undo','실행 취소·다시 실행','#palUndo'],['addpage','쪽 추가','#pAdd'],['camera','카메라 촬영 (현재 쪽)','#pCamera'],['photo','사진 넣기 (현재 쪽)','#pPhoto'],['shape','도형 넣기','#pShape'],['paste','붙여넣기 (복사한 개체)','#pPaste'],['jpg','JPG로 내보내기','#pJpg']];
 function palDefault(){return{order:PAL_DEF.map(x=>x[0]),hidden:['text','note','addpage','camera','photo','jpg']};}
@@ -6110,7 +6114,8 @@ function openPalPop(){
 }
 function palSave(){lsSet('neul-pal-v3',JSON.stringify(PAL));palApply();}
 function barDefault(){const narrow=innerWidth<560;return{order:BAR_DEF.map(x=>x[0]),hidden:narrow?['mark','zoom','title','fold']:['fold']};}
-function barLoad(){try{const j=JSON.parse(lsGet('neul-bar')||'null');if(j&&Array.isArray(j.order)){const keys=BAR_DEF.map(x=>x[0]);const order=j.order.filter(k=>keys.includes(k));const hid=(j.hidden||[]).filter(k=>keys.includes(k));for(const k of keys)if(!order.includes(k)){if(k==='tone'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='vf'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='tts'&&order.includes('tools'))order.splice(order.indexOf('tools')+1,0,k);else if(k==='dict'&&order.includes('vf'))order.splice(order.indexOf('vf')+1,0,k);else if(k==='ai'&&order.includes('dict'))order.splice(order.indexOf('dict')+1,0,k);else order.push(k);if(k==='fold')hid.push(k);}BAR={order,hidden:hid};return;}}catch(e){}BAR=barDefault();}
+function barLoad(){try{const j=JSON.parse(lsGet('neul-bar')||'null');if(j&&Array.isArray(j.order)){const keys=BAR_DEF.map(x=>x[0]);const order=j.order.filter(k=>keys.includes(k));const hid=(j.hidden||[]).filter(k=>keys.includes(k));for(const k of keys)if(!order.includes(k)){if(k==='tone'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='vf'&&order.includes('tts'))order.splice(order.indexOf('tts')+1,0,k);else if(k==='tts'&&order.includes('tools'))order.splice(order.indexOf('tools')+1,0,k);else if(k==='dict'&&order.includes('vf'))order.splice(order.indexOf('vf')+1,0,k);else if(k==='ai'&&order.includes('dict'))order.splice(order.indexOf('dict')+1,0,k);else order.push(k);if(k==='fold')hid.push(k);}BAR={order,hidden:hid};if(lsGet('neul-barai')!=='1'){lsSet('neul-barai','1');if(hid.includes('ai')){BAR.hidden=hid.filter(k=>k!=='ai');lsSet('neul-bar',JSON.stringify(BAR));}}   /* 한 번만: 떠 있는 단추 시절에 숨겨진 AI 단추를 다시 보이게 */
+return;}}catch(e){}BAR=barDefault();}
 function barEl(k){return k==='grow'?$('.rbar>.grow'):$(BAR_DEF.find(x=>x[0]===k)[2]);}
 function barApply(){
   if(!BAR)barLoad();const bar=$('.rbar');
@@ -7733,6 +7738,7 @@ function dwSeg(){
   },100);
 }
 function dwEnqueue(blob,peak){
+  if(DW.quota)return;   /* 오늘 한도를 다 썼으면 더 보내지 않는다 */
   if(peak<DW.skip||blob.size<1500)return;     /* 소리가 거의 없는 구간은 보내지 않음 (엉뚱한 문장 방지) */
   DW.q.push({blob,sid:DW.sid,n:0});dwPump();
 }
@@ -7740,12 +7746,16 @@ async function dwPump(){
   if(DW.busy)return;DW.busy=true;
   while(DW.q.length){
     const it=DW.q[0],r=await dwSend(it);
-    if(r==='retry'){it.n++;if(it.n>2){DW.q.shift();if(DW.quota)DW.q.length=0;else toast('인터넷이 불안정해 한 구간을 건너뜁니다','err');}else await dwSleep(1500*it.n);continue;}
-    DW.q.shift();if(r==='fatal'){DW.q.length=0;break;}
+    if(r==='retry'){it.n++;if(it.n>2){DW.q.shift();if(DW.quota)DW.q.length=0;else toast('인터넷이 불안정해 한 구간을 건너뜁니다','err');}else await dwSleep(it.slow?20000:1500*it.n);continue;}
+    DW.q.shift();if(r==='fatal'||r==='quota'){DW.q.length=0;break;}
   }
   DW.busy=false;if(!DW.on)dwRelease();
 }
 /* Gemini 호출: 모델 이름이 없어지거나(404) 새 키에 열려 있지 않으면 다음 모델로 자동 전환하고, 되는 모델을 기억한다 */
+/* 오늘 보낸 Gemini 요청 수(이 기기 기준·참고용). 무료 한도는 매일 미국 태평양 시간 자정(한국 시간 보통 오후 4~5시)에 초기화된다고 알려져 있음 */
+const GREQ='neul-greq',gDay=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles'}).format(new Date());}catch(e){return new Date().toISOString().slice(0,10);}};
+const gCount=()=>{try{const j=JSON.parse(lsGet(GREQ)||'{}');return j.d===gDay()?(+j.n||0):0;}catch(e){return 0;}};
+function gBump(){const n=gCount()+1;lsSet(GREQ,JSON.stringify({d:gDay(),n}));if(n===400)toast('오늘 Gemini 요청이 400회입니다. 무료 한도(하루 약 500회로 알려짐)에 가까워지고 있어요','err');return n;}
 const GMODELS=['gemini-3.1-flash-lite','gemini-3.5-flash-lite','gemini-3.6-flash','gemini-3.8-flash','gemini-2.5-flash'];
 async function gGen(key,body,sig){
   const saved=lsGet(DWK.mdl)||lsGet('nm-gmodel'),list=saved?[saved,...GMODELS.filter(m=>m!==saved)]:GMODELS;let res=null;
@@ -7753,7 +7763,7 @@ async function gGen(key,body,sig){
     if(sig&&sig.aborted)throw new DOMException('abort','AbortError');
     const js=JSON.stringify(body),ac=new AbortController(),tm=setTimeout(()=>ac.abort(),js.length>2e6?150000:25000);   /* 응답이 없으면 끊고 다시 시도 (큐가 멈추는 것 방지) */
     if(sig)sig.addEventListener('abort',()=>ac.abort(),{once:true});
-    try{res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json','x-goog-api-key':key},body:js});}finally{clearTimeout(tm);}
+    gBump();try{res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json','x-goog-api-key':key},body:js});}finally{clearTimeout(tm);}
     if(res.status===404||res.status===429)continue;   /* 모델마다 한도가 따로라서 한도 초과(429)도 다음 모델로 넘어가 본다 */
     if(res.ok)lsSet(DWK.mdl,m);return res;}
   return res;
@@ -7810,7 +7820,10 @@ async function dwSend(it){
   if(res.status===400||res.status===401||res.status===403){let m='';try{m=((await res.json()).error||{}).message||'';}catch(e){}
     if(res.status===400&&!/API key/i.test(m)){toast('고감도 받아쓰기 오류 (400)','err');return 'skip';}
     toast('Gemini API 키가 올바르지 않거나 권한이 없습니다','err');setTimeout(()=>{if(DICT.on)dictStop();},0);return 'fatal';}
-  if(res.status===429){if(it.n>=2){DW.quota=1;toast('Gemini 무료 사용 한도를 넘었습니다. 하루 한도라면 내일 다시 쓸 수 있어요 · 간격을 늘리거나 기본 방식을 쓰세요','err');}return 'retry';}
+  if(res.status===429){let dd=false;try{dd=/PerDay|per day/i.test(await res.text());}catch(e){}
+    if(dd){DW.quota=1;toast('오늘 Gemini 무료 한도를 모두 썼습니다. 보통 한국 시간 오후 4~5시경 초기화됩니다 · 그때까지는 기본 방식을 쓰세요','err');setTimeout(()=>{if(DICT.on)dictStop();},0);return 'quota';}
+    it.slow=1;   /* 분당 한도: 잠깐 쉬었다가 다시 */
+    if(it.n>=2){DW.quota=1;toast('Gemini 무료 사용 한도를 넘었습니다. 하루 한도라면 내일 다시 쓸 수 있어요 · 간격을 늘리거나 기본 방식을 쓰세요','err');}return 'retry';}
   if(res.status>=500)return 'retry';
   if(!res.ok){toast('고감도 받아쓰기 오류 ('+res.status+')','err');return 'skip';}
   let j;try{j=await res.json();}catch(e){return 'skip';}
@@ -7970,6 +7983,52 @@ setInterval(biWatch,1000);document.addEventListener('visibilitychange',()=>{if(d
 
 /* ================= AI 도우미: 보고 있는 문서를 요약하고 질문하기 (Gemini · 받아쓰기와 같은 API 키) ================= */
 const AI={on:false,busy:false,ctrl:null,key:'',loaded:false,h:[],st:''};
+/* ---- 문서 전체를 범위로 답하기: 문서 전문을 대화 맨 앞에 붙여 보낸다. 한 번에 보낼 수 있는 분량(AI_MAXC 글자)을 넘는 책은
+   앞에서부터 한 장(챕터)이 끝나는 곳까지만 붙이고, 그 사실을 먼저 알린다. 나머지는 AI가 찾아 읽는 도구로 보충한다. ---- */
+const AI_MAXC=100000;   /* 무료 키는 분당 입력 한도(TPM)가 작아 한 번에 많이 보내면 거절당한다 → 약 60~70쪽 분량까지만 본문을 붙이고, 넘는 책은 지도(목차+쪽별 첫머리)로 보충 */
+const AIT={sid:-1,id:'',texts:null,p:null,outl:null};
+async function aiTexts(){
+  if(AIT.p&&AIT.sid===S.sid&&AIT.id===(S.doc&&S.doc.id))return AIT.p;
+  const sid=S.sid,id=S.doc&&S.doc.id,n=S.pdf.numPages;AIT.sid=sid;AIT.id=id;AIT.texts=null;AIT.outl=null;
+  AIT.p=(async()=>{
+    const out=new Array(n);
+    for(let i=0;i<n;i++){
+      if(S.sid!==sid)throw new Error('doc changed');
+      let x='';try{x=(await pageText(i)).full.replace(/\s+/g,' ').trim();}catch(e){}
+      out[i]=x;if(i%10===0){AI.st='문서를 읽는 중 '+(i+1)+'/'+n+'쪽';try{aiRender();}catch(e){}await new Promise(r=>setTimeout(r,0));}
+    }
+    let starts=[];try{const ol=await S.pdf.getOutline();if(ol&&ol.length){for(const it of ol){const k=await destToPage(it.dest);if(k!=null)starts.push({i:k,t:String(it.title||'').trim()});}}}catch(e){}
+    starts=starts.sort((a,b)=>a.i-b.i);AIT.outl=starts;AIT.texts=out;return out;
+  })();
+  AIT.p.catch(()=>{if(AIT.sid===sid)AIT.p=null;});
+  return AIT.p;
+}
+/* budget 글자 안에서 앞에서부터 담을 수 있는 쪽 수와 안내문을 계산한다 */
+function aiScopeOf(texts,budget){
+  const n=texts.length,total=texts.reduce((a,x)=>a+x.length,0),blank=texts.filter(x=>x.length<20).length;
+  if(total<=budget){   /* 전체를 그대로 붙인다 */
+    let text='';for(let i=0;i<n;i++)if(texts[i])text+='['+(i+1)+'쪽]\n'+texts[i]+'\n\n';
+    return{K:n,n,whole:true,text,note:'문서 전체('+n+'쪽)를 범위로 답합니다.'+(blank>0&&blank<n?' 글자가 없는 쪽('+blank+'쪽, 스캔 그림)은 읽을 수 없습니다.':''),chars:text.length,blank};
+  }
+  /* 긴 책: ① 전체 지도(목차 + 쪽별 첫머리) ② 앞에서부터 장 단위로 본문 ③ 지금 보는 쪽 주변 */
+  const ol=AIT.outl||[];let map='';
+  if(ol.length)map+='[목차]\n'+ol.map(x=>x.t+' → '+(x.i+1)+'쪽').join('\n').slice(0,12000)+'\n\n';
+  const per=Math.max(20,Math.min(70,Math.floor(22000/n)-8));
+  map+='[쪽별 첫머리]\n';for(let i=0;i<n;i++)map+=(i+1)+'쪽: '+(texts[i].slice(0,per)||'(글자 없음)')+'\n';map+='\n';
+  const room=Math.max(20000,budget-map.length-14000);
+  let cum=0,K=0;for(let i=0;i<n;i++){if(cum+texts[i].length>room&&i>0)break;cum+=texts[i].length;K=i+1;}
+  let ch='';const st=ol.filter(x=>x.i>0&&x.i<=K),cut=st.length?st[st.length-1]:null;
+  if(cut&&cut.i>=Math.max(1,Math.floor(K*.5))){K=cut.i;const prev=ol.filter(x=>x.i<K).pop();ch=prev?prev.t:'';}
+  let text='[전체 지도: 책 전체 '+n+'쪽의 구조입니다. 본문 전체가 아닙니다]\n'+map+'[본문 1~'+K+'쪽]\n';let used=map.length;
+  for(let i=0;i<K;i++)if(texts[i]){text+='['+(i+1)+'쪽]\n'+texts[i]+'\n\n';used+=texts[i].length;}
+  const c=Math.max(0,Math.min(n-1,S.cur||0));
+  if(c>=K){const a=Math.max(K,c-2),b=Math.min(n-1,c+2);text+='[지금 보는 곳 주변 '+(a+1)+'~'+(b+1)+'쪽]\n';for(let i=a;i<=b;i++)if(texts[i]){text+='['+(i+1)+'쪽]\n'+texts[i].slice(0,6000)+'\n\n';used+=Math.min(6000,texts[i].length);}}
+  let note='이 문서는 '+n+'쪽(약 '+Math.round(total/10000)+'만 자)이라 무료 한도 때문에 한 번에 정독할 수 있는 범위는 앞쪽 1~'+K+'쪽'+(ch?'('+ch+'까지)':'')+'입니다. 책 전체의 목차·쪽별 첫머리 지도는 항상 보고 있고, 질문에 맞는 부분을 찾아 읽어 답합니다.';
+  if(blank>0&&blank<n)note+=' 글자가 없는 쪽('+blank+'쪽, 스캔 그림)은 읽을 수 없습니다.';
+  else if(blank>=n)note='이 문서는 글자가 없는 스캔본이라 내용을 읽을 수 없습니다. (지금 보는 쪽은 그림으로 보내 답할 수 있습니다)';
+  return{K,n,whole:false,text,note,chars:used,blank};
+}
+async function aiScope(budget){const t=await aiTexts();return aiScopeOf(t,budget||AI_MAXC);}
 const AI_CHIPS=[{l:'이 쪽 설명',q:'지금 보고 있는 쪽을 쉽게 설명해 주세요.'},{l:'문서 요약',q:'이 문서 전체를 요약해 주세요.'},{l:'번역',q:'지금 보고 있는 쪽을 영어로 번역해 주세요.'}];
 const aiHasDoc=()=>!!(S.pdf&&S.doc&&!S.bible&&!S.hwp);
 const aiDocKey=()=>aiHasDoc()?S.doc.id:'_';
@@ -7982,10 +8041,10 @@ const AI_TOOLS=[{functionDeclarations:[
 async function aiTool(name,a,log){
   a=a||{};const n=S.pdf.numPages;
   if(name==='get_pages'){
-    const f=Math.max(1,Math.min(n,Math.round(+a.from)||1));let t=Math.max(f,Math.min(n,Math.round(+a.to)||f));if(t-f>29)t=f+29;
+    const f=Math.max(1,Math.min(n,Math.round(+a.from)||1));let t=Math.max(f,Math.min(n,Math.round(+a.to)||f));if(t-f>19)t=f+19;
     let out='',used=0,last=f;
     for(let i=f;i<=t;i++){let x='';try{x=(await pageText(i-1)).full.replace(/\s+/g,' ').trim();}catch(e){}
-      if(used+x.length>60000&&i>f){out+='(분량 제한으로 '+(i-1)+'쪽까지만 보냈습니다)';break;}
+      if(used+x.length>30000&&i>f){out+='(분량 제한으로 '+(i-1)+'쪽까지만 보냈습니다)';break;}
       out+='['+i+'쪽]\n'+x+'\n\n';used+=x.length;last=i;}
     log.push(f===last?f+'쪽':f+'~'+last+'쪽');return out||'(글자 없음)';}
   if(name==='search_doc'){
@@ -8009,12 +8068,13 @@ function aiRender(){
   const box=$('#aiLog');if(!box)return;box.replaceChildren();$('#aiBox').classList.toggle('hs',AI.h.length>0);
   if(!AI.h.length&&!AI.busy){const d=el('div','aih');d.appendChild(el('b','',{text:'무엇을 도와드릴까요?'}));
     if(!aiHasDoc())d.appendChild(el('small','',{text:S.doc?'이 화면은 글을 읽을 수 없어 문서 없이 답합니다':'문서를 열지 않았습니다 · 무엇이든 물어보세요'}));
+    if(aiHasDoc()){const sc=el('small','',{text:AIT.texts&&AIT.sid===S.sid?aiScopeOf(AIT.texts,AI_MAXC).note:'문서 전체를 범위로 답합니다'});d.appendChild(sc);}
     if(aiHasDoc()){const cs=el('div','aichips');for(const c of AI_CHIPS){const b=el('button','',{type:'button',text:c.l});b.addEventListener('click',()=>aiAsk(c.q));cs.appendChild(b);}d.appendChild(cs);}
     box.appendChild(d);}
   for(const m of AI.h){
     if(m.r==='u'){box.appendChild(el('div','aiu',{text:m.t}));continue;}
     const d=el('div','aia'+(m.err?' err':''));d.innerHTML=aiFmt(m.t);
-    if(!m.err){const mt=el('div','aimeta');if(m.m)mt.append(m.m);const cp=el('button','',{type:'button',text:'복사'});cp.addEventListener('click',()=>{try{navigator.clipboard.writeText(m.t).then(()=>toast('복사했습니다'));}catch(e){}});mt.append(cp);d.appendChild(mt);}
+    if(!m.err&&!m.note){const mt=el('div','aimeta');if(m.m)mt.append(m.m);const cp=el('button','',{type:'button',text:'복사'});cp.addEventListener('click',()=>{try{navigator.clipboard.writeText(m.t).then(()=>toast('복사했습니다'));}catch(e){}});mt.append(cp);d.appendChild(mt);}
     box.appendChild(d);}
   if(AI.busy)box.appendChild(el('div','aiw',{text:AI.st||'생각하는 중'}));
   box.scrollTop=box.scrollHeight;
@@ -8028,7 +8088,7 @@ function aiUI(){
 function aiSetMode(on){
   const p=$('#dictPane');if(!p)return;if(!on&&!AI.on){aiUI();return;}
   AI.on=!!on;p.classList.toggle('aim',AI.on);
-  if(AI.on){aiLoad();aiRender();}else if(AI.busy&&AI.ctrl)AI.ctrl.abort();
+  if(AI.on){aiLoad();aiRender();if(aiHasDoc()&&!(AIT.texts&&AIT.sid===S.sid))aiTexts().then(()=>{if(!AI.busy)aiRender();}).catch(()=>{});}else if(AI.busy&&AI.ctrl)AI.ctrl.abort();
   dictTitleUI();aiUI();
 }
 async function aiAsk(q){
@@ -8036,10 +8096,10 @@ async function aiAsk(q){
   if(!dwKey()){AI.h.push({r:'a',t:'Gemini API 키가 필요합니다. 오른쪽 위 ⋯ → API 키 설정에서 넣어 주세요. (받아쓰기 고감도와 같은 키를 씁니다)',err:1});aiRender();return;}
   await aiLoad();
   /* 이전 대화(오류 제외)를 순서대로 넘긴다. 같은 역할이 이어지면 합친다. */
-  const turns=[];for(const m of AI.h.filter(m=>!m.err).slice(-12)){const role=m.r==='u'?'user':'model',t=m.t.slice(0,3000),l=turns[turns.length-1];if(l&&l.role===role)l.parts[0].text+='\n'+t;else turns.push({role,parts:[{text:t}]});}
+  const turns=[];for(const m of AI.h.filter(m=>!m.err&&!m.note).slice(-12)){const role=m.r==='u'?'user':'model',t=m.t.slice(0,3000),l=turns[turns.length-1];if(l&&l.role===role)l.parts[0].text+='\n'+t;else turns.push({role,parts:[{text:t}]});}
   while(turns.length&&turns[0].role!=='user')turns.shift();
   AI.h.push({r:'u',t:q});AI.busy=true;AI.st='생각하는 중';aiRender();aiUI();
-  const ac=new AbortController();AI.ctrl=ac;const key=AI.key,log=[],hasDoc=aiHasDoc();
+  const ac=new AbortController();AI.ctrl=ac;AI.w429=0;AI.dd=false;const key=AI.key,log=[],hasDoc=aiHasDoc();
   const push=m=>{if(AI.key===key)AI.h.push(m);};
   try{
     let ctx='',img=null;
@@ -8047,21 +8107,36 @@ async function aiAsk(q){
       /* 지금 쪽 글자를 미리 붙이면 AI가 그 쪽에만 매달려 답하므로 붙이지 않는다. 쪽 위치만 알려 주고 필요하면 도구로 읽게 한다 */
       const here=/(이|지금|현재|여기|보는|화면).{0,6}(쪽|페이지|장|그림|표|화면)|여기|이거|이것/.test(q);
       let cur='';if(here){try{cur=(await pageText(S.cur)).full.replace(/\s+/g,' ').trim();}catch(e){}}
-      ctx='[문서 정보] "'+((S.doc&&(S.doc.title||S.doc.name))||'문서')+'" · 총 '+S.pdf.numPages+'쪽 (사용자가 지금 화면에서 보는 곳: '+(S.cur+1)+'쪽, 질문이 "이 쪽·여기·지금 화면"을 가리킬 때만 이 쪽을 기준으로 하고, 그 밖의 질문은 문서 전체를 범위로 답할 것)\n'+(here?'[지금 쪽의 글자]\n'+(cur.slice(0,8000)||'(글자 없음)')+'\n':'')+'\n';
+      ctx='[참고] 사용자가 지금 화면에서 보는 곳: '+(S.cur+1)+'쪽 (질문이 "이 쪽·여기·지금 화면"을 가리킬 때만 이 쪽에 한정하고, 아니면 문서 전체를 범위로 답할 것)\n'+(here?'[지금 쪽의 글자]\n'+(cur.slice(0,8000)||'(글자 없음)')+'\n':'')+'\n';
       const pg=(typeof P!=='undefined'&&P[S.cur])?P[S.cur]:null;
       if(here&&cur.length<20&&pg&&pg.cv){try{const cv=pg.cv,sc=Math.min(1,1600/Math.max(cv.width,cv.height)),o=document.createElement('canvas');o.width=Math.round(cv.width*sc);o.height=Math.round(cv.height*sc);o.getContext('2d').drawImage(cv,0,0,o.width,o.height);img=o.toDataURL('image/jpeg',.85).split(',')[1];ctx+='(지금 쪽은 글자가 없어 그림으로 함께 보냅니다)\n\n';}catch(e){}}
     }
-    const sys='당신은 사용자가 쓰는 PDF 뷰어에 들어 있는 만능 AI 도우미입니다. 문서에 관한 질문뿐 아니라 요약, 번역, 설명, 글쓰기, 아이디어, 계산, 일반 지식 등 무엇이든 자유롭게 도와주세요. 기본 언어는 한국어이고 사용자가 다른 언어를 원하면 그 언어로 답하세요.'
-      +(hasDoc?' 사용자가 문서를 보고 있습니다. 질문의 범위는 기본적으로 문서 전체입니다(사용자가 지금 보는 쪽에 한정하지 마세요). 문서 내용이 필요하면 get_pages(쪽 범위 읽기)와 search_doc(낱말 찾기) 도구로 직접 읽어서 답하세요(필요한 만큼만 읽고, 긴 문서는 먼저 찾아본 뒤 해당 쪽을 읽으세요). 문서에서 얻은 내용에는 문장 끝에 (12쪽)처럼 쪽을 적고, 문서에 없는 내용은 추측하지 말고 없다고 하세요. 문서와 상관없는 질문에는 도구 없이 바로 답하세요.':' 지금 화면의 글은 읽어올 수 없으므로 일반 지식으로 답하되, 확실하지 않으면 모른다고 말하세요.')
+    let sc=null;
+    if(hasDoc){
+      AI.st='문서를 읽는 중';aiRender();
+      sc=await aiScope(AI_MAXC);
+      if(!sc.whole&&sc.blank<sc.n&&!AI.h.some(m=>m.note===sc.note))push({r:'a',t:sc.note,note:sc.note});   /* 한 번에 못 읽는 책이면 답보다 먼저 알린다 */
+    }
+    const mkSys=()=>'당신은 사용자가 쓰는 PDF 뷰어에 들어 있는 만능 AI 도우미입니다. 문서에 관한 질문뿐 아니라 요약, 번역, 설명, 글쓰기, 아이디어, 계산, 일반 지식 등 무엇이든 자유롭게 도와주세요. 기본 언어는 한국어이고 사용자가 다른 언어를 원하면 그 언어로 답하세요.'
+      +(hasDoc?' 사용자가 문서를 열어 두고 있고, 대화 맨 앞에 문서 전문이 [12쪽]처럼 쪽 표시와 함께 주어집니다'+(sc.whole?'(문서 전체).':'(긴 책이라 전체 지도[목차·쪽별 첫머리]와 1~'+sc.K+'쪽 본문만 포함. 그 밖 내용이 필요하면 지도를 보고 get_pages(쪽 범위 읽기)와 search_doc(낱말 찾기) 도구로 해당 부분을 읽어서 답하세요. 본문을 직접 읽지 않은 부분은 지도만 보고 추측하지 말고, 읽은 범위가 한정됐다면 답에서 한 줄로 밝히세요).')
+        +' 모든 질문은 기본적으로 문서 전체를 범위로 답하세요. 사용자가 지금 보는 쪽이나 특정 쪽·장·절·구간에 한정하지 마세요. 오직 질문한 사람이 범위를 직접 말했을 때("3장에서", "10~20쪽", "이 쪽·여기·지금 보는 쪽")에만 그 범위 안의 내용으로만 답하고 다른 범위의 내용을 섞지 마세요. 문서에서 얻은 내용에는 문장 끝에 (12쪽)처럼 쪽을 적고, 문서에 없는 내용은 추측하지 말고 없다고 말하세요.':'')
       +' 불필요한 인사말은 생략하고, 목록은 "- "로 쓰세요.';
+    const mkDoc=()=>hasDoc&&sc.text?[{role:'user',parts:[{text:'[문서 전문] "'+((S.doc&&(S.doc.title||S.doc.name))||'문서')+'" · 총 '+sc.n+'쪽'+(sc.whole?'':' (지도+1~'+sc.K+'쪽 본문)')+'\n\n'+sc.text}]},{role:'model',parts:[{text:'문서를 읽었습니다.'}]}]:[];
     const first=[{text:ctx+(ctx?'[질문]\n':'')+q}];if(img)first.push({inline_data:{mime_type:'image/jpeg',data:img}});
-    const contents=[...turns,{role:'user',parts:first}];
+    let contents=[...mkDoc(),...turns,{role:'user',parts:first}];
     let text='';
     for(let r=0;r<6;r++){
-      const body={systemInstruction:{parts:[{text:sys}]},contents,generationConfig:{temperature:.4}};if(hasDoc&&r<5)body.tools=AI_TOOLS;
+      const body={systemInstruction:{parts:[{text:mkSys()}]},contents,generationConfig:{temperature:.4}};if(hasDoc&&r<5)body.tools=AI_TOOLS;
       const res=await gGen(dwKey(),body,ac.signal);
+      if((!res||res.status===400||res.status===413)&&r===0&&sc&&sc.chars>60000){   /* 너무 길다고 거절되면 절반으로 줄여 한 번 더 */
+        sc=await aiScope(Math.floor(sc.chars/2));push({r:'a',t:sc.note,note:sc.note});contents=[...mkDoc(),...turns,{role:'user',parts:first}];r--;continue;}
+      if(res&&res.status===429){let dd=false;try{dd=/PerDay|per day/i.test(await res.clone().text());}catch(e){}AI.dd=dd;}
+      if(res&&res.status===429&&!AI.w429&&!AI.dd){   /* 무료 키의 분당 한도: 잠깐 기다렸다 한 번 더 */
+        AI.w429=1;AI.st='무료 한도 때문에 20초 기다린 뒤 다시 시도합니다';aiRender();
+        await new Promise((ok,no)=>{const t=setTimeout(ok,20000);ac.signal.addEventListener('abort',()=>{clearTimeout(t);no(new DOMException('abort','AbortError'));},{once:true});});
+        AI.st='생각하는 중';aiRender();r--;continue;}
       if(!res||!res.ok){const c=res?res.status:0;
-        push({r:'a',t:c===429?'Gemini 무료 사용 한도를 넘었습니다. 잠시 뒤 다시 하거나 질문을 짧게 해 보세요. 하루 한도라면 내일 다시 쓸 수 있습니다.':c===400?'요청을 처리하지 못했습니다. 문서가 너무 길거나 모델이 맞지 않을 수 있습니다. 질문을 나누어 다시 해 보세요.':(c===401||c===403)?'Gemini API 키가 올바르지 않거나 권한이 없습니다.':'AI 응답을 받지 못했습니다 ('+(c||'연결 실패')+'). 잠시 뒤 다시 시도해 주세요.',err:1});return;}
+        push({r:'a',t:c===429?(AI.dd?'오늘 Gemini 무료 한도를 모두 썼습니다. 보통 한국 시간 오후 4~5시경 초기화됩니다.':'Gemini 무료 사용 한도를 넘었습니다. 잠시 뒤 다시 하거나 질문을 짧게 해 보세요.'):c===400?'요청을 처리하지 못했습니다. 문서가 너무 길거나 모델이 맞지 않을 수 있습니다. 질문을 나누어 다시 해 보세요.':(c===401||c===403)?'Gemini API 키가 올바르지 않거나 권한이 없습니다.':'AI 응답을 받지 못했습니다 ('+(c||'연결 실패')+'). 잠시 뒤 다시 시도해 주세요.',err:1});return;}
       const j=await res.json(),parts=((((j.candidates||[])[0]||{}).content||{}).parts)||[],calls=parts.filter(x=>x.functionCall);
       if(!calls.length){text=parts.map(x=>x.text||'').join('').trim();break;}
       contents.push({role:'model',parts});
@@ -8081,63 +8156,46 @@ async function aiAsk(q){
     else{logErr('aiAsk',e);push({r:'a',t:'AI 응답을 받지 못했습니다. 인터넷을 확인하고 다시 시도해 주세요.',err:1});}
   }finally{AI.busy=false;AI.ctrl=null;aiRender();aiUI();}
 }
-/* ---- AI 도우미 떠 있는 단추(늘성경과 같은 방식): 끌어서 옮기고, 가만히 두면 흐려지고, 눌러서 연다 ---- */
-const aiFadeMs=()=>{const v=lsGet('neul-aifade');return v==null||v===''?3000:Math.max(0,+v||0);};
-let aiFab=null,aiFabT=0;
-function aiShelfOpen(){   /* 서재(문서가 없을 때): 대화 창을 따로 띄워 문서 없이 질문한다 */
-  let d=$('#dlgAiShelf');
+/* 서재(문서가 없을 때): 늘성경처럼 좁은 화면은 아래, 넓은 화면은 좌·우 옆에 붙여 열고, 끌어서 크기를 바꾼다 */
+const ASZ={w:0,h:0,side:'R'};
+try{const j=JSON.parse(lsGet('neul-aisz')||'{}')||{};ASZ.w=+j.w||0;ASZ.h=+j.h||0;ASZ.side=j.side==='L'?'L':'R';}catch(e){}
+const aiSzSave=()=>lsSet('neul-aisz',JSON.stringify(ASZ));
+function aiShelfLayout(){
+  const d=$('#aiSD'),sh=$('#shelf');if(!d)return;
+  if(d.hidden){if(sh){sh.style.left=sh.style.right=sh.style.bottom='';}return;}
+  const narrow=innerWidth<=700,side=narrow?'bottom':(ASZ.side==='L'?'left':'right');d.dataset.side=side;
+  if(side==='bottom'){const h=Math.round(Math.max(110,Math.min(innerHeight*.85,ASZ.h||innerHeight*.46)));d.style.setProperty('--ash',h+'px');sh.style.left=sh.style.right='';sh.style.bottom=h+'px';}
+  else{const w=Math.round(Math.max(260,Math.min(innerWidth*.7,ASZ.w||380)));d.style.setProperty('--asw',w+'px');sh.style.left=sh.style.right=sh.style.bottom='';}   /* 넓은 화면: 서재 칸 배치가 깨지지 않게 서재 위에 덮어서 연다 */
+  const sb=$('#asSide');if(sb)sb.hidden=narrow;
+}
+function aiShelfClose(){
+  const d=$('#aiSD');if(!d||d.hidden)return;
+  d.hidden=true;const pane=$('#dictPane'),box=$('#aiBox');if(box&&pane)pane.insertBefore(box,$('#mfPop'));
+  AI.on=false;aiShelfLayout();aiUI();aiShelfSync();
+}
+function aiShelfOpen(){
+  let d=$('#aiSD');
   if(!d){
-    d=document.createElement('dialog');d.id='dlgAiShelf';
-    d.innerHTML='<div class="ash"><b>AI 도우미</b><button type="button" id="ashClr">대화 지우기</button><button type="button" id="ashSet">설정</button><button type="button" id="ashX" aria-label="닫기">✕</button></div><div class="dpane aim aishelf" id="ashBody"></div>';
+    d=document.createElement('div');d.id='aiSD';d.hidden=true;
+    d.innerHTML='<div class="asg" aria-label="크기 조절" title="끌어서 크기 조절 (두 번 누르면 처음 크기)"></div><div class="ash"><b>AI 도우미</b><button type="button" id="asSide" title="왼쪽·오른쪽으로 옮기기" aria-label="왼쪽·오른쪽으로 옮기기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l-4 5 4 5M17 7l4 5-4 5M3 12h18"/></svg></button><button type="button" id="asClr">지우기</button><button type="button" id="asSet">설정</button><button type="button" id="asX" aria-label="닫기">✕</button></div><div class="dpane aim aishelf" id="asBody"></div>';
     document.body.appendChild(d);
-    $('#ashX').addEventListener('click',()=>d.close());$('#ashClr').addEventListener('click',()=>$('#aiClr').click());$('#ashSet').addEventListener('click',dictSettings);
-    d.addEventListener('click',e=>{if(e.target===d)d.close();});
-    d.addEventListener('close',()=>{const pane=$('#dictPane'),box=$('#aiBox');if(box&&pane)pane.insertBefore(box,$('#mfPop'));AI.on=false;aiUI();aiFabShow();});
+    $('#asX').addEventListener('click',aiShelfClose);$('#asClr').addEventListener('click',()=>$('#aiClr').click());$('#asSet').addEventListener('click',dictSettings);
+    $('#asSide').addEventListener('click',()=>{ASZ.side=ASZ.side==='R'?'L':'R';aiSzSave();aiShelfLayout();});
+    const g=$('.asg',d);
+    g.addEventListener('pointerdown',e=>{e.preventDefault();g.setPointerCapture(e.pointerId);g.classList.add('drag');
+      const mv=ev=>{const side=d.dataset.side;if(side==='bottom')ASZ.h=Math.round(innerHeight-ev.clientY);else ASZ.w=Math.round(side==='left'?ev.clientX:innerWidth-ev.clientX);aiShelfLayout();};
+      const up=()=>{g.classList.remove('drag');g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);g.removeEventListener('pointercancel',up);aiSzSave();};
+      g.addEventListener('pointermove',mv);g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up);});
+    g.addEventListener('dblclick',()=>{if(d.dataset.side==='bottom')ASZ.h=0;else ASZ.w=0;aiSzSave();aiShelfLayout();});
+    addEventListener('resize',()=>{if(!d.hidden)aiShelfLayout();});
   }
-  $('#ashBody').appendChild($('#aiBox'));AI.on=true;aiLoad().then(()=>{aiRender();});aiRender();aiUI();
-  d.showModal();aiFabShow();if(!matchMedia('(pointer:coarse)').matches){const i=$('#aiIn');if(i)i.focus();}
+  $('#asBody').appendChild($('#aiBox'));AI.on=true;d.hidden=false;aiShelfLayout();aiLoad().then(()=>{aiRender();});aiRender();aiUI();
+  aiShelfSync();if(!matchMedia('(pointer:coarse)').matches){const i=$('#aiIn');if(i)i.focus();}
 }
-function aiFabOpen(){
-  if($('#reader').hidden){aiShelfOpen();return;}
-  const pane=$('#dictPane'),inp=$('#aiIn');$('#moreMenu').hidden=true;
-  if(!pane.hidden){aiSetMode(true);dictRender();}else{dictPaneShow(true);aiSetMode(true);dictRender();}
-  if(inp&&!matchMedia('(pointer:coarse)').matches)inp.focus();aiFabShow();
-}
-function aiFabPos(){
-  let q=null;try{q=JSON.parse(lsGet('neul-aifab')||'null');}catch(e){}
-  const W=innerWidth,H=innerHeight,F=50;let x=q&&typeof q.x==='number'?q.x*W:W-F-14,y=q&&typeof q.y==='number'?q.y*H:H*.68;
-  return{x:clamp(x,6,Math.max(6,W-F-6)),y:clamp(y,56,Math.max(56,H-F-6))};
-}
-function aiFabPlace(){if(!aiFab)return;const p=aiFabPos();aiFab.style.transform='translate('+p.x+'px,'+p.y+'px)';aiFabWake();}
-function aiFabWake(){
-  if(!aiFab)return;aiFab.classList.remove('idle');clearTimeout(aiFabT);const ms=aiFadeMs();
-  if(ms>0)aiFabT=setTimeout(()=>{if(aiFab&&!aiFab.classList.contains('drag'))aiFab.classList.add('idle');},ms);
-}
-function aiFabShow(){   /* 읽기 화면일 때만, AI 창이 열려 있으면 숨김 */
-  if(!aiFab)return;const r=$('#reader'),p=$('#dictPane');
-  const sd=$('#dlgAiShelf'),open=!!(AI.on&&p&&!p.hidden)||!!(sd&&sd.open),sh=$('#shelf'),vis=!open&&((!!r&&!r.hidden)||(!!sh&&!sh.hidden));
-  if(aiFab.hidden===vis){aiFab.hidden=!vis;if(vis)aiFabPlace();}
-}
-function aiFabBuild(){
-  aiFab=document.createElement('button');aiFab.id='aiFab';aiFab.type='button';aiFab.hidden=true;aiFab.title='AI 도우미 (요약 · 질문)';aiFab.setAttribute('aria-label','AI 도우미 열기');
-  aiFab.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>';document.body.appendChild(aiFab);
-  let sx=0,sy=0,ox=0,oy=0,drag=false,wasIdle=false,pid=null,nx=0,ny=0;
-  aiFab.addEventListener('pointerdown',e=>{if(e.button!=null&&e.button>0)return;e.stopPropagation();pid=e.pointerId;try{aiFab.setPointerCapture(pid);}catch(x){}
-    wasIdle=aiFab.classList.contains('idle');aiFabWake();const p=aiFabPos();ox=nx=p.x;oy=ny=p.y;sx=e.clientX;sy=e.clientY;drag=false;});
-  aiFab.addEventListener('pointermove',e=>{if(pid==null||e.pointerId!==pid)return;const dx=e.clientX-sx,dy=e.clientY-sy;
-    if(!drag&&Math.hypot(dx,dy)>7){drag=true;aiFab.classList.add('drag');aiFab.classList.remove('idle');clearTimeout(aiFabT);}
-    if(drag){nx=clamp(ox+dx,4,innerWidth-54);ny=clamp(oy+dy,4,innerHeight-54);aiFab.style.transform='translate('+nx+'px,'+ny+'px) scale(1.08)';e.preventDefault();}});
-  const end=e=>{if(pid==null||e.pointerId!==pid)return;try{aiFab.releasePointerCapture(pid);}catch(x){}pid=null;aiFab.classList.remove('drag');
-    if(drag){drag=false;aiFab.style.transform='translate('+nx+'px,'+ny+'px)';lsSet('neul-aifab',JSON.stringify({x:nx/innerWidth,y:ny/innerHeight}));aiFabWake();return;}
-    if(e.type==='pointercancel')return;
-    if(wasIdle){aiFabWake();return;}   /* 흐린 상태의 첫 탭은 깨우기만 (본문을 읽다 잘못 눌러 열리는 것 방지) */
-    aiFabOpen();};
-  aiFab.addEventListener('pointerup',end);aiFab.addEventListener('pointercancel',end);
-  aiFab.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')aiFabWake();});aiFab.addEventListener('focus',aiFabWake);
-  for(const t of ['click','touchstart','touchend','mousedown','mouseup','dblclick'])aiFab.addEventListener(t,e=>e.stopPropagation());
-  aiFab.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();aiFabOpen();}});
-  addEventListener('resize',()=>{if(!aiFab.hidden)aiFabPlace();});
-  setInterval(aiFabShow,600);aiFabShow();
+function aiShelfSync(){   /* 서재 상단바 AI 단추 상태 + 문서를 열면 서재용 창 닫기 */
+  const d=$('#aiSD'),r=$('#reader'),b=$('#shAi');
+  if(d&&!d.hidden&&r&&!r.hidden)aiShelfClose();
+  if(b){const on=!!(d&&!d.hidden);b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));}
 }
 function aiWire(){
   const inp=$('#aiIn'),send=()=>{const v=inp.value;if(AI.busy)return;inp.value='';inp.style.height='';aiAsk(v);};
@@ -8153,7 +8211,8 @@ function aiWire(){
   $('#aiSet').addEventListener('click',dictSettings);
   $('#aiClr').addEventListener('click',()=>{if(!AI.h.length)return;if(!confirm('이 문서의 AI 대화를 모두 지울까요?'))return;AI.h=[];aiSave();aiRender();});
   setInterval(()=>{const p=$('#dictPane');if(!AI.on||!p||p.hidden)return;if(AI.key!==aiDocKey()){AI.loaded=false;aiLoad();}aiUI();},1500);
-  aiFabBuild();aiUI();
+  $('#shAi').addEventListener('click',()=>{const d=$('#aiSD');if(d&&!d.hidden)aiShelfClose();else aiShelfOpen();});
+  setInterval(aiShelfSync,600);aiUI();
 }
 function dictSettings(){
   let dlg=$('#dlgDict');
@@ -8165,8 +8224,8 @@ function dictSettings(){
         <div class="st-seg" id="dsEng" role="radiogroup"><button type="button" role="radio" data-e="">기본</button><button type="button" role="radio" data-e="gemini">고감도 (Gemini)</button></div></section>
       <section id="dsModeSec"><div class="dsh"><b>기본 방식 동작</b><small>실시간: 말하는 즉시 글이 나오지만 녹음은 되지 않습니다. 녹음 후 전사: 소리를 파일로 저장하고, 멈추면 Gemini로 보내 글로 받습니다(API 키 필요, 녹음 파일도 남습니다).</small></div>
         <div class="st-seg" id="dsMode" role="radiogroup"><button type="button" role="radio" data-m="live">실시간</button><button type="button" role="radio" data-m="after">녹음 후 전사</button></div></section>
-      <section><div class="dsh"><b>글로 바뀌는 간격</b><small>한 번에 변환하는 길이입니다. 짧으면 글이 빨리 나오지만 요청이 많아 무료 한도를 빨리 씁니다. 길면 요청이 적지만 글이 늦게 나옵니다. 1시간 기준 요청 수: 30초 120회 · 1분 60회. 하루 무료 한도는 키와 모델에 따라 달라서(Google이 수시로 바꿈) 앱에서 알 수 없습니다. 녹음을 끝낸 뒤 [글로 옮기기]는 5분씩 묶어 보내 한도를 거의 쓰지 않습니다.</small></div>
-        <div class="st-seg" id="dsInt" role="radiogroup"><button type="button" role="radio" data-n="15" id="dsInt15" hidden>15초</button><button type="button" role="radio" data-n="30">30초</button><button type="button" role="radio" data-n="60">1분</button></div></section>
+      <section><div class="dsh"><b>글로 바뀌는 간격</b><small>한 번에 변환하는 길이입니다. 짧으면 글이 빨리 나오지만 요청이 많아 무료 한도를 빨리 씁니다. 길면 요청이 적지만 글이 늦게 나옵니다. 1시간 기준 요청 수: 15초 240회 · 30초 120회 · 1분 60회. 하루 무료 한도는 키와 모델에 따라 달라서(Google이 수시로 바꿈) 앱에서 확인할 수 없습니다. 하루 약 500회로 알려진 경우, 계속 말하면 15초는 약 2시간, 30초는 약 4시간, 1분은 약 8시간 쓸 수 있습니다(말이 없는 구간은 보내지 않아 더 오래 갑니다). 녹음을 끝낸 뒤 [글로 옮기기]는 5분씩 묶어 보내 한도를 거의 쓰지 않습니다.</small></div>
+        <div class="st-seg" id="dsInt" role="radiogroup"><button type="button" role="radio" data-n="15" id="dsInt15" hidden>15초</button><button type="button" role="radio" data-n="30">30초</button><button type="button" role="radio" data-n="60">1분</button></div><div class="dsh" style="margin-top:6px"><small id="dsCnt"></small></div></section>
       <section id="dsKeySec"><div class="dsh"><b>Gemini API 키</b><small id="dsKeyH"></small></div>
         <input id="dsKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…">
         <a class="dslink" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">API 키 발급받기 <span aria-hidden="true">↗</span></a></section>
@@ -8174,20 +8233,16 @@ function dictSettings(){
         <div class="st-seg" id="dsBst" role="radiogroup"><button type="button" role="radio" data-b="0">끔</button><button type="button" role="radio" data-b="1">중</button><button type="button" role="radio" data-b="2">강</button></div></section>
       <section><div class="dsh"><b>번인 방지 (받아쓰기·녹음 중)</b><small>받아쓰는 동안 화면은 꺼지지 않습니다. 정한 시간 동안 조작이 없으면 10초간 화면을 어둡게 덮고(한 번만 눌러도 풀림), 이후 완전한 검정으로 덮습니다. 완전 검정은 화면을 빠르게 두 번 누르거나 전원 버튼으로 켜야 풀립니다.</small></div>
         <div class="st-seg" id="dsBi" role="radiogroup"><button type="button" role="radio" data-v="0">끔</button><button type="button" role="radio" data-v="1">1분</button><button type="button" role="radio" data-v="3">3분</button><button type="button" role="radio" data-v="5">5분</button><button type="button" role="radio" data-v="10">10분</button><button type="button" role="radio" data-v="30">30분</button></div></section>
-      <section><div class="dsh"><b>AI 버튼 (떠 있는 단추)</b><small>끌어서 원하는 곳으로 옮길 수 있습니다. 일정 시간 건드리지 않으면 거의 투명해져 본문을 가리지 않고, 흐려진 상태에서는 한 번 눌러 깨운 뒤 다시 누르면 열립니다.</small></div>
-        <div class="st-seg" id="dsFab" role="radiogroup"><button type="button" role="radio" data-f="0">흐리게 안 함</button><button type="button" role="radio" data-f="2000">2초 뒤</button><button type="button" role="radio" data-f="3000">3초 뒤</button><button type="button" role="radio" data-f="5000">5초 뒤</button><button type="button" role="radio" data-f="10000">10초 뒤</button></div>
-        <button type="button" class="dslink" id="dsFabReset" style="background:none;border:0;padding:6px 0;cursor:pointer;text-align:left">버튼 위치 처음대로</button></section></form>`;
+/form>`;
     document.body.appendChild(dlg);
     dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
-    $('#dsFab',dlg).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lsSet('neul-aifade',b.dataset.f);aiFabWake();ui();});
-    $('#dsFabReset',dlg).addEventListener('click',()=>{try{localStorage.removeItem('neul-aifab');}catch(x){}aiFabPlace();});
     const ui=()=>{
       try{goUI();}catch(e){}
-      {const fv=String(aiFadeMs());$$('#dsFab button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.f===fv)));}
       const eg=lsGet(DWK.eng)==='gemini';$$('#dsEng button',dlg).forEach(b=>b.setAttribute('aria-checked',String((b.dataset.e==='gemini')===eg)));
       $$('#dsMode button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.m===dmode())));$('#dsModeSec',dlg).hidden=eg;$('#dsInt',dlg).closest('section').hidden=!eg;
       $$('#dsBi button',dlg).forEach(b=>b.setAttribute('aria-checked',String(+b.dataset.v===biMin())));
       $('#dsInt15',dlg).hidden=!trLang();const il=String(dwInt());$$('#dsInt button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.n===il)));const bl=String(boostLv());$$('#dsBst button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.b===bl)));
+      $('#dsCnt',dlg).textContent='오늘 이 기기에서 보낸 Gemini 요청: '+gCount()+'회 (받아쓰기·AI 도우미 합계, 참고용)';
       const own=(lsGet(DWK.key)||'').trim(),nm=(lsGet('nm-gkey')||'').trim();
       $('#dsKeyH',dlg).textContent=own?'이 기기에 저장된 키를 씁니다.':nm?'늘메모에 저장된 키를 읽어 쓰는 중입니다. 따로 넣으면 그 키를 씁니다.':'키가 없습니다. 비워 두면 고감도를 켜도 기본 방식으로 받아씁니다.';
       $('#dsBstH',dlg).textContent=boostOk()?'마이크 소리를 먼저 키워 인식기에 넘깁니다. 폰에 따라 오히려 인식이 안 되면 끄세요.':'이 브라우저는 소리 증폭을 지원하지 않습니다 (최신 크롬에서만). 고감도 방식은 증폭을 자체로 씁니다.';
