@@ -1530,7 +1530,6 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
 .dpane.aim .dcbox,.dpane.aim .dctools,.dpane.aim .mfbar,.dpane.aim .mfpop,.dpane.aim .dcauds,.dpane.aim .dslist,.dpane.aim #dcList,.dpane.aim #dcCopy,.dpane.aim #dcClr,.dpane.aim #dcTxt,.dpane.aim #dcSet,.dpane.aim #dcFoldDot{display:none!important}
 .dpane:not(.aim) #aiClr,.dpane:not(.aim) #aiSet{display:none}
 #reader #dictPane.dfold .aibox{display:none}
-.ainote{flex:none;padding:8px 14px;font-size:12.5px;color:var(--fg2);border-bottom:1px solid var(--line);line-height:1.5}
 .ailog{flex:1;min-height:0;overflow:auto;padding:14px 12px;display:flex;flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch}
 .ailog .aiu{align-self:flex-end;max-width:90%;background:color-mix(in srgb,var(--accent) 16%,transparent);padding:8px 13px;border-radius:16px 16px 4px 16px;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
 .ailog .aia{align-self:stretch;font-size:14.5px;line-height:1.7;word-break:break-word;user-select:text;-webkit-user-select:text}
@@ -1541,16 +1540,11 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
 .ailog .aiw{align-self:flex-start;color:var(--fg2);font-size:13.5px}
 .ailog .aiw::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:aidots 1.2s steps(4,end) infinite}
 @keyframes aidots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
-.ailog .aih{margin:auto;text-align:center;color:var(--fg2);font-size:13.5px;line-height:1.7;padding:24px 18px}
 .aipg{display:inline;border:0;border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font:inherit;font-size:.88em;font-weight:700;padding:0 7px;margin:0 1px;cursor:pointer}
-.aibar{flex:none;border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.aibar{flex:none;padding:6px 12px calc(10px + env(safe-area-inset-bottom));background:var(--surface)}
 .aichips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.aichips::-webkit-scrollbar{display:none}
 .aichips button{flex:none;height:32px;padding:0 13px;border:1.5px solid var(--line);border-radius:16px;font-size:13px;font-weight:600;color:var(--fg2);background:none;white-space:nowrap}
 .aichips button:hover{color:var(--accent);border-color:var(--accent)}
-.aisc{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--fg2)}
-.aisc span{margin-right:2px}
-.aisc button{height:28px;padding:0 11px;border:1.5px solid var(--line);border-radius:14px;font-size:12.5px;font-weight:600;color:var(--fg2);background:none}
-.aisc button[aria-checked=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
 .aiq{display:flex;gap:8px;align-items:flex-end}
 .aiq textarea{flex:1;min-width:0;min-height:42px;max-height:120px;resize:none;border:1.5px solid var(--line);border-radius:21px;padding:10px 15px;font:inherit;font-size:14.5px;line-height:1.4;background:var(--bg);color:var(--fg);outline:0}
 .aiq textarea:focus{border-color:var(--accent)}
@@ -1558,7 +1552,6 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
 .aiq button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .aiq button.stop svg{fill:currentColor;stroke:none}
 @media (max-width:700px){.dpane.aim{height:var(--dph,56%)}}
-.aibox.hs .aichips{display:none}
 #dictPane .dctools{position:relative;flex-wrap:wrap;row-gap:6px}
 #dictPane .dct.tg{padding:0 12px}
 .trpop{position:absolute;left:10px;bottom:calc(100% - 2px);z-index:5;width:min(280px,calc(100% - 20px));max-height:min(70vh,440px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.22);padding:6px}
@@ -1570,6 +1563,13 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
 .trpop button[aria-checked=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
 .trpop button.off{grid-column:1/-1;color:var(--fg2);order:-1}
 @media (max-width:700px){#dictPane .dctools{gap:5px;padding-left:8px;padding-right:8px}#dictPane .dct{padding:0 9px;gap:5px;font-size:13px}#dictPane .dct.tg{padding:0 9px}#dictPane .dct.go{padding:0 14px 0 12px;font-size:14px}}
+.ainote{display:none}
+.ailog .aih{margin:auto;display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px 16px;text-align:center}
+.ailog .aih>b{font-size:19px;font-weight:700;color:var(--fg);letter-spacing:-.01em}
+.ailog .aih>small{font-size:12.5px;color:var(--fg2);margin-top:-6px}
+.aichips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:300px}
+.aichips button{height:36px;padding:0 15px;border:0;border-radius:18px;background:color-mix(in srgb,var(--fg) 7%,transparent);color:var(--fg);font-size:13.5px;font-weight:600}
+.aichips button:hover{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -1839,9 +1839,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
         <div class="dslist" id="dsList" hidden></div>
         <div class="dcauds" id="dcAuds" hidden></div>
         <div class="aibox" id="aiBox"><div class="ainote" id="aiNote"></div><div class="ailog" id="aiLog" aria-live="polite"></div>
-          <div class="aibar"><div class="aichips" id="aiChips"></div>
-            <div class="aisc" id="aiSc" role="radiogroup" aria-label="보낼 범위"><span>범위</span><button type="button" role="radio" data-s="cur">이 쪽</button><button type="button" role="radio" data-s="near">앞뒤 5쪽</button><button type="button" role="radio" data-s="all">문서 전체</button></div>
-            <div class="aiq"><textarea id="aiIn" rows="1" placeholder="이 문서에 대해 질문하기" aria-label="질문"></textarea><button type="button" id="aiSend" aria-label="보내기" title="보내기"></button></div></div></div>
+          <div class="aibar">            <div class="aiq"><textarea id="aiIn" rows="1" placeholder="무엇이든 물어보세요" aria-label="질문"></textarea><button type="button" id="aiSend" aria-label="보내기" title="보내기"></button></div></div></div>
         <div class="mfpop" id="mfPop" hidden></div>
         <div class="mfbar" id="dcFbar" role="toolbar" aria-label="글 서식">
           <button type="button" data-f="undo" title="실행취소 (Ctrl+Z)" data-i="undo"></button><button type="button" data-f="redo" title="다시실행 (Ctrl+Y)" data-i="redo"></button>
@@ -2081,7 +2079,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v249 · 11-18 07:10</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v251 · 11-18 10:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -7915,25 +7913,30 @@ function biWatch(){
 setInterval(biWatch,1000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')rwlGet();});
 
 /* ================= AI 도우미: 보고 있는 문서를 요약하고 질문하기 (Gemini · 받아쓰기와 같은 API 키) ================= */
-const AI={on:false,busy:false,ctrl:null,key:'',loaded:false,h:[],MAXC:150000,scope:['cur','near','all'].includes(lsGet('neul-aiscope'))?lsGet('neul-aiscope'):'cur'};
-const AI_CHIPS=[{l:'이 쪽 요약',s:'cur',q:'이 범위를 5줄 이내로 요약해 주세요.'},{l:'문서 전체 요약',s:'all',q:'이 문서 전체를 요약해 주세요. 먼저 한 문장으로 전체 요지를 쓰고, 이어서 주요 내용을 쪽 표시와 함께 정리해 주세요.'},{l:'핵심 5가지',q:'이 범위의 핵심을 5가지로 정리해 주세요.'},{l:'쉬운 설명',q:'이 범위를 초등학생도 이해하도록 쉬운 말로 설명해 주세요.'}];
-const aiDocKey=()=>(S.pdf&&S.doc&&!S.bible&&!S.hwp)?S.doc.id:'_';
+const AI={on:false,busy:false,ctrl:null,key:'',loaded:false,h:[],st:''};
+const AI_CHIPS=[{l:'이 쪽 설명',q:'지금 보고 있는 쪽을 쉽게 설명해 주세요.'},{l:'문서 요약',q:'이 문서 전체를 요약해 주세요.'},{l:'번역',q:'지금 보고 있는 쪽을 영어로 번역해 주세요.'}];
+const aiHasDoc=()=>!!(S.pdf&&S.doc&&!S.bible&&!S.hwp);
+const aiDocKey=()=>aiHasDoc()?S.doc.id:'_';
 async function aiLoad(){const k=aiDocKey();if(AI.loaded&&AI.key===k)return;AI.key=k;AI.loaded=true;let r=null;try{r=await DB.get('kv','ai:'+k);}catch(e){}if(AI.key!==k)return;AI.h=(r&&Array.isArray(r.h))?r.h:[];aiRender();}
 function aiSave(){try{DB.putRaw('kv','ai:'+AI.key,{h:AI.h.slice(-40)}).catch(()=>{});}catch(e){}}
-function aiRange(){
-  if(!(S.pdf&&S.doc)||S.bible||S.hwp)return null;
-  const n=S.pdf.numPages,c=S.cur;let a=c,b=c;
-  if(AI.scope==='near'){a=Math.max(0,c-2);b=Math.min(n-1,c+2);}else if(AI.scope==='all'){a=0;b=n-1;}
-  return{a,b,n};
-}
-async function aiGather(){
-  const r=aiRange();if(!r)return null;let out='',chars=0,last=r.a,trunc=false;
-  for(let i=r.a;i<=r.b;i++){
-    let t='';try{t=(await pageText(i)).full.replace(/\s+/g,' ').trim();}catch(e){}
-    if(chars+t.length>AI.MAXC&&i>r.a){trunc=true;break;}
-    out+='['+(i+1)+'쪽]\n'+t+'\n\n';chars+=t.length;last=i;
-  }
-  return{text:out,chars,from:r.a+1,to:last+1,trunc,n:r.n};
+/* AI가 필요할 때 스스로 문서를 읽는 도구 (Gemini 함수 호출): 쪽 범위 읽기, 낱말 찾기. 질문마다 범위를 고르게 하지 않는다. */
+const AI_TOOLS=[{functionDeclarations:[
+  {name:'get_pages',description:'열려 있는 PDF 문서의 지정한 쪽 범위의 글자를 가져옵니다. 쪽 번호는 1부터, 한 번에 최대 30쪽.',parameters:{type:'OBJECT',properties:{from:{type:'INTEGER',description:'시작 쪽(1부터)'},to:{type:'INTEGER',description:'끝 쪽(생략하면 시작 쪽만)'}},required:['from']}},
+  {name:'search_doc',description:'문서 전체에서 낱말이나 구절이 나오는 쪽을 찾습니다(최대 20곳). 글자가 그대로 일치하는 것만 찾으며, 찾은 쪽은 get_pages로 읽을 수 있습니다.',parameters:{type:'OBJECT',properties:{query:{type:'STRING',description:'찾을 낱말이나 구절'}},required:['query']}}]}];
+async function aiTool(name,a,log){
+  a=a||{};const n=S.pdf.numPages;
+  if(name==='get_pages'){
+    const f=Math.max(1,Math.min(n,Math.round(+a.from)||1));let t=Math.max(f,Math.min(n,Math.round(+a.to)||f));if(t-f>29)t=f+29;
+    let out='',used=0,last=f;
+    for(let i=f;i<=t;i++){let x='';try{x=(await pageText(i-1)).full.replace(/\s+/g,' ').trim();}catch(e){}
+      if(used+x.length>60000&&i>f){out+='(분량 제한으로 '+(i-1)+'쪽까지만 보냈습니다)';break;}
+      out+='['+i+'쪽]\n'+x+'\n\n';used+=x.length;last=i;}
+    log.push(f===last?f+'쪽':f+'~'+last+'쪽');return out||'(글자 없음)';}
+  if(name==='search_doc'){
+    const q=String(a.query||'').trim().toLowerCase();if(!q)return '검색어가 없습니다';const hits=[];
+    for(let i=0;i<n&&hits.length<20;i++){let x='';try{x=(await pageText(i)).full.replace(/\s+/g,' ');}catch(e){}const k=x.toLowerCase().indexOf(q);if(k>=0)hits.push((i+1)+'쪽: …'+x.slice(Math.max(0,k-40),k+q.length+60)+'…');}
+    log.push('검색 “'+q.slice(0,20)+'”');return hits.length?hits.join('\n'):'찾지 못했습니다 (글자가 없는 스캔본일 수 있습니다)';}
+  return '알 수 없는 도구입니다';
 }
 function aiFmt(t){
   const esc=x=>x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -7948,7 +7951,10 @@ function aiFmt(t){
 }
 function aiRender(){
   const box=$('#aiLog');if(!box)return;box.replaceChildren();$('#aiBox').classList.toggle('hs',AI.h.length>0);
-  if(!AI.h.length&&!AI.busy){const d=el('div','aih');d.innerHTML=(aiRange()?'지금 보는 문서를 요약하거나<br>궁금한 점을 물어보세요.<br>답에 붙는 <b>쪽</b> 표시를 누르면 그 쪽으로 이동합니다.':'이 화면의 글은 읽어올 수 없어<br>문서 없이 일반 질문에만 답합니다.<br>(PDF 문서를 열면 그 문서로 답합니다)');box.appendChild(d);}
+  if(!AI.h.length&&!AI.busy){const d=el('div','aih');d.appendChild(el('b','',{text:'무엇을 도와드릴까요?'}));
+    if(!aiHasDoc())d.appendChild(el('small','',{text:'이 화면은 글을 읽을 수 없어 문서 없이 답합니다'}));
+    const cs=el('div','aichips');for(const c of AI_CHIPS){const b=el('button','',{type:'button',text:c.l});b.addEventListener('click',()=>aiAsk(c.q));cs.appendChild(b);}
+    d.appendChild(cs);box.appendChild(d);}
   for(const m of AI.h){
     if(m.r==='u'){box.appendChild(el('div','aiu',{text:m.t}));continue;}
     const d=el('div','aia'+(m.err?' err':''));d.innerHTML=aiFmt(m.t);
@@ -7958,10 +7964,8 @@ function aiRender(){
   box.scrollTop=box.scrollHeight;
 }
 function aiUI(){
-  const nt=$('#aiNote');if(!nt)return;const r=aiRange();
-  if(r){const t=(S.doc&&(S.doc.title||S.doc.name))||'문서',a=r.a+1,b=r.b+1;nt.textContent=t+' · 총 '+r.n+'쪽 · 보낼 범위 '+(a===b?a+'쪽':a+'~'+b+'쪽')+(AI.scope==='all'&&r.n>60?' (길면 앞부분만 보냅니다)':'');}
-  else nt.textContent='이 화면은 글을 읽어올 수 없습니다 (늘성경·늘한글 편집 화면)';
-  $('#aiSc').hidden=!r;$$('#aiSc button').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.s===AI.scope)));
+  const nt=$('#aiNote');if(!nt)return;
+  nt.textContent='';
   const sb=$('#aiSend');if(sb){sb.classList.toggle('stop',AI.busy);sb.innerHTML=AI.busy?'<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>':'<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';sb.title=AI.busy?'멈추기':'보내기';sb.setAttribute('aria-label',sb.title);}
   const rb=$('#rAi'),p=$('#dictPane');if(rb){const on=!!(AI.on&&p&&!p.hidden);rb.classList.toggle('on',on);rb.setAttribute('aria-pressed',String(on));}
 }
@@ -7975,28 +7979,44 @@ async function aiAsk(q){
   q=(q||'').trim();if(!q||AI.busy)return;
   if(!dwKey()){AI.h.push({r:'a',t:'Gemini API 키가 필요합니다. 오른쪽 위 ⋯ → API 키 설정에서 넣어 주세요. (받아쓰기 고감도와 같은 키를 씁니다)',err:1});aiRender();return;}
   await aiLoad();
-  const hist=AI.h.slice(-6).filter(m=>!m.err).map(m=>(m.r==='u'?'사용자: ':'도우미: ')+m.t.slice(0,600)).join('\n');
-  AI.h.push({r:'u',t:q});AI.busy=true;AI.st='문서를 읽는 중';aiRender();aiUI();
-  const ac=new AbortController();AI.ctrl=ac;const key=AI.key;
+  /* 이전 대화(오류 제외)를 순서대로 넘긴다. 같은 역할이 이어지면 합친다. */
+  const turns=[];for(const m of AI.h.filter(m=>!m.err).slice(-12)){const role=m.r==='u'?'user':'model',t=m.t.slice(0,3000),l=turns[turns.length-1];if(l&&l.role===role)l.parts[0].text+='\n'+t;else turns.push({role,parts:[{text:t}]});}
+  while(turns.length&&turns[0].role!=='user')turns.shift();
+  AI.h.push({r:'u',t:q});AI.busy=true;AI.st='생각하는 중';aiRender();aiUI();
+  const ac=new AbortController();AI.ctrl=ac;const key=AI.key,log=[],hasDoc=aiHasDoc();
   const push=m=>{if(AI.key===key)AI.h.push(m);};
   try{
-    const g=await aiGather();let img=null;
-    if(g&&g.chars<20){
+    let ctx='',img=null;
+    if(hasDoc){
+      let cur='';try{cur=(await pageText(S.cur)).full.replace(/\s+/g,' ').trim();}catch(e){}
+      ctx='[지금 화면] 문서 "'+((S.doc&&(S.doc.title||S.doc.name))||'문서')+'" · 총 '+S.pdf.numPages+'쪽 · 사용자가 지금 '+(S.cur+1)+'쪽을 보고 있음\n[지금 쪽의 글자]\n'+(cur.slice(0,8000)||'(글자 없음)')+'\n\n';
       const pg=(typeof P!=='undefined'&&P[S.cur])?P[S.cur]:null;
-      if(AI.scope==='cur'&&pg&&pg.cv){try{const cv=pg.cv,sc=Math.min(1,1600/Math.max(cv.width,cv.height)),o=document.createElement('canvas');o.width=Math.round(cv.width*sc);o.height=Math.round(cv.height*sc);o.getContext('2d').drawImage(cv,0,0,o.width,o.height);img=o.toDataURL('image/jpeg',.85).split(',')[1];}catch(e){}}
-      if(!img){push({r:'a',t:'이 범위에는 읽을 수 있는 글자가 없습니다. 스캔본이나 그림 문서일 수 있습니다. 범위를 "이 쪽"으로 바꾸고 그 쪽이 화면에 보이는 상태에서 다시 물어보면 그림으로 읽어 봅니다.',err:1});return;}
+      if(cur.length<20&&pg&&pg.cv){try{const cv=pg.cv,sc=Math.min(1,1600/Math.max(cv.width,cv.height)),o=document.createElement('canvas');o.width=Math.round(cv.width*sc);o.height=Math.round(cv.height*sc);o.getContext('2d').drawImage(cv,0,0,o.width,o.height);img=o.toDataURL('image/jpeg',.85).split(',')[1];ctx+='(지금 쪽은 글자가 없어 그림으로 함께 보냅니다)\n\n';}catch(e){}}
     }
-    AI.st='생각하는 중';aiRender();
-    const sys=g?'당신은 문서 읽기를 돕는 도우미입니다. 아래 [문서 내용]'+(img?'(글자가 없어 쪽 그림으로 대신 보냄)':'')+'만 근거로 한국어로 간결하게 답하세요. 근거로 삼은 쪽은 문장 끝에 (12쪽)처럼 적으세요. 문서에 없는 내용은 없다고 말하고 추측하지 마세요. 목록은 "- "로 쓰고 불필요한 인사말은 생략하세요.':'당신은 한국어 도우미입니다. 지금 사용자가 보는 화면의 글은 읽어올 수 없습니다. 일반 지식으로 간결하게 답하되, 확실하지 않으면 모른다고 말하세요.';
-    const doc=g?'\n\n[문서: '+((S.doc&&(S.doc.title||S.doc.name))||'문서')+' · 보낸 범위: '+(g.from===g.to?g.from+'쪽':g.from+'~'+g.to+'쪽')+' / 총 '+g.n+'쪽]\n'+(img?'['+g.from+'쪽 그림]':g.text):'';
-    const parts=[{text:sys+doc+(hist?'\n\n[이전 대화]\n'+hist:'')+'\n\n[질문]\n'+q}];
-    if(img)parts.push({inline_data:{mime_type:'image/jpeg',data:img}});
-    const res=await gGen(dwKey(),{contents:[{parts}],generationConfig:{temperature:.3}},ac.signal);
-    if(!res||!res.ok){const c=res?res.status:0;
-      push({r:'a',t:c===429?'Gemini 무료 사용 한도를 넘었습니다. 잠시 뒤 다시 하거나, 범위를 줄여 보세요. 하루 한도라면 내일 다시 쓸 수 있습니다.':c===400?'질문을 처리하지 못했습니다. 범위가 너무 길 수 있으니 "이 쪽"이나 "앞뒤 5쪽"으로 줄여 보세요.':(c===401||c===403)?'Gemini API 키가 올바르지 않거나 권한이 없습니다.':'AI 응답을 받지 못했습니다 ('+(c||'연결 실패')+'). 잠시 뒤 다시 시도해 주세요.',err:1});return;}
-    const j=await res.json();const t=((((j.candidates||[])[0]||{}).content||{}).parts||[]).map(x=>x.text||'').join('').trim();
-    if(!t){push({r:'a',t:'답을 만들지 못했습니다. 질문을 바꾸거나 범위를 줄여 다시 해 보세요.',err:1});return;}
-    push({r:'a',t,m:g?(g.from===g.to?g.from+'쪽':g.from+'~'+g.to+'쪽')+' 기준'+(g.trunc?' · 길어서 여기까지만 봄':''):'문서 없이 답함'});
+    const sys='당신은 사용자가 쓰는 PDF 뷰어에 들어 있는 만능 AI 도우미입니다. 문서에 관한 질문뿐 아니라 요약, 번역, 설명, 글쓰기, 아이디어, 계산, 일반 지식 등 무엇이든 자유롭게 도와주세요. 기본 언어는 한국어이고 사용자가 다른 언어를 원하면 그 언어로 답하세요.'
+      +(hasDoc?' 사용자가 문서를 보고 있습니다. 문서 내용이 필요하면 get_pages(쪽 범위 읽기)와 search_doc(낱말 찾기) 도구로 직접 읽어서 답하세요(필요한 만큼만 읽고, 긴 문서는 먼저 찾아본 뒤 해당 쪽을 읽으세요). 문서에서 얻은 내용에는 문장 끝에 (12쪽)처럼 쪽을 적고, 문서에 없는 내용은 추측하지 말고 없다고 하세요. 문서와 상관없는 질문에는 도구 없이 바로 답하세요.':' 지금 화면의 글은 읽어올 수 없으므로 일반 지식으로 답하되, 확실하지 않으면 모른다고 말하세요.')
+      +' 불필요한 인사말은 생략하고, 목록은 "- "로 쓰세요.';
+    const first=[{text:ctx+(ctx?'[질문]\n':'')+q}];if(img)first.push({inline_data:{mime_type:'image/jpeg',data:img}});
+    const contents=[...turns,{role:'user',parts:first}];
+    let text='';
+    for(let r=0;r<6;r++){
+      const body={systemInstruction:{parts:[{text:sys}]},contents,generationConfig:{temperature:.4}};if(hasDoc&&r<5)body.tools=AI_TOOLS;
+      const res=await gGen(dwKey(),body,ac.signal);
+      if(!res||!res.ok){const c=res?res.status:0;
+        push({r:'a',t:c===429?'Gemini 무료 사용 한도를 넘었습니다. 잠시 뒤 다시 하거나 질문을 짧게 해 보세요. 하루 한도라면 내일 다시 쓸 수 있습니다.':c===400?'요청을 처리하지 못했습니다. 문서가 너무 길거나 모델이 맞지 않을 수 있습니다. 질문을 나누어 다시 해 보세요.':(c===401||c===403)?'Gemini API 키가 올바르지 않거나 권한이 없습니다.':'AI 응답을 받지 못했습니다 ('+(c||'연결 실패')+'). 잠시 뒤 다시 시도해 주세요.',err:1});return;}
+      const j=await res.json(),parts=((((j.candidates||[])[0]||{}).content||{}).parts)||[],calls=parts.filter(x=>x.functionCall);
+      if(!calls.length){text=parts.map(x=>x.text||'').join('').trim();break;}
+      contents.push({role:'model',parts});
+      const back=[];
+      for(const x of calls){const nm=x.functionCall.name,a=x.functionCall.args||{};
+        AI.st=nm==='search_doc'?'문서에서 찾는 중':'문서를 읽는 중';aiRender();
+        let out;try{out=await aiTool(nm,a,log);}catch(e){out='도구 오류';}
+        back.push({functionResponse:{name:nm,response:{result:out}}});}
+      contents.push({role:'user',parts:back});
+      AI.st='생각하는 중';aiRender();
+    }
+    if(!text){push({r:'a',t:'답을 만들지 못했습니다. 질문을 바꾸거나 더 구체적으로 다시 해 보세요.',err:1});return;}
+    push({r:'a',t:text,m:log.length?'읽은 곳: '+[...new Set(log)].join(' · '):''});
     if(AI.key===key)aiSave();
   }catch(e){
     if(e&&e.name==='AbortError')push({r:'a',t:'멈췄습니다.',err:1});
@@ -8004,8 +8024,6 @@ async function aiAsk(q){
   }finally{AI.busy=false;AI.ctrl=null;aiRender();aiUI();}
 }
 function aiWire(){
-  const chips=$('#aiChips');for(const c of AI_CHIPS){const b=el('button','',{type:'button',text:c.l});b.addEventListener('click',()=>{if(c.s&&aiRange()){AI.scope=c.s;lsSet('neul-aiscope',c.s);}aiUI();aiAsk(c.q);});chips.appendChild(b);}
-  $('#aiSc').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;AI.scope=b.dataset.s;lsSet('neul-aiscope',AI.scope);aiUI();});
   const inp=$('#aiIn'),send=()=>{const v=inp.value;if(AI.busy)return;inp.value='';inp.style.height='';aiAsk(v);};
   $('#aiSend').addEventListener('click',()=>{if(AI.busy){if(AI.ctrl)AI.ctrl.abort();return;}send();});
   inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(120,inp.scrollHeight)+'px';});
