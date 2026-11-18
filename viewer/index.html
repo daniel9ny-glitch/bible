@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="늘뷰어">
@@ -295,7 +295,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dcc{min-width:30px;height:30px;border-radius:15px;border:1px solid var(--line);color:var(--fg);font-size:12px;cursor:pointer;background:var(--surface)}
 .dpgrip{position:absolute;z-index:5;touch-action:none;background:transparent}.dpgrip::after{content:'';position:absolute;border-radius:3px;background:var(--line);transition:background .15s}.dpgrip:hover::after,.dpgrip.drag::after{background:var(--accent)}
 @media (min-width:701px){.dpgrip{top:0;bottom:0;right:-7px;width:14px;cursor:col-resize}.dpgrip::after{top:50%;left:5px;width:4px;height:44px;margin-top:-22px}}
-@media (max-width:700px){.dpgrip{left:0;right:0;top:-8px;height:16px;cursor:row-resize}.dpgrip::after{left:50%;top:6px;height:4px;width:44px;margin-left:-22px}}
+@media (max-width:700px){.dpgrip{left:22%;right:22%;top:-12px;height:36px;cursor:row-resize}.dpgrip::after{left:50%;top:14px;height:5px;width:52px;margin-left:-26px}}
 #reader #dictPane.dfold .dpgrip{display:none}
 @media (min-width:701px){#reader #dictPane.dR{order:99;border-left:1px solid var(--line)}#reader #dictPane.dR .dpgrip{right:auto;left:-7px}}
 @media (max-width:700px){#dcSide{display:none}}
@@ -1555,6 +1555,8 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
 @keyframes aidots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 .aipg{display:inline;border:0;border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font:inherit;font-size:.88em;font-weight:700;padding:0 7px;margin:0 1px;cursor:pointer}
 .aibar{flex:none;padding:6px 12px calc(10px + env(safe-area-inset-bottom));background:var(--surface)}
+html.kbo .aibar{padding-bottom:8px}
+html.kbo #reader{bottom:var(--kb,0px)}
 .aichips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.aichips::-webkit-scrollbar{display:none}
 .aichips button{flex:none;height:32px;padding:0 13px;border:1.5px solid var(--line);border-radius:16px;font-size:13px;font-weight:600;color:var(--fg2);background:none;white-space:nowrap}
 .aichips button:hover{color:var(--accent);border-color:var(--accent)}
@@ -2106,7 +2108,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v265 · 11-18 22:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v266 · 11-18 22:50</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -6376,6 +6378,10 @@ function bindBarDock(){
   e.addEventListener('contextmenu',ev=>{if(drag||tm)ev.preventDefault();});
   if(lsGet('neul-barpos')==='b')$('#reader').classList.add('barbot');
 }
+/* 키보드 높이 따라가기: 화면(레이아웃)이 키보드만큼 줄지 않는 브라우저에서는 읽기 화면 아래를 키보드 위로 올린다 */
+(function(){const v=window.visualViewport;if(!v)return;const root=document.documentElement;
+  const run=()=>{const kb=v.scale>1.02?0:Math.max(0,Math.round(innerHeight-v.height-v.offsetTop));if(kb>100){root.style.setProperty('--kb',kb+'px');root.classList.add('kbo');}else{root.style.removeProperty('--kb');root.classList.remove('kbo');}};
+  v.addEventListener('resize',run);v.addEventListener('scroll',run);addEventListener('orientationchange',()=>setTimeout(run,300));})();
 function bindRelayout(){
   let raf=0;const run=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;try{fabPlaceAll();palFit();measureDet();}catch(e){}});};
   if(window.ResizeObserver){const ro=new ResizeObserver(run);ro.observe($('#reader'));ro.observe($('#scroller'));ro.observe($('#palette'));ro.observe($('#palDetail'));}
