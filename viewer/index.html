@@ -920,10 +920,15 @@ kbd{display:inline-block;min-width:24px;padding:2px 7px;border-radius:6px;border
 #ttsBar.vfmin.blink #ttsDot{animation:ttsBlink 1.05s ease-in-out infinite}
 #rTts.on,#rTone.on,#rVf.on,#rDict.on{color:var(--accent);background:var(--accent-soft)}
 #rAi{display:none!important}   /* AI 도우미는 떠 있는 단추(#aiFab)로 연다. 이 단추는 내부 상태 표시용으로만 남김 */
-#aiFab{position:fixed;left:0;top:0;z-index:25;width:50px;height:50px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);box-shadow:0 6px 18px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.14) inset;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:opacity .7s ease,transform .15s ease,box-shadow .2s;opacity:1}
-#aiFab svg{width:24px;height:24px;pointer-events:none}
-#aiFab.idle{opacity:.1;box-shadow:none}#aiFab.drag{cursor:grabbing;transform:scale(1.08)!important;transition:transform .15s}#aiFab[hidden]{display:none}
+#aiFab{position:fixed;left:0;top:0;z-index:25;width:50px;height:50px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;background:var(--accent);color:var(--accent-fg);box-shadow:0 6px 18px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.14) inset;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:opacity .7s ease,box-shadow .2s;opacity:1}
+#aiFab svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#aiFab.idle{opacity:.1;box-shadow:none}#aiFab.drag{cursor:grabbing;transition:none}#aiFab[hidden]{display:none}
 @media print{#aiFab{display:none!important}}
+#dlgAiShelf{width:min(560px,calc(100vw - 20px));height:min(78vh,680px);max-height:calc(100dvh - 20px);padding:0;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--fg);overflow:hidden}
+#dlgAiShelf[open]{display:flex;flex-direction:column}#dlgAiShelf::backdrop{background:rgba(0,0,0,.4)}
+#dlgAiShelf .ash{flex:none;display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}#dlgAiShelf .ash b{flex:1;font-size:15px}
+#dlgAiShelf .ash button{border:0;background:none;color:var(--fg2);font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;cursor:pointer}#dlgAiShelf .ash button:hover{background:var(--surface2)}
+.dpane.aishelf{flex:1;width:100%;min-width:0;height:auto!important;border:0;min-height:0}
 .vfl{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
 .vfl i{position:absolute;background:rgba(150,230,150,.24);border-radius:3px}
 .vfl.vfp i{background:rgba(249,115,22,.34)}
@@ -2097,7 +2102,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v259 · 11-18 18:55</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v260 · 11-18 19:20</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -8003,9 +8008,9 @@ function aiFmt(t){
 function aiRender(){
   const box=$('#aiLog');if(!box)return;box.replaceChildren();$('#aiBox').classList.toggle('hs',AI.h.length>0);
   if(!AI.h.length&&!AI.busy){const d=el('div','aih');d.appendChild(el('b','',{text:'무엇을 도와드릴까요?'}));
-    if(!aiHasDoc())d.appendChild(el('small','',{text:'이 화면은 글을 읽을 수 없어 문서 없이 답합니다'}));
-    const cs=el('div','aichips');for(const c of AI_CHIPS){const b=el('button','',{type:'button',text:c.l});b.addEventListener('click',()=>aiAsk(c.q));cs.appendChild(b);}
-    d.appendChild(cs);box.appendChild(d);}
+    if(!aiHasDoc())d.appendChild(el('small','',{text:S.doc?'이 화면은 글을 읽을 수 없어 문서 없이 답합니다':'문서를 열지 않았습니다 · 무엇이든 물어보세요'}));
+    if(aiHasDoc()){const cs=el('div','aichips');for(const c of AI_CHIPS){const b=el('button','',{type:'button',text:c.l});b.addEventListener('click',()=>aiAsk(c.q));cs.appendChild(b);}d.appendChild(cs);}
+    box.appendChild(d);}
   for(const m of AI.h){
     if(m.r==='u'){box.appendChild(el('div','aiu',{text:m.t}));continue;}
     const d=el('div','aia'+(m.err?' err':''));d.innerHTML=aiFmt(m.t);
@@ -8079,7 +8084,21 @@ async function aiAsk(q){
 /* ---- AI 도우미 떠 있는 단추(늘성경과 같은 방식): 끌어서 옮기고, 가만히 두면 흐려지고, 눌러서 연다 ---- */
 const aiFadeMs=()=>{const v=lsGet('neul-aifade');return v==null||v===''?3000:Math.max(0,+v||0);};
 let aiFab=null,aiFabT=0;
+function aiShelfOpen(){   /* 서재(문서가 없을 때): 대화 창을 따로 띄워 문서 없이 질문한다 */
+  let d=$('#dlgAiShelf');
+  if(!d){
+    d=document.createElement('dialog');d.id='dlgAiShelf';
+    d.innerHTML='<div class="ash"><b>AI 도우미</b><button type="button" id="ashClr">대화 지우기</button><button type="button" id="ashSet">설정</button><button type="button" id="ashX" aria-label="닫기">✕</button></div><div class="dpane aim aishelf" id="ashBody"></div>';
+    document.body.appendChild(d);
+    $('#ashX').addEventListener('click',()=>d.close());$('#ashClr').addEventListener('click',()=>$('#aiClr').click());$('#ashSet').addEventListener('click',dictSettings);
+    d.addEventListener('click',e=>{if(e.target===d)d.close();});
+    d.addEventListener('close',()=>{const pane=$('#dictPane'),box=$('#aiBox');if(box&&pane)pane.insertBefore(box,$('#mfPop'));AI.on=false;aiUI();aiFabShow();});
+  }
+  $('#ashBody').appendChild($('#aiBox'));AI.on=true;aiLoad().then(()=>{aiRender();});aiRender();aiUI();
+  d.showModal();aiFabShow();if(!matchMedia('(pointer:coarse)').matches){const i=$('#aiIn');if(i)i.focus();}
+}
 function aiFabOpen(){
+  if($('#reader').hidden){aiShelfOpen();return;}
   const pane=$('#dictPane'),inp=$('#aiIn');$('#moreMenu').hidden=true;
   if(!pane.hidden){aiSetMode(true);dictRender();}else{dictPaneShow(true);aiSetMode(true);dictRender();}
   if(inp&&!matchMedia('(pointer:coarse)').matches)inp.focus();aiFabShow();
@@ -8096,20 +8115,20 @@ function aiFabWake(){
 }
 function aiFabShow(){   /* 읽기 화면일 때만, AI 창이 열려 있으면 숨김 */
   if(!aiFab)return;const r=$('#reader'),p=$('#dictPane');
-  const open=!!(AI.on&&p&&!p.hidden),vis=!!r&&!r.hidden&&!open;
+  const sd=$('#dlgAiShelf'),open=!!(AI.on&&p&&!p.hidden)||!!(sd&&sd.open),sh=$('#shelf'),vis=!open&&((!!r&&!r.hidden)||(!!sh&&!sh.hidden));
   if(aiFab.hidden===vis){aiFab.hidden=!vis;if(vis)aiFabPlace();}
 }
 function aiFabBuild(){
   aiFab=document.createElement('button');aiFab.id='aiFab';aiFab.type='button';aiFab.hidden=true;aiFab.title='AI 도우미 (요약 · 질문)';aiFab.setAttribute('aria-label','AI 도우미 열기');
-  aiFab.innerHTML='<span data-i="sparkle"></span>';document.body.appendChild(aiFab);hydrate(aiFab);
+  aiFab.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>';document.body.appendChild(aiFab);
   let sx=0,sy=0,ox=0,oy=0,drag=false,wasIdle=false,pid=null,nx=0,ny=0;
   aiFab.addEventListener('pointerdown',e=>{if(e.button!=null&&e.button>0)return;e.stopPropagation();pid=e.pointerId;try{aiFab.setPointerCapture(pid);}catch(x){}
     wasIdle=aiFab.classList.contains('idle');aiFabWake();const p=aiFabPos();ox=nx=p.x;oy=ny=p.y;sx=e.clientX;sy=e.clientY;drag=false;});
   aiFab.addEventListener('pointermove',e=>{if(pid==null||e.pointerId!==pid)return;const dx=e.clientX-sx,dy=e.clientY-sy;
     if(!drag&&Math.hypot(dx,dy)>7){drag=true;aiFab.classList.add('drag');aiFab.classList.remove('idle');clearTimeout(aiFabT);}
-    if(drag){nx=clamp(ox+dx,4,innerWidth-54);ny=clamp(oy+dy,4,innerHeight-54);aiFab.style.transform='translate('+nx+'px,'+ny+'px)';e.preventDefault();}});
+    if(drag){nx=clamp(ox+dx,4,innerWidth-54);ny=clamp(oy+dy,4,innerHeight-54);aiFab.style.transform='translate('+nx+'px,'+ny+'px) scale(1.08)';e.preventDefault();}});
   const end=e=>{if(pid==null||e.pointerId!==pid)return;try{aiFab.releasePointerCapture(pid);}catch(x){}pid=null;aiFab.classList.remove('drag');
-    if(drag){drag=false;lsSet('neul-aifab',JSON.stringify({x:nx/innerWidth,y:ny/innerHeight}));aiFabWake();return;}
+    if(drag){drag=false;aiFab.style.transform='translate('+nx+'px,'+ny+'px)';lsSet('neul-aifab',JSON.stringify({x:nx/innerWidth,y:ny/innerHeight}));aiFabWake();return;}
     if(e.type==='pointercancel')return;
     if(wasIdle){aiFabWake();return;}   /* 흐린 상태의 첫 탭은 깨우기만 (본문을 읽다 잘못 눌러 열리는 것 방지) */
     aiFabOpen();};
