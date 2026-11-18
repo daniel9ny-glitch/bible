@@ -1828,6 +1828,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
           <button data-act="orig"><span data-i="file"></span>원본 내보내기</button>
           <button data-act="export"><span data-i="download"></span>필기 포함 내보내기</button>
         </div>
+        <button data-act="share"><span data-i="upload"></span>공유 (카카오톡 · 이메일)</button>
         <button data-act="print"><span data-i="printer"></span>인쇄</button>
         <button data-grp="prefs" class="mgrp" aria-expanded="false"><span data-i="sliders"></span>환경설정<span class="mchev" data-i="chev-right"></span></button>
         <div class="msub" data-sub="prefs" hidden>
@@ -2091,7 +2092,7 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
   <div class="actions"><button type="button" class="btn" data-close autofocus>닫기</button></div>
 </div></dialog>
 <dialog id="dlgSet"><div class="dlg gs">
-  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v254 · 11-18 12:00</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
+  <div class="gs-head"><h3>설정 <small style="font-weight:400;color:var(--fg2);font-size:12px" id="verTag">v257 · 11-18 17:05</small></h3><button type="button" class="icon-btn" data-close aria-label="닫기"><span data-i="x"></span></button></div>
   <div class="st-sec"><div class="st-lab">화면 테마</div>
     <div class="st-seg" id="setTheme" role="radiogroup" aria-label="화면 테마"><button type="button" role="radio" data-t="auto">시스템</button><button type="button" role="radio" data-t="light">라이트</button><button type="button" role="radio" data-t="dark">다크</button></div>
     <div class="st-lab" style="margin-top:14px">테마 색</div><div class="pal-row" id="setPal" role="radiogroup" aria-label="테마 색"></div></div>
@@ -2111,15 +2112,19 @@ dialog.biov.s1{opacity:.2}dialog.biov.s2{opacity:1;transition:opacity 3s ease}
   </details>
 </div></dialog>
 <dialog id="dlgShare"><div class="dlg gs">
-  <h3>선택한 쪽 공유</h3>
+  <h3 id="shTt">선택한 쪽 공유</h3>
   <p class="muted" id="shInfo" style="margin:0"></p>
   <div id="shStep1">
     <button type="button" class="btn gs-act" id="shPdf"><b>PDF 한 개로 보내기</b><small>선택한 쪽(범위)만 묶어 하나의 PDF로 만듭니다</small></button>
     <button type="button" class="btn gs-act" id="shJpg"><b>사진(JPG)으로 각각 보내기</b><small>선택한 쪽을 한 장씩 사진으로 만들어 여러 장을 한 번에 보냅니다</small></button>
   </div>
+  <div id="shDoc" hidden>
+    <button type="button" class="btn gs-act" id="shDocAnn"><b>필기 포함해서 보내기</b><small>지금 그린 필기·메모·사진을 얹은 PDF 한 개</small></button>
+    <button type="button" class="btn gs-act" id="shDocOrig"><b>원본 그대로 보내기</b><small>필기 없이 처음 PDF 그대로</small></button>
+  </div>
   <div id="shStep2" hidden>
-    <button type="button" class="btn primary gs-main" id="shGo">공유하기 (카카오톡 등)</button>
-    <button type="button" class="btn gs-act" id="shSave"><b>내려받기</b><small>공유 목록에 카카오톡이 없거나 공유가 안 될 때</small></button>
+    <button type="button" class="btn primary gs-main" id="shGo">공유하기 (카카오톡 · 이메일 등)</button>
+    <button type="button" class="btn gs-act" id="shSave"><b>내려받기</b><small>공유 목록에 카카오톡·이메일이 없거나 공유가 안 될 때 (받은 파일을 메일에 첨부하세요)</small></button>
   </div>
   <div class="actions"><span class="grow"></span><button type="button" class="btn" data-close>닫기</button></div>
 </div></dialog>
@@ -7295,7 +7300,7 @@ function goUI(){
   const b=$('#dcGo');if(!b)return;const run=DICT.on||DR.on,L=dictLevel();
   b.dataset.run=run?'1':'0';b.dataset.l=DICT.on?L:'ok';
   const t0=DR.on?DR.t0:(DICT.t0||Date.now()),bad=run&&DICT.on&&L==='bad';
-  b.querySelector('b').textContent=run?('멈춤 '+drFmt((Date.now()-t0)/1000)+(bad?' · 소리 없음':'')):'시작';
+  b.querySelector('b').textContent=run?('멈춤 '+drFmt((Date.now()-t0)/1000)+(bad?' · 소리 없음':(DICT.on&&DW.on&&DW.q.length>1?' · 대기 '+DW.q.length:''))):'시작';
   b.title=run?(bad?'한참 소리가 없습니다 · 마이크 확인 · 누르면 멈춤':'눌러서 멈춤'):'눌러서 시작';b.setAttribute('aria-label',run?'멈춤':'시작');
   {const t=$('#dcTr');if(t){const L=trLang(),hi=dwEngine(),on=!!L&&hi;t.classList.toggle('on',on);t.classList.toggle('lk',!!L&&!hi);t.classList.toggle('trl',!!L);t.setAttribute('aria-pressed',String(on));t.querySelector('b').textContent=L?trName(L).replace(/\(.*\)/,''):'번역';t.title=L?(hi?'번역해서 받아쓰는 중: '+trName(L)+' · 눌러서 바꾸기':'번역은 고감도(Gemini)에서만 됩니다 · 설정에서 고감도를 켜세요'):'번역: 고르는 언어로 번역해서 받아적습니다 (고감도에서만)';}}
   for(const [id,on] of [['dcTx',goTx()],['dcSv',goSv()]]){const t=$('#'+id);if(t){t.classList.toggle('on',on);t.setAttribute('aria-pressed',String(on));t.classList.toggle('lk',run);}}
@@ -7649,7 +7654,7 @@ function dictFeed(e){   /* 인식 결과를 받아 적는다 (받아쓰기 전�
    고감도: 소리를 키워 짧게 끊어 Gemini 음성인식으로 보낸다(API 키 필요, 설정에서 켠 경우만). 기본 방식은 브라우저 음성인식.
    키는 이 기기에만 저장한다(동기화 안 함). 같은 주소(github.io)의 늘메모에 저장된 키가 있으면 그것도 읽어 쓴다. */
 const DWK={eng:'neul-dengine',key:'neul-gkey',bst:'neul-dboost',mdl:'neul-gmodel',int:'neul-dint',tx:'neul-dtx',sv:'neul-dsv',mode:'neul-dmode',bi:'neul-dbi',tr:'neul-dtr'};
-const dwInt=()=>{const v=+lsGet(DWK.int);return v===60?60:30;};   /* 글로 바뀌는 간격(초): 30·60, 기본 30 */
+const dwInt=()=>{const v=+lsGet(DWK.int);return v===60?60:(v===15&&trLang()?15:30);};   /* 글로 바뀌는 간격(초): 30·60, 기본 30 · 15초는 번역해서 받아쓸 때만 */
 const TRL=[['en','영어'],['zh','중국어(간체)'],['ja','일본어'],['vi','베트남어'],['es','스페인어'],['fr','프랑스어'],['de','독일어'],['ru','러시아어'],['id','인도네시아어'],['th','태국어'],['tl','필리핀어'],['ar','아랍어'],['ko','한국어']];   /* 번역해서 받아적을 언어 (듣는 말의 언어는 자동 인식) */
 const trLang=()=>{const v=lsGet(DWK.tr);return TRL.some(x=>x[0]===v)?v:'';},trName=c=>(TRL.find(x=>x[0]===c)||[0,''])[1];
 const dmode=()=>lsGet(DWK.mode)==='after'?'after':'live';   /* 기본 방식 동작: live 실시간(녹음 안 됨) · after 녹음 후 전사 */
@@ -7698,7 +7703,7 @@ async function dwStart(){
   const an=ctx.createAnalyser();an.fftSize=1024;const ds=ctx.createMediaStreamDestination();
   src.connect(fl[0]);fl[1].connect(g);g.connect(cp);cp.connect(an);cp.connect(ds);
   try{if(ctx.state==='suspended')await ctx.resume();}catch(e){}
-  Object.assign(DW,{on:true,sid:DICT.sid,ctx,stream:st,an,dest:ds,q:[],busy:false,prev:''});
+  Object.assign(DW,{on:true,sid:DICT.sid,ctx,stream:st,an,dest:ds,q:[],busy:false,prev:'',quota:0});
   toast('고감도 받아쓰기 · 말이 잠깐 멈추면 글로 바뀝니다');dwSeg();
 }
 function dwSeg(){
@@ -7725,7 +7730,7 @@ async function dwPump(){
   if(DW.busy)return;DW.busy=true;
   while(DW.q.length){
     const it=DW.q[0],r=await dwSend(it);
-    if(r==='retry'){it.n++;if(it.n>3){DW.q.shift();if(DW.quota)DW.q.length=0;else toast('인터넷이 불안정해 한 구간을 건너뜁니다','err');}else await dwSleep(1500*it.n);continue;}
+    if(r==='retry'){it.n++;if(it.n>2){DW.q.shift();if(DW.quota)DW.q.length=0;else toast('인터넷이 불안정해 한 구간을 건너뜁니다','err');}else await dwSleep(1500*it.n);continue;}
     DW.q.shift();if(r==='fatal'){DW.q.length=0;break;}
   }
   DW.busy=false;if(!DW.on)dwRelease();
@@ -7736,7 +7741,7 @@ async function gGen(key,body,sig){
   const saved=lsGet(DWK.mdl)||lsGet('nm-gmodel'),list=saved?[saved,...GMODELS.filter(m=>m!==saved)]:GMODELS;let res=null;
   for(const m of list){
     if(sig&&sig.aborted)throw new DOMException('abort','AbortError');
-    const js=JSON.stringify(body),ac=new AbortController(),tm=setTimeout(()=>ac.abort(),js.length>2e6?150000:45000);   /* 응답이 없으면 끊고 다시 시도 (큐가 멈추는 것 방지) */
+    const js=JSON.stringify(body),ac=new AbortController(),tm=setTimeout(()=>ac.abort(),js.length>2e6?150000:25000);   /* 응답이 없으면 끊고 다시 시도 (큐가 멈추는 것 방지) */
     if(sig)sig.addEventListener('abort',()=>ac.abort(),{once:true});
     try{res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',signal:ac.signal,headers:{'Content-Type':'application/json','x-goog-api-key':key},body:js});}finally{clearTimeout(tm);}
     if(res.status===404||res.status===429)continue;   /* 모델마다 한도가 따로라서 한도 초과(429)도 다음 모델로 넘어가 본다 */
@@ -7795,7 +7800,7 @@ async function dwSend(it){
   if(res.status===400||res.status===401||res.status===403){let m='';try{m=((await res.json()).error||{}).message||'';}catch(e){}
     if(res.status===400&&!/API key/i.test(m)){toast('고감도 받아쓰기 오류 (400)','err');return 'skip';}
     toast('Gemini API 키가 올바르지 않거나 권한이 없습니다','err');setTimeout(()=>{if(DICT.on)dictStop();},0);return 'fatal';}
-  if(res.status===429){if(it.n>=3){DW.quota=1;toast('Gemini 무료 사용 한도를 넘었습니다. 하루 한도라면 내일 다시 쓸 수 있어요 · 간격을 늘리거나 기본 방식을 쓰세요','err');}return 'retry';}
+  if(res.status===429){if(it.n>=2){DW.quota=1;toast('Gemini 무료 사용 한도를 넘었습니다. 하루 한도라면 내일 다시 쓸 수 있어요 · 간격을 늘리거나 기본 방식을 쓰세요','err');}return 'retry';}
   if(res.status>=500)return 'retry';
   if(!res.ok){toast('고감도 받아쓰기 오류 ('+res.status+')','err');return 'skip';}
   let j;try{j=await res.json();}catch(e){return 'skip';}
@@ -8029,13 +8034,15 @@ async function aiAsk(q){
   try{
     let ctx='',img=null;
     if(hasDoc){
-      let cur='';try{cur=(await pageText(S.cur)).full.replace(/\s+/g,' ').trim();}catch(e){}
-      ctx='[지금 화면] 문서 "'+((S.doc&&(S.doc.title||S.doc.name))||'문서')+'" · 총 '+S.pdf.numPages+'쪽 · 사용자가 지금 '+(S.cur+1)+'쪽을 보고 있음\n[지금 쪽의 글자]\n'+(cur.slice(0,8000)||'(글자 없음)')+'\n\n';
+      /* 지금 쪽 글자를 미리 붙이면 AI가 그 쪽에만 매달려 답하므로 붙이지 않는다. 쪽 위치만 알려 주고 필요하면 도구로 읽게 한다 */
+      const here=/(이|지금|현재|여기|보는|화면).{0,6}(쪽|페이지|장|그림|표|화면)|여기|이거|이것/.test(q);
+      let cur='';if(here){try{cur=(await pageText(S.cur)).full.replace(/\s+/g,' ').trim();}catch(e){}}
+      ctx='[문서 정보] "'+((S.doc&&(S.doc.title||S.doc.name))||'문서')+'" · 총 '+S.pdf.numPages+'쪽 (사용자가 지금 화면에서 보는 곳: '+(S.cur+1)+'쪽, 질문이 "이 쪽·여기·지금 화면"을 가리킬 때만 이 쪽을 기준으로 하고, 그 밖의 질문은 문서 전체를 범위로 답할 것)\n'+(here?'[지금 쪽의 글자]\n'+(cur.slice(0,8000)||'(글자 없음)')+'\n':'')+'\n';
       const pg=(typeof P!=='undefined'&&P[S.cur])?P[S.cur]:null;
-      if(cur.length<20&&pg&&pg.cv){try{const cv=pg.cv,sc=Math.min(1,1600/Math.max(cv.width,cv.height)),o=document.createElement('canvas');o.width=Math.round(cv.width*sc);o.height=Math.round(cv.height*sc);o.getContext('2d').drawImage(cv,0,0,o.width,o.height);img=o.toDataURL('image/jpeg',.85).split(',')[1];ctx+='(지금 쪽은 글자가 없어 그림으로 함께 보냅니다)\n\n';}catch(e){}}
+      if(here&&cur.length<20&&pg&&pg.cv){try{const cv=pg.cv,sc=Math.min(1,1600/Math.max(cv.width,cv.height)),o=document.createElement('canvas');o.width=Math.round(cv.width*sc);o.height=Math.round(cv.height*sc);o.getContext('2d').drawImage(cv,0,0,o.width,o.height);img=o.toDataURL('image/jpeg',.85).split(',')[1];ctx+='(지금 쪽은 글자가 없어 그림으로 함께 보냅니다)\n\n';}catch(e){}}
     }
     const sys='당신은 사용자가 쓰는 PDF 뷰어에 들어 있는 만능 AI 도우미입니다. 문서에 관한 질문뿐 아니라 요약, 번역, 설명, 글쓰기, 아이디어, 계산, 일반 지식 등 무엇이든 자유롭게 도와주세요. 기본 언어는 한국어이고 사용자가 다른 언어를 원하면 그 언어로 답하세요.'
-      +(hasDoc?' 사용자가 문서를 보고 있습니다. 문서 내용이 필요하면 get_pages(쪽 범위 읽기)와 search_doc(낱말 찾기) 도구로 직접 읽어서 답하세요(필요한 만큼만 읽고, 긴 문서는 먼저 찾아본 뒤 해당 쪽을 읽으세요). 문서에서 얻은 내용에는 문장 끝에 (12쪽)처럼 쪽을 적고, 문서에 없는 내용은 추측하지 말고 없다고 하세요. 문서와 상관없는 질문에는 도구 없이 바로 답하세요.':' 지금 화면의 글은 읽어올 수 없으므로 일반 지식으로 답하되, 확실하지 않으면 모른다고 말하세요.')
+      +(hasDoc?' 사용자가 문서를 보고 있습니다. 질문의 범위는 기본적으로 문서 전체입니다(사용자가 지금 보는 쪽에 한정하지 마세요). 문서 내용이 필요하면 get_pages(쪽 범위 읽기)와 search_doc(낱말 찾기) 도구로 직접 읽어서 답하세요(필요한 만큼만 읽고, 긴 문서는 먼저 찾아본 뒤 해당 쪽을 읽으세요). 문서에서 얻은 내용에는 문장 끝에 (12쪽)처럼 쪽을 적고, 문서에 없는 내용은 추측하지 말고 없다고 하세요. 문서와 상관없는 질문에는 도구 없이 바로 답하세요.':' 지금 화면의 글은 읽어올 수 없으므로 일반 지식으로 답하되, 확실하지 않으면 모른다고 말하세요.')
       +' 불필요한 인사말은 생략하고, 목록은 "- "로 쓰세요.';
     const first=[{text:ctx+(ctx?'[질문]\n':'')+q}];if(img)first.push({inline_data:{mime_type:'image/jpeg',data:img}});
     const contents=[...turns,{role:'user',parts:first}];
@@ -8091,7 +8098,7 @@ function dictSettings(){
       <section id="dsModeSec"><div class="dsh"><b>기본 방식 동작</b><small>실시간: 말하는 즉시 글이 나오지만 녹음은 되지 않습니다. 녹음 후 전사: 소리를 파일로 저장하고, 멈추면 Gemini로 보내 글로 받습니다(API 키 필요, 녹음 파일도 남습니다).</small></div>
         <div class="st-seg" id="dsMode" role="radiogroup"><button type="button" role="radio" data-m="live">실시간</button><button type="button" role="radio" data-m="after">녹음 후 전사</button></div></section>
       <section><div class="dsh"><b>글로 바뀌는 간격</b><small>한 번에 변환하는 길이입니다. 짧으면 글이 빨리 나오지만 요청이 많아 무료 한도를 빨리 씁니다. 길면 요청이 적지만 글이 늦게 나옵니다. 1시간 기준 요청 수: 30초 120회 · 1분 60회. 하루 무료 한도는 키와 모델에 따라 달라서(Google이 수시로 바꿈) 앱에서 알 수 없습니다. 녹음을 끝낸 뒤 [글로 옮기기]는 5분씩 묶어 보내 한도를 거의 쓰지 않습니다.</small></div>
-        <div class="st-seg" id="dsInt" role="radiogroup"><button type="button" role="radio" data-n="30">30초</button><button type="button" role="radio" data-n="60">1분</button></div></section>
+        <div class="st-seg" id="dsInt" role="radiogroup"><button type="button" role="radio" data-n="15" id="dsInt15" hidden>15초</button><button type="button" role="radio" data-n="30">30초</button><button type="button" role="radio" data-n="60">1분</button></div></section>
       <section id="dsKeySec"><div class="dsh"><b>Gemini API 키</b><small id="dsKeyH"></small></div>
         <input id="dsKey" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="AIza…">
         <a class="dslink" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">API 키 발급받기 <span aria-hidden="true">↗</span></a></section>
@@ -8106,7 +8113,7 @@ function dictSettings(){
       const eg=lsGet(DWK.eng)==='gemini';$$('#dsEng button',dlg).forEach(b=>b.setAttribute('aria-checked',String((b.dataset.e==='gemini')===eg)));
       $$('#dsMode button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.m===dmode())));$('#dsModeSec',dlg).hidden=eg;$('#dsInt',dlg).closest('section').hidden=!eg;
       $$('#dsBi button',dlg).forEach(b=>b.setAttribute('aria-checked',String(+b.dataset.v===biMin())));
-      const il=String(dwInt());$$('#dsInt button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.n===il)));const bl=String(boostLv());$$('#dsBst button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.b===bl)));
+      $('#dsInt15',dlg).hidden=!trLang();const il=String(dwInt());$$('#dsInt button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.n===il)));const bl=String(boostLv());$$('#dsBst button',dlg).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.b===bl)));
       const own=(lsGet(DWK.key)||'').trim(),nm=(lsGet('nm-gkey')||'').trim();
       $('#dsKeyH',dlg).textContent=own?'이 기기에 저장된 키를 씁니다.':nm?'늘메모에 저장된 키를 읽어 쓰는 중입니다. 따로 넣으면 그 키를 씁니다.':'키가 없습니다. 비워 두면 고감도를 켜도 기본 방식으로 받아씁니다.';
       $('#dsBstH',dlg).textContent=boostOk()?'마이크 소리를 먼저 키워 인식기에 넘깁니다. 폰에 따라 오히려 인식이 안 되면 끄세요.':'이 브라우저는 소리 증폭을 지원하지 않습니다 (최신 크롬에서만). 고감도 방식은 증폭을 자체로 씁니다.';
@@ -8443,11 +8450,12 @@ function bindTts(){
 const MORE_KEY='neul-more-v2';
 const PREF_DEF=[['q_theme','화면 테마','moon'],['q_pal','테마 색','highlighter'],['q_awake','화면 꺼짐 방지','sun'],['q_night','야간 보기','moon'],['q_qr','QR 코드 눌러서 열기','link'],['q_mini','확대 위치 미니맵','fit'],['q_finger','손가락으로도 필기','hand'],['q_paledit','도구툴 편집','sliders'],['q_baredit','상단바 편집','sliders']];   /* 환경설정 안에 있다가, 메뉴 편집에서 밖으로 꺼낼 수 있는 항목 (메뉴 편집은 길을 잃지 않게 늘 안에 둔다) */
 const PREF_KEYS=new Set(PREF_DEF.map(x=>x[0]));
-const MORE_DEF=[['cover','2장 보기: 표지 따로 보기','book'],['export','내보내기 (원본 · 필기 포함)','download'],['print','인쇄','printer'],['prefs','환경설정 (도구툴·상단바·메뉴 편집)','sliders'],...PREF_DEF];
+const MORE_DEF=[['cover','2장 보기: 표지 따로 보기','book'],['export','내보내기 (원본 · 필기 포함)','download'],['share','공유 (카카오톡 · 이메일)','upload'],['print','인쇄','printer'],['prefs','환경설정 (도구툴·상단바·메뉴 편집)','sliders'],...PREF_DEF];
 let MORE=null;
-function moreDefault(){return{order:['cover','hr','export','print','hr','prefs'],hidden:[]};}
+function moreDefault(){return{order:['cover','hr','export','share','print','hr','prefs'],hidden:[]};}
 function moreLoad(){const keys=MORE_DEF.map(x=>x[0]);
-  try{const j=JSON.parse(lsGet(MORE_KEY)||'null');if(j&&Array.isArray(j.order)){const order=j.order.filter(k=>k==='hr'||keys.includes(k));if(!order.includes('prefs'))order.push('hr','prefs');for(const k of keys)if(!order.includes(k)&&!PREF_KEYS.has(k))order.push(k);
+  try{const j=JSON.parse(lsGet(MORE_KEY)||'null');if(j&&Array.isArray(j.order)){const order=j.order.filter(k=>k==='hr'||keys.includes(k));if(!order.includes('prefs'))order.push('hr','prefs');if(!order.includes('share')){const at=order.indexOf('export');if(at>=0)order.splice(at+1,0,'share');}
+      for(const k of keys)if(!order.includes(k)&&!PREF_KEYS.has(k))order.push(k);
       for(let i=order.length-1;i>=0;i--){if(order[i]==='hr'&&(i===0||order[i-1]==='hr'||i===order.length-1))order.splice(i,1);}   /* 예전 설정에서 빠진 항목 때문에 생긴 맨 앞·맨 뒤·연속 구분선 정리 */
     MORE={order,hidden:(j.hidden||[]).filter(k=>keys.includes(k)&&k!=='prefs')};return;}}catch(e){}
   MORE=moreDefault();}
@@ -9056,7 +9064,7 @@ function bindEvents(){
     else if(a==='finger'){S.finger=!S.finger;S.fingerSet=true;lsSet('neul-finger',S.finger?'1':'0');updateFingerUI();updatePrefUI();}
     else if(a==='minimap'){const on=lsGet('neul-minimap')==='0';lsSet('neul-minimap',on?'1':'0');if(!on){const mm=$('#miniMap');if(mm)mm.classList.remove('on');}updateMiniUI();updatePrefUI();toast(on?'확대할 때 위치 미니맵을 보여 줍니다':'위치 미니맵을 끕니다');}
     else if(a==='zin')zoomBy(1.2);else if(a==='zout')zoomBy(1/1.2);else if(a==='fit')fitNow();
-    else if(a==='cover')setCover(!S.cover);else if(a==='print')openPrintDlg();else if(a==='mode')cycleMode();else if(a==='mark')toggleMark();else if(a==='barfold')setBarFold(!$('#reader').classList.contains('barfold'));else if(a==='paledit')openBarEdit('pal');else if(a==='baredit')openBarEdit('top');else if(a==='moreedit')openBarEdit('more');else if(a==='textfit')fitTextWidth();else if(a==='awake'){if(!navigator.wakeLock){toast('이 브라우저는 화면 꺼짐 방지를 지원하지 않습니다');}else{AWAKE.on=!AWAKE.on;lsSet('neul-awake',AWAKE.on?'1':'0');if(AWAKE.on)wlAcquire();else wlRelease();toast(AWAKE.on?'문서를 보는 동안 화면이 꺼지지 않습니다':'화면 꺼짐 방지를 껐습니다');}updateAwakeUI();}else if(a==='export')exportPdf();else if(a==='orig')downloadOriginal(S.doc);else if(a==='addpage')openAddPage();else if(a==='photo'){if(S.doc)$('#photoInput').click();}else if(a==='jpg')openJpgDlg();else if(a==='theme')toggleTheme();
+    else if(a==='cover')setCover(!S.cover);else if(a==='print')openPrintDlg();else if(a==='share')docShareOpen();else if(a==='mode')cycleMode();else if(a==='mark')toggleMark();else if(a==='barfold')setBarFold(!$('#reader').classList.contains('barfold'));else if(a==='paledit')openBarEdit('pal');else if(a==='baredit')openBarEdit('top');else if(a==='moreedit')openBarEdit('more');else if(a==='textfit')fitTextWidth();else if(a==='awake'){if(!navigator.wakeLock){toast('이 브라우저는 화면 꺼짐 방지를 지원하지 않습니다');}else{AWAKE.on=!AWAKE.on;lsSet('neul-awake',AWAKE.on?'1':'0');if(AWAKE.on)wlAcquire();else wlRelease();toast(AWAKE.on?'문서를 보는 동안 화면이 꺼지지 않습니다':'화면 꺼짐 방지를 껐습니다');}updateAwakeUI();}else if(a==='export')exportPdf();else if(a==='orig')downloadOriginal(S.doc);else if(a==='addpage')openAddPage();else if(a==='photo'){if(S.doc)$('#photoInput').click();}else if(a==='jpg')openJpgDlg();else if(a==='theme')toggleTheme();
   };
   $('#moreMenu').addEventListener('click',e=>{
     const g=e.target.closest('button[data-grp]');
@@ -10231,8 +10239,8 @@ async function pnUndo(){
 }
 function pnShareOpen(){
   if(!PN.sel.size){toast('공유할 쪽을 먼저 선택하세요');return;}
-  shFiles=null;$('#shInfo').textContent=`${S.doc.title} · ${edRanges(pnSorted())}쪽 (${PN.sel.size}쪽)`;
-  $('#shStep1').hidden=false;$('#shStep2').hidden=true;$('#dlgShare').showModal();
+  shFiles=null;$('#shTt').textContent='선택한 쪽 공유';$('#shInfo').textContent=`${S.doc.title} · ${edRanges(pnSorted())}쪽 (${PN.sel.size}쪽)`;
+  $('#shDoc').hidden=true;$('#shStep1').hidden=false;$('#shStep2').hidden=true;$('#dlgShare').showModal();
 }
 async function pnShareMake(kind){
   const idx=pnSorted();shFiles=null;$('#dlgShare').close();loading(true);
@@ -10304,6 +10312,29 @@ async function makeJpgFiles(idx,k0,withAnn){
   }
   return files;
 }
+/* ----- 문서 전체 공유(카카오톡·이메일 등): 휴대폰의 공유 창으로 PDF를 바로 보낸다 ----- */
+const docHasAnn=()=>!!(S.ann&&S.ann.pages&&Object.values(S.ann.pages).some(a=>a&&((a.s&&a.s.length)||(a.i&&a.i.length))));
+async function docShareOpen(){
+  const d=S.doc;if(!d||!S.pdf){toast('공유할 문서를 먼저 여세요');return;}
+  $('#moreMenu').hidden=true;shFiles=null;
+  $('#shTt').textContent='문서 공유';$('#shInfo').textContent=d.title+' · 총 '+S.pdf.numPages+'쪽';
+  $('#shStep1').hidden=true;$('#shStep2').hidden=true;
+  if(docHasAnn()){$('#shDoc').hidden=false;$('#dlgShare').showModal();}   /* 필기가 있으면 포함할지 고르게 한다 */
+  else{$('#shDoc').hidden=true;await docShareMake(false);}                   /* 없으면 바로 원본을 준비한다 */
+}
+async function docShareMake(withAnn){
+  const d=S.doc;shFiles=null;$('#dlgShare').close();loading(true);
+  try{
+    await flushSave();let out,has=false;
+    if(withAnn){const r=await buildPdf(null);out=r.out;has=r.has;}
+    else{const buf=await DB.get('blobs',d.id);if(!buf)throw new Error('원본을 찾을 수 없습니다');out=new Uint8Array(buf);}
+    shFiles=[new File([out],safeName(d.title)+(has?' (필기).pdf':'.pdf'),{type:'application/pdf'})];
+  }catch(e){console.error(e);toast('파일을 만들지 못했습니다: '+(e&&e.message||e),'err');shFiles=null;}
+  finally{loading(false);}
+  if(!shFiles)return;
+  $('#shInfo').textContent=d.title+' · PDF 준비됨 ('+fmtBytes(shFiles[0].size)+(withAnn?', 필기 포함':', 원본')+')';
+  $('#shDoc').hidden=true;$('#shStep1').hidden=true;$('#shStep2').hidden=false;$('#dlgShare').showModal();
+}
 let shFiles=null;
 async function edShareGo(){
   const f=shFiles;if(!f)return;const data={files:f,title:f.length===1?f[0].name:'늘뷰어 사진'};
@@ -10319,6 +10350,7 @@ async function edShareSave(){
 }
 function bindEditor(){
   $('#shPdf').addEventListener('click',()=>pnShareMake('pdf'));$('#shJpg').addEventListener('click',()=>pnShareMake('jpg'));
+  $('#shDocAnn').addEventListener('click',()=>docShareMake(true));$('#shDocOrig').addEventListener('click',()=>docShareMake(false));
   $('#shGo').addEventListener('click',edShareGo);$('#shSave').addEventListener('click',edShareSave);
   DB.get('kv','pgclip').then(c=>{if(c&&c.bytes){ED.clip=c;}}).catch(()=>{});
 }
